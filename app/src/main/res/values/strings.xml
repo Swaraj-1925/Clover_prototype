@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Clover</string>
+    <string name="welcome_message">Install the Spotify app and connect your Premium account to
+        unlock all features. Clover enhances your Spotify music experience
+    </string>
+</resources>
