@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id 'com.google.dagger.hilt.android'
-    id"dagger.hilt.android.plugin"
+    id "dagger.hilt.android.plugin"
     id 'kotlin-kapt'
 }
 
@@ -26,14 +26,13 @@ android {
         manifestPlaceholders = [redirectSchemeName: "clovermusicapp", redirectHostName: "callback"]
 
 
-
 //        Api keys
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
         buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${properties.getProperty("spotifyClientID")}\"")
 
-        buildFeatures { buildConfig = true}
+        buildFeatures { buildConfig = true }
 
 
     }
@@ -105,6 +104,7 @@ dependencies {
 
 //    Jetpack viewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2"
 
 //    Shared preferences
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
