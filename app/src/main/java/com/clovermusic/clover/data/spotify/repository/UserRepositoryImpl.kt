@@ -1,6 +1,5 @@
 package com.clovermusic.clover.data.spotify.repository
 
-import com.clovermusic.clover.data.spotify.models.artist.artistAlbums.ArtistAlbums
 import com.clovermusic.clover.data.spotify.models.user.followedArtists.FollowedArtistsResponse
 import com.clovermusic.clover.data.spotify.models.user.topItems.TopArtistsResponse
 import com.clovermusic.clover.data.spotify.network.UserApiService
@@ -19,8 +18,4 @@ class UserRepositoryImpl @Inject constructor(
         return apiService.getTopArtists()
     }
 
-    override suspend fun getAlbums(artistId: String): ArtistAlbums {
-        TODO("Move to Artist Repository")
-        return apiService.getNewReleases(artistId)
-    }
 }
