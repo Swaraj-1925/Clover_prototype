@@ -112,6 +112,12 @@ dependencies {
 //    Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0-RC'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC'
+
+//    Pager Layouts
+    implementation 'com.google.accompanist:accompanist-pager:0.35.1-alpha'
+
+//    palette for dominate color
+    implementation 'androidx.palette:palette-ktx:1.0.0'
 }
 kapt {
     correctErrorTypes true

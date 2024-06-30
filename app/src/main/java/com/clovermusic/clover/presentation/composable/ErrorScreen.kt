@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation
+package com.clovermusic.clover.presentation.composable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,7 @@ import com.clovermusic.clover.ui.theme.CloverTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ErrorAuthScreen(text: String){
+fun ErrorAuthScreen(text: String) {
     BasicAlertDialog(onDismissRequest = { test() }) {
         Surface(
             modifier = Modifier
@@ -54,7 +54,7 @@ fun ErrorAuthScreen(text: String){
                     text = "Error!",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.error
-                    )
+                )
                 Text(
                     text = text,
                     style = MaterialTheme.typography.headlineMedium,
@@ -67,10 +67,10 @@ fun ErrorAuthScreen(text: String){
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text(
-                        text="Exit",
+                        text = "Exit",
                         style = MaterialTheme.typography.headlineLarge,
                         color = MaterialTheme.colorScheme.primary
-                        )
+                    )
                 }
             }
         }
@@ -78,13 +78,13 @@ fun ErrorAuthScreen(text: String){
     }
 }
 
-fun test(){
+fun test() {
     println("aacm")
 }
 
 @Preview(showBackground = true)
 @Composable
-fun Screen(){
+fun Screen() {
     CloverTheme {
 
         ErrorAuthScreen(text = "Some Error has occurred")

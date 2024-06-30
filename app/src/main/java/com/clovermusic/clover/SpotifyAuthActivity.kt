@@ -8,25 +8,25 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import com.clovermusic.clover.presentation.ErrorAuthScreen
-import com.clovermusic.clover.presentation.SpotifyAuthScreen
+import com.clovermusic.clover.presentation.composable.ErrorAuthScreen
+import com.clovermusic.clover.presentation.composable.SpotifyAuthScreen
 import com.clovermusic.clover.presentation.viewModel.AuthViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SpotifyAuthActivity : ComponentActivity(){
+class SpotifyAuthActivity : ComponentActivity() {
 
 
     private lateinit var authResultLauncher: ActivityResultLauncher<Intent>
-    private val viewModel : AuthViewModel by viewModels()
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CloverTheme {
-                SpotifyAuthScreen (onConnectClick = { startSpotifyAuthentication() } )
+                SpotifyAuthScreen(onConnectClick = { startSpotifyAuthentication() })
             }
 
         }
@@ -34,12 +34,13 @@ class SpotifyAuthActivity : ComponentActivity(){
        this Function expects and output from the SpotifyAuthentication activity when it gets the result it
        calls the handleAuthResponse from spotifyAuthUseCase on Success it will navigate to MainActivity
         */
-        authResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            viewModel.handleAuthResponse(result, this,
-                onSuccess = { navigateToMainAppScreen() },
-                onError = { error -> showErrorScreen(error) }
-            )
-        }
+        authResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                viewModel.handleAuthResponse(result, this,
+                    onSuccess = { navigateToMainAppScreen() },
+                    onError = { error -> showErrorScreen(error) }
+                )
+            }
     }
 
 

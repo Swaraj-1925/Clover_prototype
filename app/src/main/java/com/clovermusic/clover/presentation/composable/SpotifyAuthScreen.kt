@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation
+package com.clovermusic.clover.presentation.composable
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,11 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +28,7 @@ import com.clovermusic.clover.ui.theme.CloverTheme
 
 
 @Composable
-fun SpotifyAuthScreen(onConnectClick : () ->Unit){
+fun SpotifyAuthScreen(onConnectClick: () -> Unit) {
     val cloverSpotifyLogo = painterResource(id = R.drawable.clover_spotify_png)
     val description = stringResource(id = R.string.welcome_message)
     Box(
@@ -69,7 +66,7 @@ fun SpotifyAuthScreen(onConnectClick : () ->Unit){
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Text(
-                    text =description,
+                    text = description,
                     style = MaterialTheme.typography.labelMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.secondary,
@@ -95,19 +92,14 @@ fun SpotifyAuthScreen(onConnectClick : () ->Unit){
                     .padding(horizontal = 64.dp)
 
             ) {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
-                ){
+                ) {
                     Text(
                         text = "Connect to Spotify",
-                        color = MaterialTheme.colorScheme.onPrimary ,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.padding(8.dp)
-                    )
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null ,
-                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
@@ -116,7 +108,7 @@ fun SpotifyAuthScreen(onConnectClick : () ->Unit){
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(horizontal = 40.dp , vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 40.dp, vertical = 8.dp)
             )
         }
     }
@@ -124,14 +116,14 @@ fun SpotifyAuthScreen(onConnectClick : () ->Unit){
 
 @Preview(showBackground = true)
 @Composable
-fun SpotifyPreview(){
-    CloverTheme (darkTheme = false){
+fun SpotifyPreview() {
+    CloverTheme(darkTheme = false) {
         SpotifyAuthScreen {
             abc()
         }
     }
 }
 
-fun abc(){
+fun abc() {
 
 }
