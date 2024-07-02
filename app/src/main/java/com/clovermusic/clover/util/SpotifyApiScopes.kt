@@ -1,9 +1,6 @@
-package com.clovermusic.clover.data.spotify.auth
+package com.clovermusic.clover.util
 
-/*
-Spotify authentication scope Access need from spotify of user data for app
- */
-enum class ApiScopes(val scope: String) {
+enum class SpotifyApiScopes(val scope: String) {
     USER_READ_PRIVATE("user-read-private"),                         // Access user's subscription details
     USER_READ_EMAIL("user-read-email"),                             // Access user's email address
     PLAYLIST_READ_PRIVATE("playlist-read-private"),                 // Access user's private playlists
@@ -18,7 +15,7 @@ enum class ApiScopes(val scope: String) {
     USER_FOLLOW_MODIFY("user-follow-modify"),                       // Modify user's followed artists
     UGC_IMAGE_UPLOAD("ugc-image-upload");                           // Upload images (e.g., playlist covers)
 
-//    takes all the scopes above and convert them from string to an array
+    //    takes all the scopes above and convert them from string to an array
     companion object {
         fun getAllScopes(): Array<String> {
             return entries.map { it.scope }.toTypedArray()
