@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation.composable
+package com.clovermusic.clover.presentation.composable.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

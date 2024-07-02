@@ -1,15 +1,13 @@
-package com.clovermusic.clover.presentation.composable
+package com.clovermusic.clover.presentation.composable.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -160,92 +159,73 @@ fun PlaylistAlbumCard() {
     val title = "Name album"
     val description = "68 songs"
 
-    Card(
-        onClick = { /*TODO*/ },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = Color.Gray,
         modifier = Modifier
-            .border(
-                width = 2.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(20.dp)
-            )
-            .size(width = 180.dp, height = 240.dp)
-
+            .padding(end = 8.dp)
     ) {
         Column(
-//            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(14.dp)
+                .padding(16.dp)
+                .size(width = 150.dp, height = 200.dp)
         ) {
-
-            Box {
-
-                Image(
-                    painter = image,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(14.dp)),
-                    contentScale = ContentScale.Fit
-
-                )
-
-                IconButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        painter = more,
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .wrapContentSize()
-                            .background(
-                                Color.White.copy(alpha = -1.6f),
-                                shape = RoundedCornerShape(7.dp)
-                            )
-                            .padding(7.dp)
+            Card {
+                Box {
+                    Image(
+                        painter = image,
+                        contentDescription = null
                     )
+                    IconButton(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                        ) {
+                        Icon(
+                            painter = more,
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .wrapContentSize()
+                                .background(
+                                    Color.White.copy(alpha = 0.5f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(8.dp)
+                        )
+                    }
                 }
             }
-            Spacer(modifier = Modifier.padding(8.dp))
             Row(
-                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-                Column {
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                ){
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.titleMedium
                     )
                     Text(
                         text = description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                        style = MaterialTheme.typography.labelMedium
                     )
-
                 }
-                Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-
-                Icon(
-                    painter = playButton,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        painter = playButton,
+                        contentDescription = null
+                    )
+                }
             }
-
         }
-
     }
+
 }
 
 @Composable
@@ -268,6 +248,8 @@ fun SongCard() {
             Image(
                 painter = image,
                 contentDescription = null,
+                modifier = Modifier
+
             )
             Icon(
                 painter = playButton,
@@ -276,6 +258,7 @@ fun SongCard() {
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(4.dp)
+                    .size(24.dp)
             )
             Column(
                 modifier = Modifier
@@ -319,6 +302,7 @@ fun TestA() {
         R.drawable.more_vertical,
     )
     CloverTheme(darkTheme = false) {
-        NewReleaseCard(images)
+        PlaylistAlbumCard()
     }
 }
+

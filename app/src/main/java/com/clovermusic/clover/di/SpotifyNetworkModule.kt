@@ -2,6 +2,7 @@ package com.clovermusic.clover.di
 
 import com.clovermusic.clover.data.spotify.network.ArtistApiService
 import com.clovermusic.clover.data.spotify.network.AuthInterceptor
+import com.clovermusic.clover.data.spotify.network.PlaylistApiServices
 import com.clovermusic.clover.data.spotify.network.UserApiService
 import dagger.Module
 import dagger.Provides
@@ -48,6 +49,12 @@ object SpotifyNetworkModule {
     @Singleton
     fun provideSpotifyArtistApiService(retrofit: Retrofit): ArtistApiService {
         return retrofit.create(ArtistApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlaylistApiService(retrofit: Retrofit): PlaylistApiServices {
+        return retrofit.create(PlaylistApiServices::class.java)
     }
 
 }

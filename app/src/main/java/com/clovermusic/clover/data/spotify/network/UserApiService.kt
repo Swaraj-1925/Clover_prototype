@@ -7,9 +7,9 @@ import retrofit2.http.GET
 interface UserApiService {
 
     @GET("me/following?type=artist&limit=50")
-    suspend fun getfollowedArtists(): FollowedArtistsResponse
+    suspend fun getFollowedArtists(): FollowedArtistsResponse
 
-    @GET("/me/top/artists?limit=50")
+    @GET("me/top/artists?limit=50")
     fun getTopArtists(): TopArtistsResponse
 
 

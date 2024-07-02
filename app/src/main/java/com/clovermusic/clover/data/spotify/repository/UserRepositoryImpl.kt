@@ -11,11 +11,12 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
 
     override suspend fun followedArtists(): FollowedArtistsResponse {
-        return apiService.getfollowedArtists()
+        return apiService.getFollowedArtists()
     }
 
     override suspend fun topArtists(): TopArtistsResponse {
         return apiService.getTopArtists()
     }
+
 
 }

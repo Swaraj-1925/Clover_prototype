@@ -35,9 +35,6 @@ class ArtistUseCase @Inject constructor(
                         }
                     }
                 }.awaitAll().flatten()
-
-
-
                 return@coroutineScope allNewReleases
 
             } catch (e: Exception) {
@@ -45,4 +42,5 @@ class ArtistUseCase @Inject constructor(
                 return@coroutineScope emptyList()
             }
         }
+
 }

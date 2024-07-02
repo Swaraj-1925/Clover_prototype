@@ -6,7 +6,6 @@ import com.clovermusic.clover.data.spotify.models.user.topItems.TopArtistsRespon
 interface UserRepository {
 
     suspend fun followedArtists(): FollowedArtistsResponse
-
     suspend fun topArtists(): TopArtistsResponse
 
 }

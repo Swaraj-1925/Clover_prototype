@@ -1,4 +1,4 @@
-package com.clovermusic.clover.domain.spotify.useCase
+package com.clovermusic.clover.domain.spotify.helper
 
 import android.app.Activity
 import android.content.Context
@@ -12,10 +12,10 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import javax.inject.Inject
 
-class AuthUseCase @Inject constructor(
+class Authorization @Inject constructor(
     private val repository: AuthRepository,
     private val tokenManager: TokenManager
-){
+) {
 
     //    Create an Authentication request
     private fun authenticateUser(): AuthorizationRequest {
@@ -34,7 +34,6 @@ class AuthUseCase @Inject constructor(
     }
 
 
-
     //  Check the response from spotify and save token if positive else return error
     fun handleAuthResponse(
         result: ActivityResult,
@@ -46,14 +45,16 @@ class AuthUseCase @Inject constructor(
         when (response.type) {
             AuthorizationResponse.Type.TOKEN -> {
                 val accessToken = response.accessToken
-                tokenManager.saveAccessToken( accessToken)
+                tokenManager.saveAccessToken(accessToken)
                 onSuccess()
-                Log.i("SpotifyAuthUseCase","TOKEN RECEIVED")
+                Log.i("SpotifyAuthUseCase", "TOKEN RECEIVED")
             }
+
             AuthorizationResponse.Type.ERROR -> {
                 val error = response.error
                 onError(error)
             }
+
             else -> {
                 val token = tokenManager.getAccessToken()
                 if (!token.isNullOrBlank()) {

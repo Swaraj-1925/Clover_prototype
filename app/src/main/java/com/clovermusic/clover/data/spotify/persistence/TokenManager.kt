@@ -11,7 +11,7 @@ import javax.inject.Inject
 /**
  * Object to handle token  received after authentication
  */
-class TokenManager @Inject constructor(private val context: Context){
+class TokenManager @Inject constructor(private val context: Context) {
 
     private val _prefsName = "com.clovermusic.clover.PREFERENCES"
     private val _token = "access_token"
@@ -36,7 +36,7 @@ class TokenManager @Inject constructor(private val context: Context){
         val editor = getEncryptedSharedPreferences().edit()
         editor.putString(_token, accessToken)
         editor.apply()
-        Log.i("TokenManegar","TOKEN SAVED")
+        Log.i("TokenManegar", "TOKEN SAVED$accessToken")
     }
 
 

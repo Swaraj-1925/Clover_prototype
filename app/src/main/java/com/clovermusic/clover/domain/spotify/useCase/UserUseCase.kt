@@ -28,7 +28,7 @@ class UserUseCase @Inject constructor(
     }
 
     // Function to return latest releases for followed artists
-    suspend fun getLatestReleases(): List<NewReleases> = coroutineScope {
+    suspend fun getFollowedArtistsLatestReleases(): List<NewReleases> = coroutineScope {
         try {
             val followedArtistIds = getFollowedArtistsId()
             if (followedArtistIds.isEmpty()) {
@@ -47,5 +47,6 @@ class UserUseCase @Inject constructor(
             return@coroutineScope emptyList()
         }
     }
+
 
 }

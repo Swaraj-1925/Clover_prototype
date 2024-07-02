@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import com.clovermusic.clover.presentation.composable.ErrorAuthScreen
+import com.clovermusic.clover.presentation.composable.component.ErrorAuthScreen
 import com.clovermusic.clover.presentation.composable.SpotifyAuthScreen
 import com.clovermusic.clover.presentation.viewModel.AuthViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
