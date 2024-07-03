@@ -8,18 +8,24 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import com.clovermusic.clover.presentation.composable.component.ErrorAuthScreen
+import com.clovermusic.clover.presentation.SpotifyAuthViewModel
 import com.clovermusic.clover.presentation.composable.SpotifyAuthScreen
-import com.clovermusic.clover.presentation.viewModel.AuthViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
+import com.spotify.sdk.android.auth.AuthorizationClient
 import dagger.hilt.android.AndroidEntryPoint
+
+
+/**
+ * Activity for spotify authentication,
+ * this activity is separate from main activity because this requires to create an intent
+ * and to keep the main activity clean its separate
+ */
 
 @AndroidEntryPoint
 class SpotifyAuthActivity : ComponentActivity() {
 
-
     private lateinit var authResultLauncher: ActivityResultLauncher<Intent>
-    private val viewModel: AuthViewModel by viewModels()
+    private val viewModel: SpotifyAuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,48 +34,37 @@ class SpotifyAuthActivity : ComponentActivity() {
             CloverTheme {
                 SpotifyAuthScreen(onConnectClick = { startSpotifyAuthentication() })
             }
-
         }
-        /*
-       this Function expects and output from the SpotifyAuthentication activity when it gets the result it
-       calls the handleAuthResponse from spotifyAuthUseCase on Success it will navigate to MainActivity
-        */
         authResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                viewModel.handleAuthResponse(result, this,
+                viewModel.handleAuthResponse(
+                    result,
                     onSuccess = { navigateToMainAppScreen() },
                     onError = { error -> showErrorScreen(error) }
                 )
             }
-    }
 
+
+    }
 
     /**
      * Start Spotify authentication flow.
      */
     private fun startSpotifyAuthentication() {
-        val intent = viewModel.getSpotifyAuthIntent(this)
+        val request = viewModel.authorizationRequest
+
+        val intent =
+            AuthorizationClient.createLoginActivityIntent(this@SpotifyAuthActivity, request)
         authResultLauncher.launch(intent)
     }
 
-    /**
-     * Navigate to the main app screen (MainActivity).
-     */
     private fun navigateToMainAppScreen() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
 
-    /**
-     * Show error screen if some error occurred.
-     */
-
     private fun showErrorScreen(error: String) {
-        setContent {
-            CloverTheme {
-                ErrorAuthScreen(text = "Some error has occurred: $error")
-            }
-        }
+        // Show error screen UI logic
     }
 }

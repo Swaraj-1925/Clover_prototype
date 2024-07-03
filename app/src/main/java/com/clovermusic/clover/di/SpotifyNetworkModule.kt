@@ -1,9 +1,10 @@
 package com.clovermusic.clover.di
 
-import com.clovermusic.clover.data.spotify.network.ArtistApiService
-import com.clovermusic.clover.data.spotify.network.AuthInterceptor
-import com.clovermusic.clover.data.spotify.network.PlaylistApiServices
-import com.clovermusic.clover.data.spotify.network.UserApiService
+
+import com.clovermusic.clover.data.api.spotify.service.ArtistService
+import com.clovermusic.clover.data.api.spotify.service.PlaylistService
+import com.clovermusic.clover.data.api.spotify.service.UserService
+import com.clovermusic.clover.util.SpotifyAuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,7 @@ object SpotifyNetworkModule {
     //    Return the OkHttpClient with the AuthInterceptor When OkHttpClient is created
     @Provides
     @Singleton
-    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideOkHttpClient(authInterceptor: SpotifyAuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .build()
@@ -38,23 +39,22 @@ object SpotifyNetworkModule {
 
     }
 
-    //    Return the UserApiService class when UserApiService is created
     @Provides
     @Singleton
-    fun provideSpotifyUserApiService(retrofit: Retrofit): UserApiService {
-        return retrofit.create(UserApiService::class.java)
+    fun provideUserService(retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideSpotifyArtistApiService(retrofit: Retrofit): ArtistApiService {
-        return retrofit.create(ArtistApiService::class.java)
+    fun provideArtistService(retrofit: Retrofit): ArtistService {
+        return retrofit.create(ArtistService::class.java)
     }
 
     @Provides
     @Singleton
-    fun providePlaylistApiService(retrofit: Retrofit): PlaylistApiServices {
-        return retrofit.create(PlaylistApiServices::class.java)
+    fun providePlaylistService(retrofit: Retrofit): PlaylistService {
+        return retrofit.create(PlaylistService::class.java)
     }
 
 }

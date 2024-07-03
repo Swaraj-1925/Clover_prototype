@@ -1,40 +1,36 @@
 package com.clovermusic.clover.di
 
-import com.clovermusic.clover.data.spotify.repository.ArtistRepositoryImpl
-import com.clovermusic.clover.data.spotify.repository.PlaylistRepositoryImpl
-import com.clovermusic.clover.data.spotify.repository.UserRepositoryImpl
-import com.clovermusic.clover.domain.spotify.repository.ArtistRepository
-import com.clovermusic.clover.domain.spotify.repository.PlaylistRepository
-import com.clovermusic.clover.domain.spotify.repository.UserRepository
-import dagger.Binds
+import com.clovermusic.clover.data.api.spotify.service.ArtistService
+import com.clovermusic.clover.data.api.spotify.service.PlaylistService
+import com.clovermusic.clover.data.api.spotify.service.UserService
+import com.clovermusic.clover.data.repository.ArtistRepository
+import com.clovermusic.clover.data.repository.PlaylistRepository
+import com.clovermusic.clover.data.repository.UserRepository
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-/**
- *bind your repository implementations to their interfaces
- */
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
+class RepositoryModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindUserRepository(
-        userRepositoryImpl: UserRepositoryImpl
-    ): UserRepository
+    fun providesUserRepository(userService: UserService): UserRepository {
+        return UserRepository(userService)
+    }
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindsArtistRepository(
-        artistRepositoryImpl: ArtistRepositoryImpl
-    ): ArtistRepository
+    fun providesArtistRepository(artistService: ArtistService): ArtistRepository {
+        return ArtistRepository(artistService)
+    }
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindsPlaylistRepository(
-        playlistRepositoryImpl: PlaylistRepositoryImpl
-    ): PlaylistRepository
-
+    fun providesPlaylistRepository(playlistService: PlaylistService): PlaylistRepository {
+        return PlaylistRepository(playlistService)
+    }
 }
