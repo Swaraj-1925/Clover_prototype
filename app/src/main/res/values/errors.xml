@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_unknown_error">Unknown error. Please contact support for assistance.</string>
+    <string name="error_empty_data">No data found.</string>
+    <string name="error_data_loading_failed">Failed to load data. Please try again.</string>
+    <string name="error_generic_error">An error occurred. Please try again later.</string>
+    <string name="error_network_error_during_auth">Network error occurred during authentication. Please try again later.</string>
+</resources>

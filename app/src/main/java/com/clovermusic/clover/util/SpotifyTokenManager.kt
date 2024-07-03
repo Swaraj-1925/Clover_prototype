@@ -1,4 +1,4 @@
-package com.clovermusic.clover.data.spotify.persistence
+package com.clovermusic.clover.util
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,11 +7,9 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import javax.inject.Inject
 
-
-/**
- * Object to handle token  received after authentication
- */
-class TokenManager @Inject constructor(private val context: Context){
+class SpotifyTokenManager @Inject constructor(
+    private val context: Context
+) {
 
     private val _prefsName = "com.clovermusic.clover.PREFERENCES"
     private val _token = "access_token"
@@ -33,10 +31,15 @@ class TokenManager @Inject constructor(private val context: Context){
 
     //    Function to save access token in shared preferences
     fun saveAccessToken(accessToken: String) {
-        val editor = getEncryptedSharedPreferences().edit()
-        editor.putString(_token, accessToken)
-        editor.apply()
-        Log.i("TokenManegar","TOKEN SAVED")
+        try {
+            val editor = getEncryptedSharedPreferences().edit()
+            editor.putString(_token, accessToken)
+            editor.apply()
+            Log.i("TokenManager", "TOKEN SAVED$accessToken")
+        } catch (e: Exception) {
+
+            Log.e("SpotifyAuthRepositoryImpl", "spotifyAuthIntent: ${e.message}")
+        }
     }
 
 
@@ -51,5 +54,4 @@ class TokenManager @Inject constructor(private val context: Context){
         editor.remove(_token)
         editor.apply()
     }
-
 }
