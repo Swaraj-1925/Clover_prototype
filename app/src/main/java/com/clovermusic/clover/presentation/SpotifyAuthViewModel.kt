@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.clovermusic.clover.domain.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.util.Resource
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ class SpotifyAuthViewModel @Inject constructor(
         buildSpotifyAuthRequest()
     }
 
-    fun buildSpotifyAuthRequest() {
+    private fun buildSpotifyAuthRequest() {
         viewModelScope.launch {
             repository.buildSpotifyAuthRequest().collect { resource ->
                 when (resource) {

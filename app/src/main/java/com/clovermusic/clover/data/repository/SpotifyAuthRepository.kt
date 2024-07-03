@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.ActivityResult
-import com.clovermusic.clover.domain.repository.SpotifyAuthRepository
 import com.clovermusic.clover.util.Resource
 import com.clovermusic.clover.util.SpotifyApiScopes
 import com.clovermusic.clover.util.SpotifyAuthConfig
@@ -23,17 +22,17 @@ import javax.inject.Singleton
  * Implementation of SpotifyAuthRepository
  */
 @Singleton
-class SpotifyAuthRepositoryImpl @Inject constructor(
+class SpotifyAuthRepository @Inject constructor(
     private val tokenManager: SpotifyTokenManager,
     @ApplicationContext private val context: Context
-) : SpotifyAuthRepository {
+) {
 
     private val clientId = SpotifyAuthConfig.CLIENT_ID
     private val redirectUri = SpotifyAuthConfig.REDIRECT_URI
     private val spotifyPackage = "com.spotify.music"
 
 
-    override suspend fun buildSpotifyAuthRequest(): Flow<Resource<AuthorizationRequest>> = flow {
+    suspend fun buildSpotifyAuthRequest(): Flow<Resource<AuthorizationRequest>> = flow {
         emit(Resource.Loading())
         try {
             val spotifyInstalled = isSpotifyInstalled()
@@ -63,7 +62,7 @@ class SpotifyAuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun handleAuthResponse(
+    fun handleAuthResponse(
         result: ActivityResult,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -93,7 +92,7 @@ class SpotifyAuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun isSpotifyInstalled(): Boolean {
+    private fun isSpotifyInstalled(): Boolean {
         return try {
             context.packageManager.getPackageInfo(spotifyPackage, 0)
             true

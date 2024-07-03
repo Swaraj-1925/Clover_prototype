@@ -1,8 +1,7 @@
 package com.clovermusic.clover.di
 
 import android.content.Context
-import com.clovermusic.clover.data.repository.SpotifyAuthRepositoryImpl
-import com.clovermusic.clover.domain.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.util.SpotifyTokenManager
 import dagger.Module
 import dagger.Provides
@@ -30,7 +29,7 @@ class AuthenticationModule {
         tokenManager: SpotifyTokenManager,
         context: Context
     ): SpotifyAuthRepository {
-        return SpotifyAuthRepositoryImpl(tokenManager, context)
+        return SpotifyAuthRepository(tokenManager, context)
     }
 
 }

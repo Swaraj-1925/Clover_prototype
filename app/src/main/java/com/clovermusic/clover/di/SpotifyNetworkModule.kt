@@ -1,6 +1,9 @@
 package com.clovermusic.clover.di
 
 
+import com.clovermusic.clover.data.api.spotify.service.ArtistService
+import com.clovermusic.clover.data.api.spotify.service.PlaylistService
+import com.clovermusic.clover.data.api.spotify.service.UserService
 import com.clovermusic.clover.util.SpotifyAuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -34,6 +37,24 @@ object SpotifyNetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserService(retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideArtistService(retrofit: Retrofit): ArtistService {
+        return retrofit.create(ArtistService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlaylistService(retrofit: Retrofit): PlaylistService {
+        return retrofit.create(PlaylistService::class.java)
     }
 
 }
