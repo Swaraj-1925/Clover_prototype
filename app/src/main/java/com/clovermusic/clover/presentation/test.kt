@@ -2,8 +2,8 @@ package com.clovermusic.clover.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.clovermusic.clover.domain.model.CurrentUserPlaylist
-import com.clovermusic.clover.domain.usecase.playlist.CurrentUsersPlaylistsUseCase
+import com.clovermusic.clover.domain.model.PlaylistItem
+import com.clovermusic.clover.domain.usecase.playlist.PlaylistItemsUseCase
 import com.clovermusic.clover.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,11 +14,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class test @Inject constructor(
-    private val currentUsersPlaylistsUseCase: CurrentUsersPlaylistsUseCase
+    private val playlistItemsUseCase: PlaylistItemsUseCase
 ) : ViewModel() {
     private val _artistsState =
-        MutableStateFlow<Resource<List<CurrentUserPlaylist>>>(Resource.Loading())
-    val artistsState: StateFlow<Resource<List<CurrentUserPlaylist>>> = _artistsState.asStateFlow()
+        MutableStateFlow<Resource<List<PlaylistItem>>>(Resource.Loading())
+    val artistsState: StateFlow<Resource<List<PlaylistItem>>> = _artistsState.asStateFlow()
 
     init {
         getFollowedArtists()
@@ -26,7 +26,7 @@ class test @Inject constructor(
 
     private fun getFollowedArtists() {
         viewModelScope.launch {
-            currentUsersPlaylistsUseCase().collect { resource ->
+            playlistItemsUseCase("3KmOjYMdaijoiW5L1BPI2h").collect { resource ->
                 _artistsState.value = resource
             }
         }

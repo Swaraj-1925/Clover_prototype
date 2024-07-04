@@ -5,6 +5,7 @@ import com.clovermusic.clover.data.repository.PlaylistRepository
 import com.clovermusic.clover.data.repository.UserRepository
 import com.clovermusic.clover.domain.usecase.artist.ArtistAlbumsUseCase
 import com.clovermusic.clover.domain.usecase.playlist.CurrentUsersPlaylistsUseCase
+import com.clovermusic.clover.domain.usecase.playlist.PlaylistItemsUseCase
 import com.clovermusic.clover.domain.usecase.user.FollowedArtistsUseCase
 import com.clovermusic.clover.domain.usecase.user.TopArtistUseCase
 import dagger.Module
@@ -47,6 +48,14 @@ object UseCaseModule {
         artistRepository: ArtistRepository
     ): ArtistAlbumsUseCase {
         return ArtistAlbumsUseCase(artistRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlaylistItemsUseCase(
+        playlistRepository: PlaylistRepository
+    ): PlaylistItemsUseCase {
+        return PlaylistItemsUseCase(playlistRepository)
     }
 
 }

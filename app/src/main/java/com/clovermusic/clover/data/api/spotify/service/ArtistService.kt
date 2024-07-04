@@ -8,7 +8,7 @@ import retrofit2.http.Url
 
 interface ArtistService {
 
-    @GET("artists/{id}/albums")
+    @GET("artists/{trackId}/albums")
     suspend fun getNewReleases(
         @Path("id") artistId: String,
         @Query("include_groups") includeGroups: String = "album,single",

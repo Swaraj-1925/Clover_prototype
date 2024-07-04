@@ -22,7 +22,6 @@ data class PlaylistItemResponse(
 )
 
 data class ItemsInPlaylistAddedBy(
-    val href: String,
     val id: String,
     val type: String,
     val uri: String
