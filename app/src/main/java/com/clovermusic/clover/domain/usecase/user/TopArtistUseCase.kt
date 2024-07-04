@@ -17,7 +17,7 @@ class TopArtistUseCase @Inject constructor(
         response.collect { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    val artistsTop = toTopArtists(resource.data!!)
+                    val artistsTop = toTopArtists(resource.data)
                     emit(Resource.Success(artistsTop))
                 }
 

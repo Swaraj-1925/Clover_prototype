@@ -1,13 +1,13 @@
 package com.clovermusic.clover.di
 
-import com.clovermusic.clover.data.repository.ArtistRepository
-import com.clovermusic.clover.data.repository.PlaylistRepository
-import com.clovermusic.clover.data.repository.UserRepository
 import com.clovermusic.clover.domain.usecase.artist.ArtistAlbumsUseCase
+import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.playlist.CurrentUsersPlaylistsUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistItemsUseCase
+import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.domain.usecase.user.FollowedArtistsUseCase
 import com.clovermusic.clover.domain.usecase.user.TopArtistUseCase
+import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,45 +17,37 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
-
     @Provides
     @Singleton
-    fun provideFollowArtistsUseCase(
-        userRepository: UserRepository
-    ): FollowedArtistsUseCase {
-        return FollowedArtistsUseCase(userRepository)
+    fun provideUserUseCases(
+        followedArtistsUseCase: FollowedArtistsUseCase,
+        topArtistUseCase: TopArtistUseCase
+    ): UserUseCases {
+        return UserUseCases(
+            followedArtists = followedArtistsUseCase,
+            topArtist = topArtistUseCase
+        )
     }
 
     @Provides
     @Singleton
-    fun provideTopArtistsUseCase(
-        userRepository: UserRepository
-    ): TopArtistUseCase {
-        return TopArtistUseCase(userRepository)
+    fun providePlaylistUseCases(
+        playlistsUseCase: PlaylistItemsUseCase,
+        currentUsersPlaylistsUseCase: CurrentUsersPlaylistsUseCase
+    ): PlaylistUseCases {
+        return PlaylistUseCases(
+            playlistItems = playlistsUseCase,
+            currentUsersPlaylists = currentUsersPlaylistsUseCase
+        )
     }
 
     @Provides
     @Singleton
-    fun provideCurrentUsersPlaylistsUseCase(
-        playlistRepository: PlaylistRepository
-    ): CurrentUsersPlaylistsUseCase {
-        return CurrentUsersPlaylistsUseCase(playlistRepository)
+    fun provideArtistUseCases(
+        artistAlbumsUseCase: ArtistAlbumsUseCase
+    ): ArtistUseCases {
+        return ArtistUseCases(
+            artistAlbums = artistAlbumsUseCase
+        )
     }
-
-    @Provides
-    @Singleton
-    fun provideArtistAlbumsUseCase(
-        artistRepository: ArtistRepository
-    ): ArtistAlbumsUseCase {
-        return ArtistAlbumsUseCase(artistRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun providePlaylistItemsUseCase(
-        playlistRepository: PlaylistRepository
-    ): PlaylistItemsUseCase {
-        return PlaylistItemsUseCase(playlistRepository)
-    }
-
 }

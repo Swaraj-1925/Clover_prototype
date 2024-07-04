@@ -14,6 +14,7 @@ data class FollowedArtists(
     val items: List<FollowedArtistsItem>,
     val limit: Int,
     val next: String?,
+    val offset: Int,
     val total: Int
 )
 

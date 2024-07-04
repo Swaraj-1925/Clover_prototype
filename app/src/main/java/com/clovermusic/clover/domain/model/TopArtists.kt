@@ -11,5 +11,4 @@ data class TopArtists(
     val popularity: Int,
     val type: String,
     val uri: String,
-    val total: Int
 )
