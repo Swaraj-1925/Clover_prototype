@@ -1,7 +1,7 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.api.spotify.response.ArtistAlbumsResponseItem
+import com.clovermusic.clover.data.api.spotify.response.artistResponseModels.ArtistsAlbumsItem
 import com.clovermusic.clover.data.api.spotify.service.ArtistService
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -12,16 +12,16 @@ import javax.inject.Inject
 class ArtistRepository @Inject constructor(
     private val artistService: ArtistService
 ) {
-    suspend fun getArtistAlbums(artistId: String): Flow<Resource<List<ArtistAlbumsResponseItem>>> =
+    suspend fun getArtistAlbums(artistId: String): Flow<Resource<List<ArtistsAlbumsItem>>> =
         flow {
             emit(Resource.Loading())
 
-            val artistAlbums = mutableListOf<ArtistAlbumsResponseItem>()
+            val artistAlbums = mutableListOf<ArtistsAlbumsItem>()
             try {
                 var response = artistService.getNewReleases(artistId)
                 artistAlbums.addAll(response.items)
                 while (response.next != null) {
-                    response = artistService.getNextPage(response.next)
+                    response = artistService.getNextPage(response.next!!)
                     artistAlbums.addAll(response.items)
                 }
                 Log.i("ArtistRepository", "getArtistAlbums : Success")

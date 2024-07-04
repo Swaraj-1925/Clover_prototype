@@ -1,5 +1,7 @@
 package com.clovermusic.clover.domain.model
 
+import com.clovermusic.clover.domain.model.util.Image
+
 
 data class CurrentUserPlaylist(
     val collaborative: Boolean,

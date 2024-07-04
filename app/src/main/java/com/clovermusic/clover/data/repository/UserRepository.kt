@@ -1,7 +1,8 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.api.spotify.response.ArtistResponseItem
+import com.clovermusic.clover.data.api.spotify.response.userResponseModels.FollowedArtistsItem
+import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsItem
 import com.clovermusic.clover.data.api.spotify.service.UserService
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -16,15 +17,15 @@ class UserRepository @Inject constructor(
      * Function will 1st make a request get 50 artists from the api and then if there is more than 50
      * it will make request till next != null and return all followed artists
      */
-    suspend fun getFollowedArtists(): Flow<Resource<List<ArtistResponseItem>>> =
+    suspend fun getFollowedArtists(): Flow<Resource<List<FollowedArtistsItem>>> =
         flow {
             emit(Resource.Loading())
-            val followedArtists = mutableListOf<ArtistResponseItem>()
+            val followedArtists = mutableListOf<FollowedArtistsItem>()
             try {
                 var response = userService.getFollowedArtists()
                 followedArtists.addAll(response.artists.items)
                 while (response.artists.next != null) {
-                    response = userService.getNextPage(response.artists.next)
+                    response = userService.getNextPage(response.artists.next!!)
                     followedArtists.addAll(response.artists.items)
                 }
                 Log.i("UserRepository", "getFollowedArtists : Success")
@@ -39,16 +40,16 @@ class UserRepository @Inject constructor(
 
         }
 
-    suspend fun getTopArtists(timeRange: String = "short_term"): Flow<Resource<List<ArtistResponseItem>>> =
+    suspend fun getTopArtists(timeRange: String = "short_term"): Flow<Resource<List<TopArtistsItem>>> =
         flow {
             emit(Resource.Loading())
 
-            val followedArtists = mutableListOf<ArtistResponseItem>()
+            val followedArtists = mutableListOf<TopArtistsItem>()
             try {
                 var response = userService.getTopArtists(timeRange)
                 followedArtists.addAll(response.items)
                 while (response.next != null) {
-                    response = userService.getNextPage(response.next)
+                    response = userService.getNextPage(response.next!!)
                     followedArtists.addAll(response.items)
                 }
                 Log.i("UserRepositoryImpl", "getFollowedArtists : Success $followedArtists")
