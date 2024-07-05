@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.ActivityResult
+import com.clovermusic.clover.data.api.spotify.service.SpotifyAuthService
 import com.clovermusic.clover.util.Resource
 import com.clovermusic.clover.util.SpotifyApiScopes
 import com.clovermusic.clover.util.SpotifyAuthConfig
@@ -12,8 +13,12 @@ import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,10 +29,12 @@ import javax.inject.Singleton
 @Singleton
 class SpotifyAuthRepository @Inject constructor(
     private val tokenManager: SpotifyTokenManager,
+    private val api: SpotifyAuthService,
     @ApplicationContext private val context: Context
 ) {
 
     private val clientId = SpotifyAuthConfig.CLIENT_ID
+    private val clientSecret = SpotifyAuthConfig.CLIENT_SECRET
     private val redirectUri = SpotifyAuthConfig.REDIRECT_URI
     private val spotifyPackage = "com.spotify.music"
 
@@ -45,7 +52,7 @@ class SpotifyAuthRepository @Inject constructor(
             } else {
                 val authRequest = AuthorizationRequest.Builder(
                     clientId,
-                    AuthorizationResponse.Type.TOKEN,
+                    AuthorizationResponse.Type.CODE,
                     redirectUri
                 ).setScopes(
                     SpotifyApiScopes.getAllScopes()
@@ -62,18 +69,17 @@ class SpotifyAuthRepository @Inject constructor(
         }
     }
 
-    fun handleAuthResponse(
+    suspend fun handleAuthResponse(
         result: ActivityResult,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         val response = AuthorizationClient.getResponse(result.resultCode, result.data)
         when (response.type) {
-            AuthorizationResponse.Type.TOKEN -> {
-                val accessToken = response.accessToken
-                tokenManager.saveAccessToken(accessToken)
-                onSuccess()
-                Log.i("SpotifyAuthUseCase", "TOKEN RECEIVED")
+            AuthorizationResponse.Type.CODE -> {
+                val code = response.code
+                exchangeCodeForTokens(code, onSuccess, onError)
+                Log.i("SpotifyAuthUseCase", "CODE  RECEIVED")
             }
 
             AuthorizationResponse.Type.ERROR -> {
@@ -82,14 +88,90 @@ class SpotifyAuthRepository @Inject constructor(
             }
 
             else -> {
-                val token = tokenManager.getAccessToken()
-                if (!token.isNullOrBlank()) {
+                onError("SpotifyAuthRepositoryImpl: Unknown response type: ${response.type}")
+            }
+        }
+    }
+
+    fun ensureValidAccessToken(onTokenRefreshed: () -> Unit, onError: (String) -> Unit) {
+        val accessToken = tokenManager.getAccessToken()
+        if (accessToken.isNullOrBlank() || isTokenExpired(accessToken)) {
+            refreshAccessToken(
+                onSuccess = {
+                    onTokenRefreshed()
+                },
+                onError = {
+                    Log.e("SpotifyAuthRepository", "ensureValidAccessToken: $it")
+                    onError(it)
+                }
+            )
+        } else {
+            onTokenRefreshed()
+        }
+    }
+
+    private suspend fun exchangeCodeForTokens(
+        code: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = api.exchangeCodeForTokens(
+                    grantType = "authorization_code",
+                    code = code,
+                    redirectUri = redirectUri,
+                    clientId = clientId,
+                    clientSecret = clientSecret
+                )
+                tokenManager.saveAccessToken(response.access_token)
+                response.refresh_token?.let { tokenManager.saveRefreshToken(it) }
+                tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
+                withContext(Dispatchers.Main) {
                     onSuccess()
-                } else {
-                    onError("Unknown error")
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onError("Failed to exchange authorization code: ${e.message}")
                 }
             }
         }
+    }
+
+    private fun refreshAccessToken(
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val refreshToken = tokenManager.getRefreshToken() ?: run {
+            onError("No refresh token available")
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = api.refreshAccessToken(
+                    grantType = "refresh_token",
+                    refreshToken = refreshToken,
+                    clientId = clientId,
+                    clientSecret = SpotifyAuthConfig.CLIENT_SECRET
+                )
+                tokenManager.saveAccessToken(response.access_token)
+                tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onError("Failed to refresh access token: ${e.message}")
+                }
+            }
+        }
+    }
+
+
+    private fun isTokenExpired(token: String): Boolean {
+        val expirationTime = tokenManager.getTokenExpirationTime()
+        return System.currentTimeMillis() > expirationTime
     }
 
     private fun isSpotifyInstalled(): Boolean {
@@ -100,5 +182,6 @@ class SpotifyAuthRepository @Inject constructor(
             false
         }
     }
+
 
 }

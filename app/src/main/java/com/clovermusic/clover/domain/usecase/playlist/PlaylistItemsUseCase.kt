@@ -1,7 +1,7 @@
 package com.clovermusic.clover.domain.usecase.playlist
 
 import com.clovermusic.clover.data.repository.PlaylistRepository
-import com.clovermusic.clover.domain.mapper.toItemPlaylist
+import com.clovermusic.clover.domain.mapper.toPlaylistItems
 import com.clovermusic.clover.domain.model.PlaylistItem
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +20,7 @@ class PlaylistItemsUseCase @Inject constructor(
             when (resource) {
                 is Resource.Success -> {
                     try {
-                        val playlistItem = toItemPlaylist(resource.data!!)
+                        val playlistItem = toPlaylistItems(resource.data)
                         emit(Resource.Success(playlistItem))
                     } catch (e: Exception) {
                         emit(Resource.Error("Failed to map playlist items: ${e.message}"))

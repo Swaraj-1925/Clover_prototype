@@ -12,12 +12,13 @@ interface PlaylistService {
     @GET("me/playlists?limit=50")
     suspend fun getCurrentUsersPlaylists(): CurrentUsersPlaylistResponse
 
+
     @GET("playlists/{playlist_id}/tracks")
     suspend fun getPlaylistItems(
         @Path("playlist_id") playlistId: String,
-        @Query("limit") limit: Int? = 50,
+        @Query("offset") offset: Int? = null
     ): ItemsInPlaylistResponse
 
     @GET
-    suspend fun <T> getNextPage(@Url url: String): T
+    suspend fun <T> getNextPage(@Url url: String?): T
 }

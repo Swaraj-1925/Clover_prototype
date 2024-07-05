@@ -27,10 +27,11 @@ android {
 
 
 //        Api keys
+
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
-
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${properties.getProperty("spotifyClientID")}\"")
+        buildConfigField "String", "SPOTIFY_CLIENT_ID", "\"${properties.getProperty("spotifyClientID")}\""
+        buildConfigField "String", "SPOTIFY_CLIENT_SECRET", "\"${properties.getProperty("spotifyClientSecret")}\""
 
         buildFeatures { buildConfig = true }
 

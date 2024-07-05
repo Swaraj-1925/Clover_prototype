@@ -13,7 +13,8 @@ import java.io.IOException
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
-    private val userService: UserService
+    private val userService: UserService,
+    private val spotifyAuthRepository: SpotifyAuthRepository
 ) {
     /**
      * Function will 1st make a request get 50 artists from the api and then if there is more than 50
@@ -48,6 +49,7 @@ class UserRepository @Inject constructor(
         flow {
             emit(Resource.Loading())
 
+
             val topArtists = mutableListOf<TopArtistsItem>()
             var nextUrl: String? = null
             try {
@@ -58,7 +60,6 @@ class UserRepository @Inject constructor(
                 )
                 topArtists.addAll(response.items)
                 if (response.next == null) {
-//                    Log.i("UserRepositoryImpl", "getFollowedArtists1 : Success $topArtists")
                     emit(Resource.Success(topArtists.toList()))
                 } else {
                     nextUrl = response.next

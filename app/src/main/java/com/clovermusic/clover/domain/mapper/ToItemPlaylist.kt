@@ -1,10 +1,13 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.PlaylistItemResponse
+import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.PlaylistItemsResponse
 import com.clovermusic.clover.domain.model.PlaylistItem
 import com.clovermusic.clover.domain.model.util.Artists
 
-fun toItemPlaylist(response: List<PlaylistItemResponse>): List<PlaylistItem> {
+fun toPlaylistItems(response: List<PlaylistItemsResponse>?): List<PlaylistItem> {
+    if (response == null) {
+        return emptyList()
+    }
     return response.map { apiItem ->
         PlaylistItem(
             addedById = apiItem.added_by.id,
@@ -14,7 +17,7 @@ fun toItemPlaylist(response: List<PlaylistItemResponse>): List<PlaylistItem> {
                     id = apiArtist.id,
                     name = apiArtist.name,
                     type = apiArtist.type,
-                    uri = apiArtist.uri,
+                    uri = apiArtist.uri
                 )
             },
             trackDurationMs = apiItem.track.duration_ms,
@@ -23,7 +26,7 @@ fun toItemPlaylist(response: List<PlaylistItemResponse>): List<PlaylistItem> {
             trackPopularity = apiItem.track.popularity,
             trackPreviewUrl = apiItem.track.preview_url,
             trackNumber = apiItem.track.track_number,
-            trackUri = apiItem.track.uri,
+            trackUri = apiItem.track.uri
         )
     }
 }

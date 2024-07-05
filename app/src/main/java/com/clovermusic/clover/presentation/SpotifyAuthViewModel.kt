@@ -8,6 +8,8 @@ import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.util.Resource
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,6 +52,8 @@ class SpotifyAuthViewModel @Inject constructor(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        repository.handleAuthResponse(result, onSuccess, onError)
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.handleAuthResponse(result, onSuccess, onError)
+        }
     }
 }

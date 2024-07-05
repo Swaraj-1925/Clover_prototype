@@ -11,7 +11,7 @@ data class PlaylistItem(
     val trackId: String,
     val trackName: String,
     val trackPopularity: Int,
-    val trackPreviewUrl: String,
+    val trackPreviewUrl: String?,
     val trackNumber: Int,
     val trackUri: String,
 )

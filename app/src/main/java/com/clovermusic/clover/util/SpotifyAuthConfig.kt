@@ -6,6 +6,7 @@ import com.clovermusic.clover.BuildConfig
 
 object SpotifyAuthConfig {
     const val CLIENT_ID: String = BuildConfig.SPOTIFY_CLIENT_ID
+    const val CLIENT_SECRET: String = BuildConfig.SPOTIFY_CLIENT_SECRET
     const val REQUEST_CODE: Int = 1337
     const val REDIRECT_URI: String = "clovermusicapp://callback"
 

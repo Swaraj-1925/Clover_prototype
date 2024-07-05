@@ -2,7 +2,8 @@ package com.clovermusic.clover.data.repository
 
 import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.CurrentUsersPlaylistItem
-import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.PlaylistItemResponse
+import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.ItemsInPlaylistResponse
+import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.PlaylistItemsResponse
 import com.clovermusic.clover.data.api.spotify.service.PlaylistService
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +22,12 @@ class PlaylistRepository @Inject constructor(
             try {
                 var response = playlistService.getCurrentUsersPlaylists()
                 userPlaylists.addAll(response.items)
-                while (response.next != null) {
-                    response = playlistService.getNextPage(response.next!!)
+                var nextPage = response.next
+
+                while (nextPage != null) {
+                    response = playlistService.getNextPage(nextPage)
                     userPlaylists.addAll(response.items)
+                    nextPage = response.next
                 }
                 Log.i("PlaylistRepository", "getCurrentUsersPlaylists : Success")
                 emit(Resource.Success(userPlaylists))
@@ -37,21 +41,25 @@ class PlaylistRepository @Inject constructor(
             }
         }
 
-    suspend fun getPlaylistItems(playlistId: String): Flow<Resource<List<PlaylistItemResponse>>> =
+
+    suspend fun getPlaylistItems(playlistId: String): Flow<Resource<List<PlaylistItemsResponse>>> =
         flow {
             emit(Resource.Loading())
 
-            val playlistsItems = mutableListOf<PlaylistItemResponse>()
-            try {
-                var response = playlistService.getPlaylistItems(playlistId)
-                playlistsItems.addAll(response.items)
-                while (response.next != null) {
-                    response = playlistService.getNextPage(response.next!!)
-                    playlistsItems.addAll(response.items)
-                }
-                Log.i("PlaylistRepository", "getPlaylistItems : Success")
-                emit(Resource.Success(playlistsItems))
+            val playlistsItems = mutableListOf<PlaylistItemsResponse>()
+            var offset = 0
+            var total = -1
+            var response: ItemsInPlaylistResponse
 
+            try {
+                do {
+                    response = playlistService.getPlaylistItems(playlistId, offset)
+                    playlistsItems.addAll(response.items)
+                    total = response.total
+                    offset += response.limit
+                } while (offset < total)
+
+                emit(Resource.Success(playlistsItems))
             } catch (e: Exception) {
                 Log.e("PlaylistRepository", "getPlaylistItems Exception: ", e)
                 emit(Resource.Error("Unknown error. Please contact support for assistance."))
@@ -60,4 +68,5 @@ class PlaylistRepository @Inject constructor(
                 emit(Resource.Error("Network error occurred during authentication. Please try again later."))
             }
         }
+
 }
