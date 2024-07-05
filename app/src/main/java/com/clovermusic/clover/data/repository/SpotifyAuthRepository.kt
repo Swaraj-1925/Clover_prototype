@@ -13,11 +13,9 @@ import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
@@ -50,13 +48,14 @@ class SpotifyAuthRepository @Inject constructor(
                 )
                 emit(Resource.Error("Spotify is not installed"))
             } else {
-                val authRequest = AuthorizationRequest.Builder(
-                    clientId,
-                    AuthorizationResponse.Type.CODE,
-                    redirectUri
-                ).setScopes(
-                    SpotifyApiScopes.getAllScopes()
-                ).build()
+                val authRequest = AuthorizationRequest
+                    .Builder(
+                        clientId,
+                        AuthorizationResponse.Type.CODE,
+                        redirectUri
+                    )
+                    .setScopes(SpotifyApiScopes.getAllScopes())
+                    .build()
 
                 emit(Resource.Success(authRequest))
             }
@@ -78,8 +77,11 @@ class SpotifyAuthRepository @Inject constructor(
         when (response.type) {
             AuthorizationResponse.Type.CODE -> {
                 val code = response.code
-                exchangeCodeForTokens(code, onSuccess, onError)
                 Log.i("SpotifyAuthUseCase", "CODE  RECEIVED")
+
+                withContext(Dispatchers.IO) {
+                    exchangeCodeForTokens(code, onSuccess, onError)
+                }
             }
 
             AuthorizationResponse.Type.ERROR -> {
@@ -93,81 +95,78 @@ class SpotifyAuthRepository @Inject constructor(
         }
     }
 
-    fun ensureValidAccessToken(onTokenRefreshed: () -> Unit, onError: (String) -> Unit) {
-        val accessToken = tokenManager.getAccessToken()
-        if (accessToken.isNullOrBlank() || isTokenExpired(accessToken)) {
-            refreshAccessToken(
-                onSuccess = {
-                    onTokenRefreshed()
-                },
-                onError = {
-                    Log.e("SpotifyAuthRepository", "ensureValidAccessToken: $it")
-                    onError(it)
-                }
-            )
-        } else {
-            onTokenRefreshed()
-        }
-    }
 
     private suspend fun exchangeCodeForTokens(
         code: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = api.exchangeCodeForTokens(
-                    grantType = "authorization_code",
-                    code = code,
-                    redirectUri = redirectUri,
-                    clientId = clientId,
-                    clientSecret = clientSecret
-                )
-                tokenManager.saveAccessToken(response.access_token)
-                response.refresh_token?.let { tokenManager.saveRefreshToken(it) }
-                tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    onError("Failed to exchange authorization code: ${e.message}")
-                }
+        try {
+            val response = api.exchangeCodeForTokens(
+                grantType = "authorization_code",
+                code = code,
+                redirectUri = redirectUri,
+                clientId = clientId,
+                clientSecret = clientSecret
+            )
+            tokenManager.saveAccessToken(response.access_token)
+            response.refresh_token?.let { tokenManager.saveRefreshToken(it) }
+            tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
+
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                onError("Failed to exchange authorization code: ${e.message}")
             }
         }
     }
 
-    private fun refreshAccessToken(
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+    suspend fun ensureValidAccessToken(
+        onTokenRefreshed: suspend () -> Unit,
+        onError: suspend (String) -> Unit
+    ) {
+        val accessToken = tokenManager.getAccessToken()
+        if (accessToken.isNullOrBlank() || isTokenExpired(accessToken)) {
+            refreshAccessToken(
+                onSuccess = { onTokenRefreshed() },
+                onError = { onError(it) }
+            )
+        } else {
+            onTokenRefreshed()
+        }
+    }
+
+    private suspend fun refreshAccessToken(
+        onSuccess: suspend () -> Unit,
+        onError: suspend (String) -> Unit
     ) {
         val refreshToken = tokenManager.getRefreshToken() ?: run {
-            onError("No refresh token available")
+            withContext(Dispatchers.Main) {
+                onError("No refresh token available")
+            }
             return
         }
+        try {
+            val response = api.refreshAccessToken(
+                grantType = "refresh_token",
+                refreshToken = refreshToken,
+                clientId = clientId,
+                clientSecret = SpotifyAuthConfig.CLIENT_SECRET
+            )
+            tokenManager.saveAccessToken(response.access_token)
+            tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = api.refreshAccessToken(
-                    grantType = "refresh_token",
-                    refreshToken = refreshToken,
-                    clientId = clientId,
-                    clientSecret = SpotifyAuthConfig.CLIENT_SECRET
-                )
-                tokenManager.saveAccessToken(response.access_token)
-                tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    onError("Failed to refresh access token: ${e.message}")
-                }
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                onError("Failed to refresh access token: ${e.message}")
             }
         }
     }
-
 
     private fun isTokenExpired(token: String): Boolean {
         val expirationTime = tokenManager.getTokenExpirationTime()
