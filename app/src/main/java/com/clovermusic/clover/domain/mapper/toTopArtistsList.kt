@@ -1,17 +1,19 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.userResponseModels.FollowedArtistsItem
-import com.clovermusic.clover.domain.model.FollowedArtists
+import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsItem
+import com.clovermusic.clover.domain.model.TopArtists
 import com.clovermusic.clover.domain.model.util.Image
 
-fun toFollowedArtists(response: List<FollowedArtistsItem>?): List<FollowedArtists>? {
-    return response?.map { apiItem ->
-        FollowedArtists(
+fun toTopArtists(response: List<TopArtistsItem>?): List<TopArtists> {
+    if (response == null) {
+        return emptyList()
+    }
+    return response.map { apiItem ->
+        TopArtists(
             followers = apiItem.followers.total,
             genres = apiItem.genres,
-            href = apiItem.href,
             id = apiItem.id,
-            images = apiItem.images.map { apiImage ->
+            image = apiItem.images.map { apiImage ->
                 Image(
                     height = apiImage.height,
                     url = apiImage.url,
@@ -21,7 +23,7 @@ fun toFollowedArtists(response: List<FollowedArtistsItem>?): List<FollowedArtist
             name = apiItem.name,
             popularity = apiItem.popularity,
             type = apiItem.type,
-            uri = apiItem.uri
+            uri = apiItem.uri,
         )
     }
 }

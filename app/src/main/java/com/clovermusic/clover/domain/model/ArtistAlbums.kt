@@ -1,8 +1,9 @@
 package com.clovermusic.clover.domain.model
 
+import com.clovermusic.clover.domain.model.util.Image
+
 
 data class ArtistAlbums(
-    val album_group: String,
     val album_type: String,
     val artists: List<AlbumsArtist>,
     val id: String,

@@ -13,15 +13,17 @@ import com.clovermusic.clover.R
 val Cabin = FontFamily(
     Font(R.font.cabin_variable)
 )
+
 // Any Description
 val Jost = FontFamily(
     Font(R.font.jost_variable)
 )
+
 // Labels
 val RobotoMedium = FontFamily(
     Font(R.font.roboto_medium)
 )
-val RobotoReguler= FontFamily(
+val RobotoReguler = FontFamily(
     Font(R.font.roboto_regular)
 )
 
