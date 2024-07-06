@@ -1,6 +1,7 @@
 package com.clovermusic.clover.domain.usecase.user
 
 import android.util.Log
+import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
 import com.clovermusic.clover.domain.mapper.toFollowedArtists
 import com.clovermusic.clover.domain.model.FollowedArtists
@@ -13,33 +14,30 @@ import javax.inject.Inject
  * Gets all Artists and map them to FollowedArtists data class for UI and emits a new flow
  */
 class FollowedArtistsUseCase @Inject constructor(
-    private val repository: UserRepository
+    private val repository: UserRepository,
+    private val authRepository: SpotifyAuthRepository
 ) {
     suspend operator fun invoke(): Flow<Resource<List<FollowedArtists>>> = flow {
         emit(Resource.Loading())
-        val response = repository.getFollowedArtists()
-        response.collect { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val artists = toFollowedArtists(resource.data)
-                    emit(Resource.Success(artists))
+        try {
+            authRepository.ensureValidAccessToken(
+                onTokenRefreshed = {
+                    val artists = repository.getFollowedArtists()
+                    if (artists.isNotEmpty()) {
+                        emit(Resource.Success(toFollowedArtists(artists)))
+                    } else {
+                        Log.d("GetFollowedArtistsUseCase", "No followed artists found")
+                        emit(Resource.Error("No followed artists found"))
+                    }
+                },
+                onError = { error ->
+                    Log.e("GetFollowedArtistsUseCase", "Error getting data: $error")
+                    emit(Resource.Error("Failed to refresh token: $error"))
                 }
-
-                is Resource.Error -> {
-                    Log.e(
-                        "FollowArtistsUseCase",
-                        "Error Getting data: ${resource.message}"
-                    )
-                    emit(Resource.Error("Unknown error. Please contact support for assistance."))
-                }
-
-                is Resource.Loading -> {
-                    // You can handle loading state if needed
-                    emit(Resource.Loading())
-                }
-            }
-
+            )
+        } catch (e: Exception) {
+            Log.e("GetFollowedArtistsUseCase", "Error getting data: ${e.message}")
+            emit(Resource.Error("An error occurred while fetching followed artists"))
         }
-
     }
 }

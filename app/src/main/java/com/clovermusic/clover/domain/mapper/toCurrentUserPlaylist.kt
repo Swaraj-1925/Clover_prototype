@@ -1,11 +1,11 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.CurrentUsersPlaylistsResponseItem
+import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.CurrentUsersPlaylistItem
 import com.clovermusic.clover.domain.model.CurrentUserPlaylist
-import com.clovermusic.clover.domain.model.Image
 import com.clovermusic.clover.domain.model.Owner
+import com.clovermusic.clover.domain.model.util.Image
 
-fun toCurrentUserPlaylist(response: List<CurrentUsersPlaylistsResponseItem>?): List<CurrentUserPlaylist>? {
+fun toCurrentUserPlaylist(response: List<CurrentUsersPlaylistItem>?): List<CurrentUserPlaylist>? {
     return response?.map { apiItem ->
         CurrentUserPlaylist(
             collaborative = apiItem.collaborative,
