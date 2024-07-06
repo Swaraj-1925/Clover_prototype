@@ -9,8 +9,11 @@ import retrofit2.http.Url
 
 interface PlaylistService {
 
-    @GET("me/playlists?limit=50")
-    suspend fun getCurrentUsersPlaylists(): CurrentUsersPlaylistResponse
+    @GET("me/playlists")
+    suspend fun getCurrentUsersPlaylists(
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int = 50
+    ): CurrentUsersPlaylistResponse
 
 
     @GET("playlists/{playlist_id}/tracks")

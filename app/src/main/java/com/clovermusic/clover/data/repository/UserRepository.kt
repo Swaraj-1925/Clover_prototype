@@ -3,7 +3,6 @@ package com.clovermusic.clover.data.repository
 import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.userResponseModels.FollowedArtistsItem
 import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsItem
-import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsResponse
 import com.clovermusic.clover.data.api.spotify.service.UserService
 import javax.inject.Inject
 
@@ -40,26 +39,26 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getTopArtists(timeRange: String = "short_term"): List<TopArtistsItem> {
+    suspend fun getTopArtists(timeRange: String): List<TopArtistsItem> {
         return try {
             val topArtists = mutableListOf<TopArtistsItem>()
-            var nextUrl: String? = null
-
-            val initialResponse = userService.getTopArtists(timeRange)
-            topArtists.addAll(initialResponse.items)
-            nextUrl = initialResponse.next
-
-            while (nextUrl != null) {
-                val response = userService.getNextPage<TopArtistsResponse>(nextUrl)
+            var total: Int
+            var offset = 0
+            do {
+                val response = userService.getTopArtists(timeRange = timeRange, offset = offset)
                 topArtists.addAll(response.items)
-                nextUrl = response.next
+                total = response.total
+                offset += response.limit
                 Log.d(
                     "UserRepository",
-                    "getTopArtists: fetched batch, size: ${response.items.size}"
+                    "getTopArtists: fetched batch, size: ${response.total} and offset: $offset"
                 )
-            }
+            } while (offset < total)
 
-            Log.d("UserRepository", "getTopArtists: total artists fetched: ${topArtists.size}")
+            Log.d(
+                "UserRepository",
+                "getTopArtists: total items fetched: ${topArtists.size}"
+            )
             topArtists
         } catch (e: Exception) {
             Log.e("UserRepository", "Error fetching top artists: ${e.message}", e)

@@ -9,10 +9,11 @@ import retrofit2.http.Url
 interface ArtistService {
 
     @GET("artists/{trackId}/albums")
-    suspend fun getNewReleases(
-        @Path("id") artistId: String,
+    suspend fun getArtistAlbums(
+        @Path("trackId") artistId: String,
         @Query("include_groups") includeGroups: String = "album,single",
-        @Query("limit") limit: Int = 50
+        @Query("limit") limit: Int = 50,
+        @Query("offset") offset: Int,
     ): ArtistsAlbumsResponse
 
 

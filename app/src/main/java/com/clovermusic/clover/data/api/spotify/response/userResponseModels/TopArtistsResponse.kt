@@ -9,7 +9,7 @@ data class TopArtistsResponse(
     val items: List<TopArtistsItem>,
     val limit: Int,
     val offset: Int,
-    val previous: Any,
+    val previous: String,
     val total: Int
 )
 

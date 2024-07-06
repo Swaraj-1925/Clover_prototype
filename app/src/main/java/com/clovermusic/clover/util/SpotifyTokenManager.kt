@@ -37,7 +37,7 @@ class SpotifyTokenManager @Inject constructor(
             val editor = getEncryptedSharedPreferences().edit()
             editor.putString(_accessToken, accessToken)
             editor.apply()
-            Log.i("TokenManager", "TOKEN SAVED")
+            Log.i("TokenManager", "TOKEN SAVED: $accessToken")
         } catch (e: Exception) {
             Log.e("TokenManager", "Error saving access token: ${e.message}")
         } catch (e: IOException) {
