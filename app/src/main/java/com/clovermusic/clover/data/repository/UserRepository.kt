@@ -3,13 +3,7 @@ package com.clovermusic.clover.data.repository
 import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.userResponseModels.FollowedArtistsItem
 import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsItem
-import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsResponse
 import com.clovermusic.clover.data.api.spotify.service.UserService
-import com.clovermusic.clover.util.Resource
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import java.io.IOException
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -20,65 +14,55 @@ class UserRepository @Inject constructor(
      * Function will 1st make a request get 50 artists from the api and then if there is more than 50
      * it will make request till next != null and return all followed artists
      */
+    suspend fun getFollowedArtists(): List<FollowedArtistsItem> {
+        return try {
+            val followedArtists = mutableListOf<FollowedArtistsItem>()
+            var after: String? = null
+            do {
+                val response = userService.getFollowedArtists(after)
+                followedArtists.addAll(response.artists.items)
+                after = response.artists.cursors.after
+                Log.d(
+                    "UserRepository",
+                    "getFollowedArtists: fetched batch, size: ${response.artists.items.size}"
+                )
+            } while (after != null)
 
-    suspend fun getFollowedArtists(): Flow<Resource<List<FollowedArtistsItem>>> = flow {
-        emit(Resource.Loading())
-
-        val followedArtists = mutableListOf<FollowedArtistsItem>()
-        val response = userService.getFollowedArtists()
-        followedArtists.addAll(response.artists.items)
-        var after: String? = response.artists.cursors.after
-
-        try {
-            while (after != null) {
-                val res = userService.getFollowedArtists(after)
-                Log.d("UserRepository", "getFollowedArtists: in loop")
-                after = res.artists.cursors.after
-                followedArtists.addAll(res.artists.items)
-            }
-
-            emit(Resource.Success(followedArtists.toList())) // Convert to List before emitting
+            Log.d(
+                "UserRepository",
+                "getFollowedArtists: total artists fetched: ${followedArtists.size}"
+            )
+            followedArtists
         } catch (e: Exception) {
-            emit(Resource.Error("Unknown error. Please contact support for assistance."))
-        } catch (e: IOException) {
-            emit(Resource.Error("Network error occurred during authentication. Please try again later."))
+            Log.e("UserRepository", "Error fetching followed artists: ${e.message}", e)
+            throw e // Rethrow the exception to be handled in the use case
         }
     }
 
-    suspend fun getTopArtists(timeRange: String = "short_term"): Flow<Resource<List<TopArtistsItem>>> =
-        flow {
-            emit(Resource.Loading())
-
-
+    suspend fun getTopArtists(timeRange: String): List<TopArtistsItem> {
+        return try {
             val topArtists = mutableListOf<TopArtistsItem>()
-            var nextUrl: String? = null
-            try {
-                val response: TopArtistsResponse = userService.getTopArtists(timeRange)
-                Log.i(
-                    "UserRepositoryImpl",
-                    "getFollowedArtists : Success ${response.items[0].images}"
-                )
+            var total: Int
+            var offset = 0
+            do {
+                val response = userService.getTopArtists(timeRange = timeRange, offset = offset)
                 topArtists.addAll(response.items)
-                if (response.next == null) {
-                    emit(Resource.Success(topArtists.toList()))
-                } else {
-                    nextUrl = response.next
-                    do {
-                        val res = userService.getNextPage<TopArtistsResponse>(nextUrl)
-                        nextUrl = res.next
-                        topArtists.addAll(res.items)
-                    } while (nextUrl != null)
-                    emit(Resource.Success(topArtists.toList()))
-                }
-            } catch (e: Exception) {
-                Log.e("UserRepositoryImpl", "getFollowedArtists2 Exception: ", e)
-                emit(Resource.Error("Unknown error. Please contact support for assistance."))
-            } catch (e: IOException) {
-                Log.e("UserRepositoryImpl", "getFollowedArtists3 IOException: ${e.message}", e)
-                emit(Resource.Error("Network error occurred during authentication. Please try again later."))
-            }
+                total = response.total
+                offset += response.limit
+                Log.d(
+                    "UserRepository",
+                    "getTopArtists: fetched batch, size: ${response.total} and offset: $offset"
+                )
+            } while (offset < total)
 
-        }.catch { e ->
-            emit(Resource.Error("Error fetching top artists: ${e.localizedMessage}"))
+            Log.d(
+                "UserRepository",
+                "getTopArtists: total items fetched: ${topArtists.size}"
+            )
+            topArtists
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error fetching top artists: ${e.message}", e)
+            throw e // Rethrow the exception to be handled in the use case
         }
+    }
 }

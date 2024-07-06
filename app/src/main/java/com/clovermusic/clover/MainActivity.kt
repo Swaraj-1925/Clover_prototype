@@ -15,7 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.clovermusic.clover.domain.model.PlaylistItem
+import com.clovermusic.clover.domain.model.TopArtists
 import com.clovermusic.clover.presentation.test
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.Resource
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
                     is Resource.Success -> {
                         val artists =
-                            (artistsState as Resource.Success<List<PlaylistItem>>).data
+                            (artistsState as Resource.Success<List<TopArtists>>).data
                         ArtistsList(artists)
                     }
 
@@ -56,10 +56,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ArtistsList(artists: List<PlaylistItem>?) {
+fun ArtistsList(artists: List<TopArtists>?) {
     LazyColumn(modifier = Modifier.padding(16.dp)) {
         itemsIndexed(artists ?: emptyList()) { index, artist ->
-            Text(text = "${index + 1}. ${artist.trackName}")
+            Text(text = "${index + 1}. ${artist.name}")
         }
     }
 }
