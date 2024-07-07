@@ -1,10 +1,10 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.userResponseModels.TopArtistsItem
+import com.clovermusic.clover.data.api.spotify.response.util.TrackArtistResponse
 import com.clovermusic.clover.domain.model.TopArtists
 import com.clovermusic.clover.domain.model.util.Image
 
-fun toTopArtists(response: List<TopArtistsItem>?): List<TopArtists> {
+fun toTopArtists(response: List<TrackArtistResponse>?): List<TopArtists> {
     if (response == null) {
         return emptyList()
     }

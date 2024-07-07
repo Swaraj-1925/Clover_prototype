@@ -1,12 +1,12 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.artistResponseModels.ArtistsAlbumsItem
+import com.clovermusic.clover.data.api.spotify.response.util.AlbumResponse
 import com.clovermusic.clover.domain.model.AlbumsArtist
 import com.clovermusic.clover.domain.model.ArtistAlbums
 import com.clovermusic.clover.domain.model.util.Image
 
 
-fun toArtistAlbums(response: List<ArtistsAlbumsItem>?): List<ArtistAlbums>? {
+fun toArtistAlbums(response: List<AlbumResponse>?): List<ArtistAlbums>? {
     return response?.map { apiItem ->
         ArtistAlbums(
             album_type = apiItem.album_type,
