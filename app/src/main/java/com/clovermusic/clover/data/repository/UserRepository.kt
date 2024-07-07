@@ -19,11 +19,11 @@ class UserRepository @Inject constructor(
             var after: String? = null
             do {
                 val response = userService.getFollowedArtists(after)
-                followedArtists.addAll(response.items)
-                after = response.cursors.after
+                followedArtists.addAll(response.artists.items)
+                after = response.artists.cursors?.after
                 Log.d(
                     "UserRepository",
-                    "getFollowedArtists: fetched batch, size: ${response.items.size}"
+                    "getFollowedArtists: fetched batch, size: ${response.artists.items.size}"
                 )
             } while (after != null)
 

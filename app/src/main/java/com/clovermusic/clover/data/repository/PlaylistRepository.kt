@@ -59,7 +59,7 @@ class PlaylistRepository @Inject constructor(
                 offset += response.limit
                 Log.d(
                     "PlaylistRepository",
-                    "getPlaylistItems: fetched batch, size: ${response.total} and offset: $offset"
+                    "getPlaylistItems: fetched batch, size: ${response.items} and offset: $offset"
                 )
             } while (offset < total)
 

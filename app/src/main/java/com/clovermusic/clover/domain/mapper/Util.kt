@@ -1,9 +1,11 @@
 package com.clovermusic.clover.domain.mapper
 
 import com.clovermusic.clover.data.api.spotify.response.common.AlbumArtistResponseDto
+import com.clovermusic.clover.data.api.spotify.response.common.AlbumResponseDto
 import com.clovermusic.clover.data.api.spotify.response.common.ImageResponseDto
 import com.clovermusic.clover.data.api.spotify.response.common.OwnerResponseDto
 import com.clovermusic.clover.data.api.spotify.response.common.TrackArtistResponseDto
+import com.clovermusic.clover.domain.model.Albums
 import com.clovermusic.clover.domain.model.common.AlbumArtist
 import com.clovermusic.clover.domain.model.common.Image
 import com.clovermusic.clover.domain.model.common.Owner
@@ -43,15 +45,27 @@ object Util {
     fun List<TrackArtistResponseDto>.toTrackArtists(): List<TrackArtists> {
         return map { apiArtist ->
             TrackArtists(
-                followers = apiArtist.followers.total,
+                followers = apiArtist.followers?.total ?: 0,
                 genres = apiArtist.genres,
                 id = apiArtist.id,
-                images = apiArtist.images.toImages(),
+                images = apiArtist.images?.toImages() ?: emptyList(),
                 name = apiArtist.name,
                 popularity = apiArtist.popularity,
                 uri = apiArtist.uri
             )
         }
+    }
+
+    fun AlbumResponseDto.toAlbum(): Albums {
+        return Albums(
+            artists = artists.toAlbumArtist(),
+            image = images.toImages(),
+            totalTracks = total_tracks,
+            albumId = id,
+            albumName = name,
+            releaseDate = release_date,
+            uri = uri
+        )
     }
 
 }

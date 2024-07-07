@@ -1,16 +1,16 @@
 package com.clovermusic.clover.data.api.spotify.service
 
-import com.clovermusic.clover.data.api.spotify.response.users.FollowedArtistsResponseDto
+import com.clovermusic.clover.data.api.spotify.response.users.FollowedArtistsDto
 import com.clovermusic.clover.data.api.spotify.response.users.TopArtistsResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface UserService {
 
-    @GET("me/following?type=artist&limit=50")
+    @GET("me/following?type=artist")
     suspend fun getFollowedArtists(
         @Query("after") after: String? = null
-    ): FollowedArtistsResponseDto
+    ): FollowedArtistsDto
 
 
     @GET("me/top/artists")

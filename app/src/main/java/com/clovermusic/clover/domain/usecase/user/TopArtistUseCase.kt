@@ -3,8 +3,8 @@ package com.clovermusic.clover.domain.usecase.user
 import android.util.Log
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
-import com.clovermusic.clover.domain.mapper.toTopArtists
-import com.clovermusic.clover.domain.model.TopArtists
+import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
+import com.clovermusic.clover.domain.model.common.TrackArtists
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,7 +14,7 @@ class TopArtistUseCase @Inject constructor(
     private val repository: UserRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    suspend operator fun invoke(timeRange: String = "short_term"): Flow<Resource<List<TopArtists>>> =
+    suspend operator fun invoke(timeRange: String = "short_term"): Flow<Resource<List<TrackArtists>>> =
         flow {
             emit(Resource.Loading())
             try {
@@ -22,7 +22,7 @@ class TopArtistUseCase @Inject constructor(
                     onTokenRefreshed = {
                         val topArtists = repository.getTopArtists(timeRange)
                         if (topArtists.isNotEmpty()) {
-                            emit(Resource.Success(toTopArtists(topArtists)))
+                            emit(Resource.Success(topArtists.toTrackArtists()))
                         } else {
                             emit(Resource.Error("No top artists found"))
                         }

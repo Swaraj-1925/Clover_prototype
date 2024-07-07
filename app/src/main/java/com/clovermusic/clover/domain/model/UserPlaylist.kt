@@ -3,7 +3,7 @@ package com.clovermusic.clover.domain.model
 import com.clovermusic.clover.domain.model.common.Image
 import com.clovermusic.clover.domain.model.common.Owner
 
-data class Playlist(
+data class UserPlaylist(
     val collaborative: Boolean,
     val description: String,
     val id: String,
@@ -12,5 +12,5 @@ data class Playlist(
     val snapshotId: String,
     val owner: Owner,
     val uri: String,
-    val tracks: List<PlaylistItems>
+    val tracks: Int
 )

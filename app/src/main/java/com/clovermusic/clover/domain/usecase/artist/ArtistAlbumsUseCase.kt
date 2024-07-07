@@ -25,7 +25,7 @@ class ArtistAlbumsUseCase @Inject constructor(
                         artistId.forEach { artistId ->
                             val response = artistRepository.getArtistAlbums(artistId)
                             if (response.isNotEmpty()) {
-                                emit(Resource.Success(toArtistAlbums(response)))
+                                emit(Resource.Success(response.toArtistAlbums()))
                             } else {
                                 emit(Resource.Error("No artist albums found"))
                             }

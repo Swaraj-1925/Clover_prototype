@@ -2,10 +2,11 @@ package com.clovermusic.clover.di
 
 import com.clovermusic.clover.domain.usecase.artist.ArtistAlbumsUseCase
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
-import com.clovermusic.clover.domain.usecase.playlist.CurrentUsersPlaylistsUseCase
+import com.clovermusic.clover.domain.usecase.artist.ArtistsTopTracksUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistItemsUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
+import com.clovermusic.clover.domain.usecase.playlist.UsersPlaylistsUseCase
 import com.clovermusic.clover.domain.usecase.user.FollowedArtistsUseCase
 import com.clovermusic.clover.domain.usecase.user.TopArtistUseCase
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
@@ -34,13 +35,13 @@ object UseCaseModule {
     @Singleton
     fun providePlaylistUseCases(
         playlistItemsUseCase: PlaylistItemsUseCase,
-        currentUsersPlaylistsUseCase: CurrentUsersPlaylistsUseCase,
+        usersPlaylistsUseCase: UsersPlaylistsUseCase,
         playlistUseCase: PlaylistUseCase
 
     ): PlaylistUseCases {
         return PlaylistUseCases(
             playlistItems = playlistItemsUseCase,
-            currentUsersPlaylists = currentUsersPlaylistsUseCase,
+            currentUsersPlaylists = usersPlaylistsUseCase,
             playlistUseCase
         )
     }
@@ -48,10 +49,12 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideArtistUseCases(
-        artistAlbumsUseCase: ArtistAlbumsUseCase
+        artistAlbumsUseCase: ArtistAlbumsUseCase,
+        artistsTopTracksUseCase: ArtistsTopTracksUseCase
     ): ArtistUseCases {
         return ArtistUseCases(
-            artistAlbums = artistAlbumsUseCase
+            artistAlbums = artistAlbumsUseCase,
+            artistTopTrack = artistsTopTracksUseCase
         )
     }
 }
