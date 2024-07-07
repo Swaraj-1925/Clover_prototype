@@ -1,8 +1,9 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.api.spotify.response.playlistResponseModels.CurrentUsersPlaylistItem
-import com.clovermusic.clover.data.api.spotify.response.util.PlaylistTrackResponse
+import com.clovermusic.clover.data.api.spotify.response.common.PlaylistTrackResponseDto
+import com.clovermusic.clover.data.api.spotify.response.playlists.CurrentUsersPlaylistItemDto
+import com.clovermusic.clover.data.api.spotify.response.playlists.PlaylistResponseDto
 import com.clovermusic.clover.data.api.spotify.service.PlaylistService
 import java.io.IOException
 import javax.inject.Inject
@@ -10,8 +11,8 @@ import javax.inject.Inject
 class PlaylistRepository @Inject constructor(
     private val playlistService: PlaylistService
 ) {
-    suspend fun getCurrentUsersPlaylists(): List<CurrentUsersPlaylistItem> {
-        val userPlaylists = mutableListOf<CurrentUsersPlaylistItem>()
+    suspend fun getCurrentUsersPlaylists(): List<CurrentUsersPlaylistItemDto> {
+        val userPlaylists = mutableListOf<CurrentUsersPlaylistItemDto>()
         var offset = 0
         val limit = 50
         var total: Int
@@ -45,9 +46,9 @@ class PlaylistRepository @Inject constructor(
     class PlaylistFetchException(message: String, cause: Throwable? = null) :
         Exception(message, cause)
 
-    suspend fun getPlaylistItems(playlistId: String): List<PlaylistTrackResponse> {
+    suspend fun getPlaylistItems(playlistId: String): List<PlaylistTrackResponseDto> {
         return try {
-            val playlistItems = mutableListOf<PlaylistTrackResponse>()
+            val playlistItems = mutableListOf<PlaylistTrackResponseDto>()
             var offset = 0
             var total: Int
 
@@ -73,25 +74,24 @@ class PlaylistRepository @Inject constructor(
         }
     }
 
-    suspend fun getPlaylist(playlistId: String): List<PlaylistTrackResponse> {
+    suspend fun getPlaylist(playlistId: String): PlaylistResponseDto {
         try {
-            val playlist = mutableListOf<PlaylistTrackResponse>()
+            var playlist: PlaylistResponseDto
             var offset = 0
             var total: Int
             do {
-                val response = playlistService.getPlaylist(playlistId)
-                playlist.addAll(response.tracks.items)
-                total = response.tracks.total
-                offset += response.tracks.limit
+                playlist = playlistService.getPlaylist(playlistId)
+                total = playlist.tracks.total
+                offset += playlist.tracks.limit
                 Log.d(
                     "PlaylistRepository",
-                    "getPlaylist: fetched batch, size: ${response.tracks.total} and offset: $offset"
+                    "getPlaylist: fetched batch, size: ${playlist.tracks.total} and offset: $offset"
                 )
             } while (offset < total)
 
             Log.d(
                 "PlaylistRepository",
-                "getPlaylist: total items fetched: ${playlist.size}"
+                "getPlaylist: total items fetched: ${playlist.tracks.items.size}"
             )
             return playlist
         } catch (e: Exception) {

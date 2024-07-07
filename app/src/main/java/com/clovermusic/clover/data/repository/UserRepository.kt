@@ -1,7 +1,7 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.api.spotify.response.util.TrackArtistResponse
+import com.clovermusic.clover.data.api.spotify.response.common.TrackArtistResponseDto
 import com.clovermusic.clover.data.api.spotify.service.UserService
 import javax.inject.Inject
 
@@ -13,17 +13,17 @@ class UserRepository @Inject constructor(
      * Function will 1st make a request get 50 artists from the api and then if there is more than 50
      * it will make request till next != null and return all followed artists
      */
-    suspend fun getFollowedArtists(): List<TrackArtistResponse> {
+    suspend fun getFollowedArtists(): List<TrackArtistResponseDto> {
         return try {
-            val followedArtists = mutableListOf<TrackArtistResponse>()
+            val followedArtists = mutableListOf<TrackArtistResponseDto>()
             var after: String? = null
             do {
                 val response = userService.getFollowedArtists(after)
-                followedArtists.addAll(response.artists.items)
-                after = response.artists.cursors.after
+                followedArtists.addAll(response.items)
+                after = response.cursors.after
                 Log.d(
                     "UserRepository",
-                    "getFollowedArtists: fetched batch, size: ${response.artists.items.size}"
+                    "getFollowedArtists: fetched batch, size: ${response.items.size}"
                 )
             } while (after != null)
 
@@ -38,9 +38,9 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getTopArtists(timeRange: String): List<TrackArtistResponse> {
+    suspend fun getTopArtists(timeRange: String): List<TrackArtistResponseDto> {
         return try {
-            val topArtists = mutableListOf<TrackArtistResponse>()
+            val topArtists = mutableListOf<TrackArtistResponseDto>()
             var total: Int
             var offset = 0
             do {

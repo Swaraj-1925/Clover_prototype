@@ -1,8 +1,8 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.api.spotify.response.util.AlbumResponse
-import com.clovermusic.clover.data.api.spotify.response.util.TrackItemsResponse
+import com.clovermusic.clover.data.api.spotify.response.common.AlbumResponseDto
+import com.clovermusic.clover.data.api.spotify.response.common.TrackItemsResponseDto
 import com.clovermusic.clover.data.api.spotify.service.ArtistService
 import java.io.IOException
 import javax.inject.Inject
@@ -10,8 +10,8 @@ import javax.inject.Inject
 class ArtistRepository @Inject constructor(
     private val artistService: ArtistService
 ) {
-    suspend fun getArtistAlbums(artistId: String): List<AlbumResponse> {
-        val artistAlbums = mutableListOf<AlbumResponse>()
+    suspend fun getArtistAlbums(artistId: String): List<AlbumResponseDto> {
+        val artistAlbums = mutableListOf<AlbumResponseDto>()
         var offset = 0
         val limit = 50
         var total: Int
@@ -42,9 +42,9 @@ class ArtistRepository @Inject constructor(
         }
     }
 
-    suspend fun getArtistTopTracks(artistId: String): List<TrackItemsResponse> {
+    suspend fun getArtistTopTracks(artistId: String): List<TrackItemsResponseDto> {
 
-        val topTrack = mutableListOf<TrackItemsResponse>()
+        val topTrack = mutableListOf<TrackItemsResponseDto>()
         try {
             val response = artistService.getArtistTopTracks(artistId)
             topTrack.addAll(response.tracks)
