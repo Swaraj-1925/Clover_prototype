@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.material3.Text
 import com.clovermusic.clover.presentation.SpotifyAuthViewModel
 import com.clovermusic.clover.presentation.composable.SpotifyAuthScreen
 import com.clovermusic.clover.ui.theme.CloverTheme
@@ -65,6 +66,8 @@ class SpotifyAuthActivity : ComponentActivity() {
     }
 
     private fun showErrorScreen(error: String) {
-        // Show error screen UI logic
+        setContent {
+            Text(text = "some error occurred, $error")
+        }
     }
 }

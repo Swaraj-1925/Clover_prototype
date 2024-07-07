@@ -1,35 +1,19 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.artistResponseModels.ArtistsAlbumsItem
-import com.clovermusic.clover.domain.model.AlbumsArtist
-import com.clovermusic.clover.domain.model.ArtistAlbums
-import com.clovermusic.clover.domain.model.util.Image
+import com.clovermusic.clover.data.api.spotify.response.common.AlbumResponseDto
+import com.clovermusic.clover.domain.mapper.Util.toAlbumArtist
+import com.clovermusic.clover.domain.mapper.Util.toImages
+import com.clovermusic.clover.domain.model.Albums
 
-
-fun toArtistAlbums(response: List<ArtistsAlbumsItem>?): List<ArtistAlbums>? {
-    return response?.map { apiItem ->
-        ArtistAlbums(
-            album_type = apiItem.album_type,
-            id = apiItem.id,
-            artists = apiItem.artists.map { apiArtist ->
-                AlbumsArtist(
-                    id = apiArtist.id,
-                    name = apiArtist.name,
-                    type = apiArtist.type,
-                    uri = apiArtist.uri
-                )
-            },
-            images = apiItem.images.map { apiImage ->
-                Image(
-                    height = apiImage.height,
-                    url = apiImage.url,
-                    width = apiImage.width
-                )
-            },
-            name = apiItem.name,
-            release_date = apiItem.release_date,
-            total_tracks = apiItem.total_tracks,
-            type = apiItem.type,
+fun List<AlbumResponseDto>.toArtistAlbums(): List<Albums> {
+    return map { apiItem ->
+        Albums(
+            artists = apiItem.artists.toAlbumArtist(),
+            image = apiItem.images.toImages(),
+            totalTracks = apiItem.total_tracks,
+            albumId = apiItem.id,
+            albumName = apiItem.name,
+            releaseDate = apiItem.release_date,
             uri = apiItem.uri
         )
     }

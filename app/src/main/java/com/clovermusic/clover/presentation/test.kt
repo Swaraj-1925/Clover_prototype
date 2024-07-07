@@ -2,7 +2,7 @@ package com.clovermusic.clover.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.clovermusic.clover.domain.model.TopArtists
+import com.clovermusic.clover.domain.model.common.TrackArtists
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
@@ -21,10 +21,11 @@ class test @Inject constructor(
     private val artistUseCases: ArtistUseCases
 ) : ViewModel() {
     private val _artistsState =
-        MutableStateFlow<Resource<List<TopArtists>>>(Resource.Loading())
-    val artistsState: StateFlow<Resource<List<TopArtists>>> = _artistsState.asStateFlow()
+        MutableStateFlow<Resource<List<TrackArtists>>>(Resource.Loading())
+    val artistsState: StateFlow<Resource<List<TrackArtists>>> = _artistsState.asStateFlow()
 
-    val artist = listOf("246dkjvS1zLTtiykXe5h60")
+    val artist = "246dkjvS1zLTtiykXe5h60"
+    val playlist = "6sSKe7i5Z42rMIoOuW75yY"
 
     init {
         getFollowedArtists()

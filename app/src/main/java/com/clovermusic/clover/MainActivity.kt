@@ -15,7 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.clovermusic.clover.domain.model.TopArtists
+import com.clovermusic.clover.domain.model.common.TrackArtists
 import com.clovermusic.clover.presentation.test
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.Resource
@@ -24,15 +24,14 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    val viewmodel: test by viewModels()
+    private val viewModel: test by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
             CloverTheme {
-                val artistsState by viewmodel.artistsState.collectAsState()
+                val artistsState by viewModel.artistsState.collectAsState()
                 when (artistsState) {
                     is Resource.Loading -> {
                         CircularProgressIndicator()
@@ -40,23 +39,21 @@ class MainActivity : ComponentActivity() {
 
                     is Resource.Success -> {
                         val artists =
-                            (artistsState as Resource.Success<List<TopArtists>>).data
+                            (artistsState as Resource.Success<List<TrackArtists>>).data
                         ArtistsList(artists)
                     }
 
                     is Resource.Error -> {
-//                        Text(text = (artistsState as Resource.Error).message)
+                        Text(text = (artistsState as Resource.Error).message ?: "An error occurred")
                     }
                 }
             }
         }
-
-
     }
 }
 
 @Composable
-fun ArtistsList(artists: List<TopArtists>?) {
+fun ArtistsList(artists: List<TrackArtists>?) {
     LazyColumn(modifier = Modifier.padding(16.dp)) {
         itemsIndexed(artists ?: emptyList()) { index, artist ->
             Text(text = "${index + 1}. ${artist.name}")
