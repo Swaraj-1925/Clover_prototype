@@ -5,10 +5,10 @@ import com.clovermusic.clover.domain.model.common.Image
 
 data class Albums(
     val artists: List<AlbumArtist>,
+    val image: List<Image>,
     val totalTracks: Int,
     val albumId: String,
     val albumName: String,
-    val albumImage: List<Image>,
     val releaseDate: String,
     val uri: String
 )
