@@ -13,19 +13,21 @@ class ArtistsTopTracksUseCase @Inject constructor(
     private val artistRepository: ArtistRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    suspend operator fun invoke(artistId: String) : Flow<Resource<List<PlaylistItem>>> =
-        flow{
+    suspend operator fun invoke(artistId: String): Flow<Resource<List<PlaylistItem>>> =
+        flow {
             emit(Resource.Loading())
             try {
                 authRepository.ensureValidAccessToken(
                     onTokenRefreshed = {
                         val res = artistRepository.getArtistTopTracks(artistId)
-                        if (res.isNotEmpty()){
+                        if (res.isNotEmpty()) {
                             emit(Resource.Success(toPlaylistItems(res)))
                         }
                     },
                     onError = {}
                 )
+            } catch (e: Exception) {
+
             }
         }
 }
