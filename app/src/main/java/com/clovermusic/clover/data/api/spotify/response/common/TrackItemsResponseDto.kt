@@ -1,8 +1,8 @@
-package com.clovermusic.clover.data.api.spotify.response.util
+package com.clovermusic.clover.data.api.spotify.response.common
 
-data class TrackItemsResponse(
-    val album: AlbumResponse,
-    val artists: List<TrackArtistResponse>,
+data class TrackItemsResponseDto(
+    val album: AlbumResponseDto,
+    val artists: List<TrackArtistResponseDto>,
     val disc_number: Int,
     val duration_ms: Int,
     val explicit: Boolean,

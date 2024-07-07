@@ -1,13 +1,12 @@
-package com.clovermusic.clover.data.api.spotify.response.util
+package com.clovermusic.clover.data.api.spotify.response.common
 
-
-data class AlbumResponse(
+data class AlbumResponseDto(
     val album_type: String,
-    val artists: List<AlbumArtistResponse>,
+    val artists: List<AlbumArtistResponseDto>,
     val available_markets: List<String>,
     val href: String,
     val id: String,
-    val images: List<ImageResponse>,
+    val images: List<ImageResponseDto>,
     val name: String,
     val release_date: String,
     val release_date_precision: String,

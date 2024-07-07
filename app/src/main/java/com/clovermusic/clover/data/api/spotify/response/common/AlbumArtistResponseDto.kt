@@ -1,6 +1,6 @@
-package com.clovermusic.clover.data.api.spotify.response.util
+package com.clovermusic.clover.data.api.spotify.response.common
 
-data class AlbumArtistResponse(
+data class AlbumArtistResponseDto(
     val href: String,
     val id: String,
     val name: String,
