@@ -2,8 +2,8 @@ package com.clovermusic.clover.data.repository
 
 import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.common.PlaylistTrackResponseDto
-import com.clovermusic.clover.data.api.spotify.response.playlists.CurrentUsersPlaylistItemDto
 import com.clovermusic.clover.data.api.spotify.response.playlists.PlaylistResponseDto
+import com.clovermusic.clover.data.api.spotify.response.playlists.UsersPlaylistItemDto
 import com.clovermusic.clover.data.api.spotify.service.PlaylistService
 import java.io.IOException
 import javax.inject.Inject
@@ -11,8 +11,8 @@ import javax.inject.Inject
 class PlaylistRepository @Inject constructor(
     private val playlistService: PlaylistService
 ) {
-    suspend fun getCurrentUsersPlaylists(): List<CurrentUsersPlaylistItemDto> {
-        val userPlaylists = mutableListOf<CurrentUsersPlaylistItemDto>()
+    suspend fun getCurrentUsersPlaylists(): List<UsersPlaylistItemDto> {
+        val userPlaylists = mutableListOf<UsersPlaylistItemDto>()
         var offset = 0
         val limit = 50
         var total: Int

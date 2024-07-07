@@ -1,6 +1,6 @@
-package com.clovermusic.clover.domain.model.util
+package com.clovermusic.clover.domain.model.common
 
-data class Artists(
+data class AlbumArtist(
     val id: String,
     val name: String,
     val type: String,

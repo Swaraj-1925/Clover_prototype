@@ -5,7 +5,7 @@ import com.clovermusic.clover.data.api.spotify.response.common.OwnerResponseDto
 
 data class CurrentUsersPlaylistResponseDto(
     val href: String,
-    val items: List<CurrentUsersPlaylistItemDto>,
+    val items: List<UsersPlaylistItemDto>,
     val limit: Int,
     val next: String?,
     val offset: Int,
@@ -13,7 +13,7 @@ data class CurrentUsersPlaylistResponseDto(
     val total: Int
 )
 
-data class CurrentUsersPlaylistItemDto(
+data class UsersPlaylistItemDto(
     val collaborative: Boolean,
     val description: String,
     val href: String,
@@ -24,12 +24,12 @@ data class CurrentUsersPlaylistItemDto(
     val primary_color: String,
     val public: Boolean,
     val snapshot_id: String,
-    val tracks: CurrentUsersPlaylistTracksDto,
+    val tracks: UsersPlaylistTracksDto,
     val type: String,
     val uri: String
 )
 
-data class CurrentUsersPlaylistTracksDto(
+data class UsersPlaylistTracksDto(
     val href: String,
     val total: Int
 )

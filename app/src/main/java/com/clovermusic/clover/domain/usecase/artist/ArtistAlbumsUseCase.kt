@@ -4,7 +4,7 @@ import android.util.Log
 import com.clovermusic.clover.data.repository.ArtistRepository
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.domain.mapper.toArtistAlbums
-import com.clovermusic.clover.domain.model.ArtistAlbums
+import com.clovermusic.clover.domain.model.Albums
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,7 +16,7 @@ class ArtistAlbumsUseCase @Inject constructor(
     private val authRepository: SpotifyAuthRepository
 ) {
 
-    suspend operator fun invoke(artistId: List<String>): Flow<Resource<List<ArtistAlbums>>> =
+    suspend operator fun invoke(artistId: List<String>): Flow<Resource<List<Albums>>> =
         flow {
             emit(Resource.Loading())
             try {

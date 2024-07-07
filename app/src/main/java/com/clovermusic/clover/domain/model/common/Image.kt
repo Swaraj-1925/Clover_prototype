@@ -1,4 +1,4 @@
-package com.clovermusic.clover.domain.model.util
+package com.clovermusic.clover.domain.model.common
 
 data class Image(
     val height: Int,
