@@ -3,26 +3,25 @@ package com.clovermusic.clover.domain.usecase.playlist
 import android.util.Log
 import com.clovermusic.clover.data.repository.PlaylistRepository
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
-import com.clovermusic.clover.domain.mapper.toPlaylistItems
-import com.clovermusic.clover.domain.model.PlaylistItems
+import com.clovermusic.clover.domain.mapper.toPlaylist
+import com.clovermusic.clover.domain.model.Playlist
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class PlaylistItemsUseCase @Inject constructor(
+class PlaylistUseCase @Inject constructor(
     private val repository: PlaylistRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    suspend operator fun invoke(playlistId: String): Flow<Resource<List<PlaylistItems>>> = flow {
+    suspend operator fun invoke(playlistId: String): Flow<Resource<Playlist>> = flow {
         emit(Resource.Loading())
         try {
             authRepository.ensureValidAccessToken(
                 onTokenRefreshed = {
-                    val playlistItems = repository.getPlaylistItems(playlistId)
-                    Log.d("GetPlaylistItemsUseCase", "Playlist items: $playlistItems")
-                    if (playlistItems.isNotEmpty()) {
-                        emit(Resource.Success(playlistItems.toPlaylistItems()))
+                    val playlistItems = repository.getPlaylist(playlistId)
+                    if (playlistItems.tracks.items.isNotEmpty()) {
+                        emit(Resource.Success(playlistItems.toPlaylist()))
                     } else {
                         emit(Resource.Error("No playlist items found"))
                     }
@@ -32,8 +31,8 @@ class PlaylistItemsUseCase @Inject constructor(
                 }
             )
         } catch (e: Exception) {
-            Log.e("GetPlaylistItemsUseCase", "Error getting data: ${e}")
             emit(Resource.Error("An error occurred while fetching playlist items"))
+            Log.e("GetPlaylistItemsUseCase", "Error getting data: ${e.message}")
         }
     }
 }

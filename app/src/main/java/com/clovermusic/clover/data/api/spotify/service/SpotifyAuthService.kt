@@ -1,6 +1,6 @@
 package com.clovermusic.clover.data.api.spotify.service
 
-import com.clovermusic.clover.data.api.spotify.response.authResponseModels.SpotifyAuthResponse
+import com.clovermusic.clover.data.api.spotify.response.auth.SpotifyAuthResponseDto
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -14,7 +14,7 @@ interface SpotifyAuthService {
         @Field("redirect_uri") redirectUri: String,
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String
-    ): SpotifyAuthResponse
+    ): SpotifyAuthResponseDto
 
     @FormUrlEncoded
     @POST("api/token")
@@ -23,5 +23,5 @@ interface SpotifyAuthService {
         @Field("refresh_token") refreshToken: String,
         @Field("client_id") clientId: String,
         @Field("client_secret") clientSecret: String
-    ): SpotifyAuthResponse
+    ): SpotifyAuthResponseDto
 }

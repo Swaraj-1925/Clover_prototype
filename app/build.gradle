@@ -84,41 +84,41 @@ dependencies {
     debugImplementation libs.androidx.ui.test.manifest
 
 //    Hilt
-    implementation 'com.google.dagger:hilt-android:2.51.1'
-    kapt 'com.google.dagger:hilt-compiler:2.51.1'
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
 
 
 //    Spotify
     implementation files("../app-remote-lib/spotify-app-remote-release-0.8.0.aar")
-    implementation 'com.spotify.android:auth:2.1.2'
+    implementation libs.auth
 
 
 //    Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation libs.retrofit
+    implementation libs.converter.gson
 
 //    okhttp3
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
+    implementation libs.okhttp
 
 //    Coil
-    implementation 'io.coil-kt:coil-compose:2.6.0'
+    implementation libs.coil.compose
 
 //    life Cycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2"
+    implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.lifecycle.viewmodel.ktx
 
 //    Shared preferences
-    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+    implementation libs.androidx.security.crypto
 
 //    Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0-RC'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC'
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.kotlinx.coroutines.core
 
 //    Pager Layouts
-    implementation 'com.google.accompanist:accompanist-pager:0.35.1-alpha'
+    implementation libs.accompanist.pager
 
 //    palette for dominate color
-    implementation 'androidx.palette:palette-ktx:1.0.0'
+    implementation libs.androidx.palette.ktx
 }
 kapt {
     correctErrorTypes true

@@ -1,10 +1,10 @@
 package com.clovermusic.clover.data.api.spotify.service
 
-import com.clovermusic.clover.data.api.spotify.response.artistResponseModels.ArtistsAlbumsResponse
+import com.clovermusic.clover.data.api.spotify.response.artists.ArtistsAlbumsResponseDto
+import com.clovermusic.clover.data.api.spotify.response.artists.ArtistsTopTracksResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface ArtistService {
 
@@ -14,9 +14,10 @@ interface ArtistService {
         @Query("include_groups") includeGroups: String = "album,single",
         @Query("limit") limit: Int = 50,
         @Query("offset") offset: Int,
-    ): ArtistsAlbumsResponse
+    ): ArtistsAlbumsResponseDto
 
-
-    @GET
-    suspend fun <T> getNextPage(@Url url: String): T
+    @GET("artists/{artistId}/top-tracks")
+    suspend fun getArtistTopTracks(
+        @Path("artistId") artistId: String,
+    ): ArtistsTopTracksResponseDto
 }

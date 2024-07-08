@@ -3,8 +3,8 @@ package com.clovermusic.clover.domain.usecase.user
 import android.util.Log
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
-import com.clovermusic.clover.domain.mapper.toFollowedArtists
-import com.clovermusic.clover.domain.model.FollowedArtists
+import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
+import com.clovermusic.clover.domain.model.common.TrackArtists
 import com.clovermusic.clover.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,14 +17,14 @@ class FollowedArtistsUseCase @Inject constructor(
     private val repository: UserRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    suspend operator fun invoke(): Flow<Resource<List<FollowedArtists>>> = flow {
+    suspend operator fun invoke(): Flow<Resource<List<TrackArtists>>> = flow {
         emit(Resource.Loading())
         try {
             authRepository.ensureValidAccessToken(
                 onTokenRefreshed = {
                     val artists = repository.getFollowedArtists()
                     if (artists.isNotEmpty()) {
-                        emit(Resource.Success(toFollowedArtists(artists)))
+                        emit(Resource.Success(artists.toTrackArtists()))
                     } else {
                         Log.d("GetFollowedArtistsUseCase", "No followed artists found")
                         emit(Resource.Error("No followed artists found"))
