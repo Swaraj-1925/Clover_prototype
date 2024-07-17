@@ -39,7 +39,11 @@ class SpotifyAuthRepository @Inject constructor(
     fun buildSpotifyAuthRequest(): AuthorizationRequest {
         return runCatching {
             if (!isSpotifyInstalled()) {
-                throw IllegalStateException("Spotify is not installed")
+                throw CustomException.AuthException(
+                    "SpotifyAuthRepository",
+                    "buildSpotifyAuthRequest",
+                    Throwable("Spotify is not installed")
+                )
             } else {
                 val authRequest = AuthorizationRequest
                     .Builder(
@@ -54,7 +58,6 @@ class SpotifyAuthRepository @Inject constructor(
             }
         }.onFailure { e ->
             Log.e("SpotifyAuthRepository", "buildSpotifyAuthRequest: ", e)
-
         }.getOrThrow()
     }
 

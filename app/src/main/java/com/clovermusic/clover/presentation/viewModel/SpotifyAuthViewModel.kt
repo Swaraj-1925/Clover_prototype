@@ -31,10 +31,10 @@ class SpotifyAuthViewModel @Inject constructor(
                 val authRequest = repository.buildSpotifyAuthRequest()
                 authorizationRequest = authRequest
 
-            } catch (e: CustomException.InvalidInputException) {
+            } catch (e: CustomException.AuthException) {
                 Log.e("SpotifyAuthViewModel", "Error building auth request: ${e.message}")
                 _authUiState.value =
-                    Resource.Error("Unable to connect to Spotify please try again later")
+                    Resource.Error("Please make sure spotify us installed")
             } catch (e: Exception) {
                 Log.e("SpotifyAuthViewModel", "Error building auth request", e)
                 _authUiState.value =
