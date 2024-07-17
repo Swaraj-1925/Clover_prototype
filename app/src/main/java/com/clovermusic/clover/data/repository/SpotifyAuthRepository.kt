@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.clovermusic.clover.data.api.spotify.service.SpotifyAuthService
-import com.clovermusic.clover.util.Resource
+import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyApiScopes
 import com.clovermusic.clover.util.SpotifyAuthConfig
 import com.clovermusic.clover.util.SpotifyTokenManager
@@ -14,15 +14,13 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of SpotifyAuthRepository
+ * Repository class for Spotify authentication.
  */
 @Singleton
 class SpotifyAuthRepository @Inject constructor(
@@ -31,22 +29,17 @@ class SpotifyAuthRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
+
     private val clientId = SpotifyAuthConfig.CLIENT_ID
     private val clientSecret = SpotifyAuthConfig.CLIENT_SECRET
     private val redirectUri = SpotifyAuthConfig.REDIRECT_URI
     private val spotifyPackage = "com.spotify.music"
 
-
-    suspend fun buildSpotifyAuthRequest(): Flow<Resource<AuthorizationRequest>> = flow {
-        emit(Resource.Loading())
-        try {
-            val spotifyInstalled = isSpotifyInstalled()
-            if (!spotifyInstalled) {
-                Log.e(
-                    "SpotifyAuthRepositoryImpl",
-                    "buildSpotifyAuthRequest: Spotify is not installed"
-                )
-                emit(Resource.Error("Spotify is not installed"))
+    //    Builds the Spotify authorization request.
+    fun buildSpotifyAuthRequest(): AuthorizationRequest {
+        return runCatching {
+            if (!isSpotifyInstalled()) {
+                throw IllegalStateException("Spotify is not installed")
             } else {
                 val authRequest = AuthorizationRequest
                     .Builder(
@@ -57,49 +50,68 @@ class SpotifyAuthRepository @Inject constructor(
                     .setScopes(SpotifyApiScopes.getAllScopes())
                     .build()
 
-                emit(Resource.Success(authRequest))
+                authRequest
             }
-        } catch (e: Exception) {
-            Log.e("SpotifyAuthRepositoryImpl", "buildSpotifyAuthRequest: ${e.message}", e)
-            emit(Resource.Error("Unknown error. Please contact support for assistance."))
-        } catch (e: IOException) {
-            Log.e("SpotifyAuthRepositoryImpl", "buildSpotifyAuthRequest: ${e.message}", e)
-            emit(Resource.Error("Network error occurred during authentication. Please try again later."))
-        }
+        }.onFailure { e ->
+            Log.e("SpotifyAuthRepository", "buildSpotifyAuthRequest: ", e)
+
+        }.getOrThrow()
     }
 
-    suspend fun handleAuthResponse(
-        result: ActivityResult,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val response = AuthorizationClient.getResponse(result.resultCode, result.data)
-        when (response.type) {
-            AuthorizationResponse.Type.CODE -> {
-                val code = response.code
-                Log.i("SpotifyAuthUseCase", "CODE  RECEIVED")
+    //    Handles the Spotify authorization response.
+    suspend fun handleAuthResponse(result: ActivityResult): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val res = AuthorizationClient.getResponse(result.resultCode, result.data)
+                when (res.type) {
+                    AuthorizationResponse.Type.CODE -> {
+                        Log.i("SpotifyAuthRepository", "Authorization code received")
+                        exchangeCodeForTokens(res.code)
+                        true
+                    }
 
-                withContext(Dispatchers.IO) {
-                    exchangeCodeForTokens(code, onSuccess, onError)
+                    AuthorizationResponse.Type.ERROR -> {
+                        throw CustomException.AuthException(
+                            "SpotifyAuthRepository",
+                            "handleAuthResponse",
+                            Throwable(res.error)
+                        )
+                    }
+
+                    AuthorizationResponse.Type.EMPTY -> {
+                        throw CustomException.EmptyResponseException(
+                            "SpotifyAuthRepository",
+                            "handleAuthResponse"
+                        )
+                    }
+
+                    else -> {
+                        throw CustomException.UnknownException(
+                            "SpotifyAuthRepository",
+                            "handleAuthResponse",
+                            "Unknown response type",
+                            Throwable(res.type.name)
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is CustomException -> throw e
+                    else -> throw CustomException.UnknownException(
+                        "SpotifyAuthRepository",
+                        "handleAuthResponse",
+                        "Some error occured while handling response",
+                        e
+                    )
                 }
             }
 
-            AuthorizationResponse.Type.ERROR -> {
-                val error = response.error
-                onError(error)
-            }
-
-            else -> {
-                onError("SpotifyAuthRepositoryImpl: Unknown response type: ${response.type}")
-            }
         }
     }
 
-
+    //    Exchanges the authorization code for access and refresh tokens.
     private suspend fun exchangeCodeForTokens(
         code: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
     ) {
         try {
             val response = api.exchangeCodeForTokens(
@@ -113,42 +125,45 @@ class SpotifyAuthRepository @Inject constructor(
             response.refresh_token?.let { tokenManager.saveRefreshToken(it) }
             tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
 
-            withContext(Dispatchers.Main) {
-                onSuccess()
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                onError("Failed to exchange authorization code: ${e.message}")
-            }
-        }
-    }
-
-    suspend fun ensureValidAccessToken(
-        onTokenRefreshed: suspend () -> Unit,
-        onError: suspend (String) -> Unit
-    ) {
-        val accessToken = tokenManager.getAccessToken()
-        if (accessToken.isNullOrBlank() || isTokenExpired(accessToken)) {
-            refreshAccessToken(
-                onSuccess = { onTokenRefreshed() },
-                onError = { onError(it) }
+        } catch (e: IOException) {
+            throw CustomException.NetworkException(
+                "SpotifyAuthRepository",
+                "exchangeCodeForTokens",
+                e
             )
-        } else {
-            onTokenRefreshed()
+        } catch (e: Exception) {
+            throw CustomException.UnknownException(
+                "SpotifyAuthRepository",
+                "exchangeCodeForTokens",
+                "An unexpected error occurred",
+                e
+            )
         }
     }
 
-    private suspend fun refreshAccessToken(
-        onSuccess: suspend () -> Unit,
-        onError: suspend (String) -> Unit
-    ) {
-        val refreshToken = tokenManager.getRefreshToken() ?: run {
-            withContext(Dispatchers.Main) {
-                onError("No refresh token available")
-            }
-            return
+    //    Checks if the access token is valid or needs to be refreshed.
+    suspend fun ensureValidAccessToken() {
+        val accessToken = tokenManager.getAccessToken()
+        if (isTokenExpired()) {
+            refreshAccessToken()
+        } else if (accessToken.isNullOrBlank()) {
+            throw CustomException.AuthException(
+                "SpotifyAuthRepository",
+                "ensureValidAccessToken",
+                Throwable("Access token is null or blank")
+            )
         }
+    }
+
+    //    Refreshes the access token using the refresh token.
+    private suspend fun refreshAccessToken() {
         try {
+            val refreshToken = tokenManager.getRefreshToken()
+                ?: throw CustomException.AuthException(
+                    "SpotifyAuthRepository",
+                    "refreshAccessToken",
+                    Throwable("Refresh token is null")
+                )
             val response = api.refreshAccessToken(
                 grantType = "refresh_token",
                 refreshToken = refreshToken,
@@ -157,22 +172,28 @@ class SpotifyAuthRepository @Inject constructor(
             )
             tokenManager.saveAccessToken(response.access_token)
             tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
-
-            withContext(Dispatchers.Main) {
-                onSuccess()
-            }
+        } catch (e: IOException) {
+            throw CustomException.NetworkException("SpotifyAuthRepository", "refreshAccessToken", e)
         } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                onError("Failed to refresh access token: ${e.message}")
+            when (e) {
+                is CustomException -> throw e
+                else -> throw CustomException.UnknownException(
+                    "SpotifyAuthRepository",
+                    "refreshAccessToken",
+                    "Unknown error",
+                    e
+                )
             }
         }
     }
 
-    private fun isTokenExpired(token: String): Boolean {
+    //    Checks if the access token has expired.
+    private fun isTokenExpired(): Boolean {
         val expirationTime = tokenManager.getTokenExpirationTime()
         return System.currentTimeMillis() > expirationTime
     }
 
+    //    Checks if Spotify is installed on the device.
     private fun isSpotifyInstalled(): Boolean {
         return try {
             context.packageManager.getPackageInfo(spotifyPackage, 0)
@@ -181,6 +202,4 @@ class SpotifyAuthRepository @Inject constructor(
             false
         }
     }
-
-
 }

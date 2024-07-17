@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import java.io.IOException
 import javax.inject.Inject
 
 class SpotifyTokenManager @Inject constructor(
@@ -37,11 +36,9 @@ class SpotifyTokenManager @Inject constructor(
             val editor = getEncryptedSharedPreferences().edit()
             editor.putString(_accessToken, accessToken)
             editor.apply()
-            Log.i("TokenManager", "TOKEN SAVED: $accessToken")
+            Log.i("TokenManager", "TOKEN SAVED")
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error saving access token: ${e.message}")
-        } catch (e: IOException) {
-            Log.e("TokenManager", "IoError saving access token: ${e.message}")
+            throw CustomException.DatabaseException("TokenManager", "saveAccessToken", e)
         }
     }
 
@@ -62,7 +59,7 @@ class SpotifyTokenManager @Inject constructor(
             editor.apply()
             Log.i("TokenManager", "Refresh token saved")
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error saving refresh token: ${e.message}")
+            throw CustomException.DatabaseException("TokenManager", "saveRefreshToken", e)
         }
     }
 
@@ -73,7 +70,7 @@ class SpotifyTokenManager @Inject constructor(
             editor.apply()
             Log.i("TokenManager", "Token expiration time saved: $expirationTime")
         } catch (e: Exception) {
-            Log.e("TokenManager", "Error saving token expiration time: ${e.message}")
+            throw CustomException.DatabaseException("TokenManager", "saveTokenExpirationTime", e)
         }
     }
 
