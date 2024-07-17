@@ -4,68 +4,91 @@ import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.common.AlbumResponseDto
 import com.clovermusic.clover.data.api.spotify.response.common.TrackItemsResponseDto
 import com.clovermusic.clover.data.api.spotify.service.ArtistService
+import com.clovermusic.clover.util.CustomException
+import com.clovermusic.clover.util.SpotifyApiException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+// Repository for Artist related api call
 class ArtistRepository @Inject constructor(
     private val artistService: ArtistService
 ) {
-    suspend fun getArtistAlbums(artistId: String): List<AlbumResponseDto> {
-        val artistAlbums = mutableListOf<AlbumResponseDto>()
-        var offset = 0
-        val limit = 50
-        var total: Int
-        try {
-            do {
-                val response =
-                    artistService.getArtistAlbums(artistId, offset = offset, limit = limit)
-                artistAlbums.addAll(response.items)
-                total = response.total
-                offset += limit
+    /**
+     * Function will get artist all albums if no limit is present if limit is present then it will
+     * get just that many albums i.e until it reaches that offset
+     */
+    suspend fun getArtistAlbums(artistId: String, limits: Int?): List<AlbumResponseDto> =
+        withContext(Dispatchers.IO) {
+            val artistAlbums = mutableListOf<AlbumResponseDto>()
+            var offset = 0
+            var total: Int
+            try {
+                do {
+                    val response =
+                        artistService.getArtistAlbums(artistId, offset = offset)
+                    artistAlbums.addAll(response.items)
+                    total = response.total
+                    offset += response.limit
+                    if (limits != null && total > limits) {
+                        if (offset > limits) {
+                            break
+                        }
+                    }
+                    Log.d(
+                        "ArtistRepository ",
+                        "getArtistAlbums: fetched batch, size: ${response.total} and offset: $offset"
+                    )
+                } while (offset < total)
+
                 Log.d(
                     "ArtistRepository ",
-                    "getArtistAlbums: fetched batch, size: ${response.total} and offset: $offset"
+                    "getArtistAlbums: Success, total albums: ${artistAlbums.size}"
                 )
-            } while (offset < total)
-
-            Log.d(
-                "ArtistRepository ",
-                "getArtistAlbums: Success, total albums: ${artistAlbums.size}"
-            )
-            return artistAlbums
-        } catch (e: IOException) {
-            Log.e("ArtistRepository", "Network error while fetching playlists", e)
-            throw ArtistFetchException("Network error occurred while fetching playlists", e)
-        } catch (e: Exception) {
-            Log.e("ArtistRepository", "Unexpected error while fetching playlists", e)
-            throw ArtistFetchException("An unexpected error occurred while fetching playlists", e)
+                artistAlbums
+            } catch (e: IOException) {
+                throw CustomException.NetworkException("ArtistRepository", "getArtistAlbums", e)
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "ArtistRepository",
+                    "getArtistAlbums",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException("ArtistRepository", "getArtistAlbums", e)
+            }
         }
-    }
 
-    suspend fun getArtistTopTracks(artistId: String): List<TrackItemsResponseDto> {
+    //    Function to get artist top tracks
+    suspend fun getArtistTopTracks(artistId: String): List<TrackItemsResponseDto> =
+        withContext(Dispatchers.IO) {
+            val topTrack = mutableListOf<TrackItemsResponseDto>()
+            try {
+                val response = artistService.getArtistTopTracks(artistId)
+                topTrack.addAll(response.tracks)
 
-        val topTrack = mutableListOf<TrackItemsResponseDto>()
-        try {
-            val response = artistService.getArtistTopTracks(artistId)
-            topTrack.addAll(response.tracks)
+                Log.d(
+                    "ArtistRepository ",
+                    "getArtistTopTracks: Success, total albums: ${topTrack.size}"
+                )
+                topTrack
 
-            Log.d(
-                "ArtistRepository ",
-                "getArtistTopTracks: Success, total albums: ${topTrack.size}"
-            )
-            return topTrack
-
-        } catch (e: IOException) {
-            Log.e("ArtistRepository", "Network error while fetching playlists", e)
-            throw ArtistFetchException("Network error occurred while fetching playlists", e)
-        } catch (e: Exception) {
-            Log.e("ArtistRepository", "Unexpected error while fetching playlists", e)
-            throw ArtistFetchException("An unexpected error occurred while fetching playlists", e)
+            } catch (e: IOException) {
+                throw CustomException.NetworkException("ArtistRepository", "getArtistTopTracks", e)
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "ArtistRepository",
+                    "getArtistTopTracks",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException("ArtistRepository", "getArtistTopTracks", e)
+            }
         }
-    }
-
-    class ArtistFetchException(message: String, cause: Throwable? = null) :
-        Exception(message, cause)
 }
 
 

@@ -5,35 +5,19 @@ import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
 import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
 import com.clovermusic.clover.domain.model.common.TrackArtists
-import com.clovermusic.clover.util.Resource
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class TopArtistUseCase @Inject constructor(
     private val repository: UserRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    suspend operator fun invoke(timeRange: String = "short_term"): Flow<Resource<List<TrackArtists>>> =
-        flow {
-            emit(Resource.Loading())
-            try {
-                authRepository.ensureValidAccessToken(
-                    onTokenRefreshed = {
-                        val topArtists = repository.getTopArtists(timeRange)
-                        if (topArtists.isNotEmpty()) {
-                            emit(Resource.Success(topArtists.toTrackArtists()))
-                        } else {
-                            emit(Resource.Error("No top artists found"))
-                        }
-                    },
-                    onError = { error ->
-                        emit(Resource.Error("Failed to refresh token: $error"))
-                    }
-                )
-            } catch (e: Exception) {
-                Log.e("GetTopArtistsUseCase", "Error getting data: ${e.message}")
-                emit(Resource.Error("An error occurred while fetching top artists"))
-            }
-        }
+    //    Get list of artist which user listen to most in short time(4 Weeks) period
+    suspend operator fun invoke(timeRange: String = "short_term"): List<TrackArtists> {
+        return runCatching {
+            authRepository.ensureValidAccessToken()
+            repository.getTopArtists(timeRange).toTrackArtists()
+        }.onFailure { e ->
+            Log.e("TopArtistUseCase", "Error fetching top artists", e)
+        }.getOrThrow()
+    }
 }

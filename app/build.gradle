@@ -119,6 +119,9 @@ dependencies {
 
 //    palette for dominate color
     implementation libs.androidx.palette.ktx
+
+
+    implementation libs.lottie.compose
 }
 kapt {
     correctErrorTypes true

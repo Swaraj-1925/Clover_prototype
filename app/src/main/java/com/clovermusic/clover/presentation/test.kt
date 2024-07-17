@@ -33,9 +33,7 @@ class test @Inject constructor(
 
     private fun getFollowedArtists() {
         viewModelScope.launch {
-            userUseCases.topArtist().collect() { resource ->
-                _artistsState.value = resource
-            }
+
         }
     }
 }
