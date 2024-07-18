@@ -33,6 +33,14 @@ object Util {
         }
     }
 
+    fun ImageResponseDto.toImages(): Image {
+        return Image(
+            height = height,
+            url = url,
+            width = width
+        )
+    }
+
     fun OwnerResponseDto.toOwner(): Owner {
         return Owner(
             display_name = display_name,

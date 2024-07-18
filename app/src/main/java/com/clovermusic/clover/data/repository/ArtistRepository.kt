@@ -2,6 +2,7 @@ package com.clovermusic.clover.data.repository
 
 import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.common.AlbumResponseDto
+import com.clovermusic.clover.data.api.spotify.response.common.TrackArtistResponseDto
 import com.clovermusic.clover.data.api.spotify.response.common.TrackItemsResponseDto
 import com.clovermusic.clover.data.api.spotify.service.ArtistService
 import com.clovermusic.clover.util.CustomException
@@ -89,6 +90,26 @@ class ArtistRepository @Inject constructor(
                 SpotifyApiException.handleApiException("ArtistRepository", "getArtistTopTracks", e)
             }
         }
+
+    suspend fun getArtistRelatedArtists(id: String): TrackArtistResponseDto =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = artistService.getArtistRelatedArtists(id)
+                response
+            } catch (e: IOException) {
+                throw CustomException.NetworkException("ArtistRepository", "getArtistTopTracks", e)
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "ArtistRepository",
+                    "getArtistTopTracks",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException("ArtistRepository", "getArtistTopTracks", e)
+            }
+        }
+    
 }
 
 

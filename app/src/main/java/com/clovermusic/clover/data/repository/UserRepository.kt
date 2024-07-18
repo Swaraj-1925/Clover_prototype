@@ -2,6 +2,7 @@ package com.clovermusic.clover.data.repository
 
 import android.util.Log
 import com.clovermusic.clover.data.api.spotify.response.common.TrackArtistResponseDto
+import com.clovermusic.clover.data.api.spotify.response.users.UsersProfileResponseDto
 import com.clovermusic.clover.data.api.spotify.service.UserService
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyApiException
@@ -91,4 +92,143 @@ class UserRepository @Inject constructor(
                 throw CustomException.NetworkException("UserRepository", "getTopArtists", e)
             }
         }
+
+    //    Function to get Current (Logged in) User Profile
+    suspend fun getCurrentUsersProfile(): UsersProfileResponseDto = withContext(Dispatchers.IO) {
+        try {
+            val response = userService.getCurrentUsersProfile()
+            response
+        } catch (e: HttpException) {
+            SpotifyApiException.handleApiException("UserRepository", "getCurrentUsersProfile", e)
+        } catch (e: Exception) {
+            throw CustomException.UnknownException(
+                "UserRepository",
+                "getCurrentUsersProfile",
+                "Unknown error",
+                e
+            )
+        } catch (e: IOException) {
+            throw CustomException.NetworkException("UserRepository", "getCurrentUsersProfile", e)
+        }
+    }
+
+    //    Function to get any other user profile
+    suspend fun getUsersProfile(userId: String): UsersProfileResponseDto =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = userService.getUsersProfile(userId)
+                response
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException("UserRepository", "getUsersProfile", e)
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "UserRepository",
+                    "getUsersProfile",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException("UserRepository", "getUsersProfile", e)
+            }
+        }
+
+    //    Function to follow a playlist
+    suspend fun followPlaylist(playlistId: String) = withContext(Dispatchers.IO) {
+        try {
+            userService.followPlaylist(playlistId)
+            Log.d("UserRepository", "Successfully followed playlist with ID: $playlistId")
+        } catch (e: HttpException) {
+            SpotifyApiException.handleApiException("UserRepository", "followPlaylist", e)
+        } catch (e: Exception) {
+            throw CustomException.UnknownException(
+                "UserRepository",
+                "followPlaylist",
+                "Unknown error",
+                e
+            )
+        } catch (e: IOException) {
+            throw CustomException.NetworkException("UserRepository", "followPlaylist", e)
+        }
+    }
+
+    //    Function to unfollow a playlist
+    suspend fun unfollowPlaylist(playlistId: String) = withContext(Dispatchers.IO) {
+        try {
+            userService.unfollowPlaylist(playlistId)
+            Log.d("UserRepository", "Successfully unfollowed playlist with ID: $playlistId")
+        } catch (e: HttpException) {
+            SpotifyApiException.handleApiException("UserRepository", "unfollowPlaylist", e)
+        } catch (e: Exception) {
+            throw CustomException.UnknownException(
+                "UserRepository",
+                "unfollowPlaylist",
+                "Unknown error",
+                e
+            )
+        } catch (e: IOException) {
+            throw CustomException.NetworkException("UserRepository", "unfollowPlaylist", e)
+        }
+    }
+
+    //    Function to check if user follows artists or users
+    suspend fun checkIfUserFollowsArtistsOrUsers(type: String, ids: List<String>): List<Boolean> =
+        withContext(Dispatchers.IO) {
+            try {
+                val idsParam = ids.joinToString(",")
+                val response = userService.checkIfUserFollowsArtistsOrUsers(type, idsParam)
+                Log.d("UserRepository", "Checked if user follows artists or users: $response")
+                response
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException(
+                    "UserRepository",
+                    "checkIfUserFollowsArtistsOrUsers",
+                    e
+                )
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "UserRepository",
+                    "checkIfUserFollowsArtistsOrUsers",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException(
+                    "UserRepository",
+                    "checkIfUserFollowsArtistsOrUsers",
+                    e
+                )
+            }
+        }
+
+    //    Function to check if current user follows playlist
+    suspend fun checkIfCurrentUserFollowsPlaylist(
+        playlistId: String,
+        ids: List<String>
+    ): List<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            val idsParam = ids.joinToString(",")
+            val response = userService.checkIfCurrentUserFollowsPlaylist(playlistId, idsParam)
+            Log.d("UserRepository", "Checked if current user follows playlist: $response")
+            response
+        } catch (e: HttpException) {
+            SpotifyApiException.handleApiException(
+                "UserRepository",
+                "checkIfCurrentUserFollowsPlaylist",
+                e
+            )
+        } catch (e: Exception) {
+            throw CustomException.UnknownException(
+                "UserRepository",
+                "checkIfCurrentUserFollowsPlaylist",
+                "Unknown error",
+                e
+            )
+        } catch (e: IOException) {
+            throw CustomException.NetworkException(
+                "UserRepository",
+                "checkIfCurrentUserFollowsPlaylist",
+                e
+            )
+        }
+    }
 }

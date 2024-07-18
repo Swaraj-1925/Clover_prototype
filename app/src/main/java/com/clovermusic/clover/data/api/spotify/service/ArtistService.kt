@@ -2,6 +2,7 @@ package com.clovermusic.clover.data.api.spotify.service
 
 import com.clovermusic.clover.data.api.spotify.response.artists.ArtistsAlbumsResponseDto
 import com.clovermusic.clover.data.api.spotify.response.artists.ArtistsTopTracksResponseDto
+import com.clovermusic.clover.data.api.spotify.response.common.TrackArtistResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -20,4 +21,9 @@ interface ArtistService {
     suspend fun getArtistTopTracks(
         @Path("artistId") artistId: String,
     ): ArtistsTopTracksResponseDto
+
+    @GET("artists/{id}/related-artists")
+    suspend fun getArtistRelatedArtists(
+        @Path("id") id: String
+    ): TrackArtistResponseDto
 }

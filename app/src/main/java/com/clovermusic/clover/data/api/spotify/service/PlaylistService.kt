@@ -1,9 +1,15 @@
 package com.clovermusic.clover.data.api.spotify.service
 
+import com.clovermusic.clover.data.api.spotify.response.common.ImageResponseDto
+import com.clovermusic.clover.data.api.spotify.response.playlists.CreatePlaylistRequest
 import com.clovermusic.clover.data.api.spotify.response.playlists.CurrentUsersPlaylistResponseDto
 import com.clovermusic.clover.data.api.spotify.response.playlists.ItemsInPlaylistResponseDto
 import com.clovermusic.clover.data.api.spotify.response.playlists.PlaylistResponseDto
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -27,4 +33,27 @@ interface PlaylistService {
         @Path("playlist_id") playlistId: String,
     ): PlaylistResponseDto
 
+    @POST("playlists/{playlist_id}/tracks")
+    suspend fun addItemsToPlaylist(
+        @Path("playlist_id") playlistId: String,
+        @Body uris: Array<String>
+    )
+
+    @DELETE("playlists/{playlist_id}/tracks")
+    suspend fun removePlaylistItems(
+        @Path("playlist_id") playlistId: String,
+        @Query("tracks") tracks: List<String>
+    )
+
+    @POST("users/{user_id}/playlists")
+    suspend fun createPlaylist(
+        @Path("user_id") userId: String,
+        @Body body: CreatePlaylistRequest
+    ): PlaylistResponseDto
+
+    @PUT("playlists/{playlist_id}/images")
+    suspend fun uploadPlaylistCoverImage(
+        @Path("playlist_id") playlistId: String,
+        @Body image: String // Base64-encoded JPEG image data
+    ): ImageResponseDto
 }

@@ -9,6 +9,7 @@ fun PlaylistResponseDto.toPlaylist(): Playlist {
     return Playlist(
         collaborative = collaborative,
         description = description,
+        followers = followers.total,
         id = id,
         image = images.toImages(),
         name = name,

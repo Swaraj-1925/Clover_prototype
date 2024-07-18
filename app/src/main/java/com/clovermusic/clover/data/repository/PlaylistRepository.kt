@@ -1,7 +1,9 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
+import com.clovermusic.clover.data.api.spotify.response.common.ImageResponseDto
 import com.clovermusic.clover.data.api.spotify.response.common.PlaylistTrackResponseDto
+import com.clovermusic.clover.data.api.spotify.response.playlists.CreatePlaylistRequest
 import com.clovermusic.clover.data.api.spotify.response.playlists.PlaylistResponseDto
 import com.clovermusic.clover.data.api.spotify.response.playlists.UsersPlaylistItemDto
 import com.clovermusic.clover.data.api.spotify.service.PlaylistService
@@ -105,38 +107,157 @@ class PlaylistRepository @Inject constructor(
         }
 
     // Function to get enter playlist and all the data related to it
-    suspend fun getPlaylist(playlistId: String): PlaylistResponseDto = withContext(Dispatchers.IO) {
-        try {
-            var playlist: PlaylistResponseDto
-            var offset = 0
-            var total: Int
-            do {
-                playlist = playlistService.getPlaylist(playlistId)
-                total = playlist.tracks.total
-                offset += playlist.tracks.limit
+    suspend fun getPlaylist(playlistId: String): PlaylistResponseDto =
+        withContext(Dispatchers.IO) {
+            try {
+                var playlist: PlaylistResponseDto
+                var offset = 0
+                var total: Int
+                do {
+                    playlist = playlistService.getPlaylist(playlistId)
+                    total = playlist.tracks.total
+                    offset += playlist.tracks.limit
+                    Log.d(
+                        "PlaylistRepository",
+                        "getPlaylist: fetched batch, size: ${playlist.tracks.total} and offset: $offset"
+                    )
+                } while (offset < total)
+
                 Log.d(
                     "PlaylistRepository",
-                    "getPlaylist: fetched batch, size: ${playlist.tracks.total} and offset: $offset"
+                    "getPlaylist: total items fetched: ${playlist.tracks.items.size}"
                 )
-            } while (offset < total)
-
-            Log.d(
-                "PlaylistRepository",
-                "getPlaylist: total items fetched: ${playlist.tracks.items.size}"
-            )
-            playlist
-        } catch (e: Exception) {
-            throw CustomException.UnknownException(
-                "PlaylistRepository",
-                "getPlaylist",
-                "Unknown error",
-                e
-            )
-        } catch (e: IOException) {
-            throw CustomException.NetworkException("PlaylistRepository", "getPlaylist", e)
-        } catch (e: HttpException) {
-            SpotifyApiException.handleApiException("PlaylistRepository", "getPlaylist", e)
+                playlist
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "PlaylistRepository",
+                    "getPlaylist",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException("PlaylistRepository", "getPlaylist", e)
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException("PlaylistRepository", "getPlaylist", e)
+            }
         }
-    }
+
+    //    Function to add items to playlist
+    suspend fun addItemsToPlaylist(playlistId: String, uris: List<String>): Unit =
+        withContext(Dispatchers.IO) {
+            try {
+                playlistService.addItemsToPlaylist(playlistId, uris.toTypedArray())
+                Log.d("UserRepository", "followPlaylist: Successfully followed playlist")
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException(
+                    "PlaylistRepository",
+                    "addItemsToPlaylist",
+                    e
+                )
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "PlaylistRepository",
+                    "addItemsToPlaylist",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException(
+                    "PlaylistRepository",
+                    "addItemsToPlaylist",
+                    e
+                )
+            }
+        }
+
+    //    Function to remove items from playlist
+    suspend fun removePlaylistItems(playlistId: String, tracks: List<String>): Unit =
+        withContext(Dispatchers.IO) {
+            try {
+                playlistService.removePlaylistItems(playlistId, tracks)
+                Log.d("UserRepository", "followPlaylist: Successfully followed playlist")
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException(
+                    "PlaylistRepository",
+                    "removePlaylistItems",
+                    e
+                )
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "PlaylistRepository",
+                    "removePlaylistItems",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException(
+                    "PlaylistRepository",
+                    "removePlaylistItems",
+                    e
+                )
+            }
+
+        }
+
+    //    Function to create new playlist
+    suspend fun createNewPlaylist(
+        userId: String,
+        playlistRequest: CreatePlaylistRequest
+    ): PlaylistResponseDto =
+        withContext(Dispatchers.IO) {
+            try {
+                val createdPlaylist = playlistService.createPlaylist(userId, playlistRequest)
+                Log.d("UserRepository", "followPlaylist: Successfully followed playlist")
+                createdPlaylist
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException(
+                    "PlaylistRepository",
+                    "createNewPlaylist",
+                    e
+                )
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "PlaylistRepository",
+                    "createNewPlaylist",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException(
+                    "PlaylistRepository",
+                    "createNewPlaylist",
+                    e
+                )
+            }
+        }
+
+    //    Function to upload playlist cover image
+    suspend fun uploadPlaylistCover(playlistId: String, image: String): ImageResponseDto =
+        withContext(Dispatchers.IO) {
+            try {
+                val playlist = playlistService.uploadPlaylistCoverImage(playlistId, image)
+                Log.d("UserRepository", "followPlaylist: Successfully followed playlist")
+                playlist
+            } catch (e: HttpException) {
+                SpotifyApiException.handleApiException(
+                    "PlaylistRepository",
+                    "uploadPlaylistCover",
+                    e
+                )
+            } catch (e: Exception) {
+                throw CustomException.UnknownException(
+                    "PlaylistRepository",
+                    "uploadPlaylistCover",
+                    "Unknown error",
+                    e
+                )
+            } catch (e: IOException) {
+                throw CustomException.NetworkException(
+                    "PlaylistRepository",
+                    "uploadPlaylistCover",
+                    e
+                )
+            }
+        }
 
 }
