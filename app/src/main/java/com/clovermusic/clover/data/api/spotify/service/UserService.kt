@@ -52,6 +52,5 @@ interface UserService {
     @GET("playlists/{playlist_id}/followers/contains")
     suspend fun checkIfCurrentUserFollowsPlaylist(
         @Path("playlist_id") playlistId: String,
-        @Query("ids") ids: String
-    ): List<Boolean>
+    ): Boolean
 }

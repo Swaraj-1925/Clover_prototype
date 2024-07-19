@@ -7,7 +7,7 @@ import com.clovermusic.clover.domain.mapper.toPlaylist
 import com.clovermusic.clover.domain.model.Playlist
 import javax.inject.Inject
 
-class PlaylistUseCase @Inject constructor(
+class GetPlaylistUseCase @Inject constructor(
     private val repository: PlaylistRepository,
     private val authRepository: SpotifyAuthRepository
 ) {

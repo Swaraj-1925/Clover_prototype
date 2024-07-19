@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(
 
 //       Start Fetch followed artists and User Playlist in parallel
         val followedArtistsDeferred = async { userUseCases.followedArtists() }
-        val currentUsersPlaylistsDeferred = async { playlistUseCases.currentUsersPlaylists() }
+        val currentUsersPlaylistsDeferred = async { playlistUseCases.currentUserPlaylist() }
 
 //        Wait for followed artists finish and the from that response map artists id to get albums
         val followedArtists = followedArtistsDeferred.await()

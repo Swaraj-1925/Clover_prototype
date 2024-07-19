@@ -133,7 +133,7 @@ class UserRepository @Inject constructor(
         }
 
     //    Function to follow a playlist
-    suspend fun followPlaylist(playlistId: String) = withContext(Dispatchers.IO) {
+    suspend fun followPlaylist(playlistId: String): Unit = withContext(Dispatchers.IO) {
         try {
             userService.followPlaylist(playlistId)
             Log.d("UserRepository", "Successfully followed playlist with ID: $playlistId")
@@ -152,7 +152,7 @@ class UserRepository @Inject constructor(
     }
 
     //    Function to unfollow a playlist
-    suspend fun unfollowPlaylist(playlistId: String) = withContext(Dispatchers.IO) {
+    suspend fun unfollowPlaylist(playlistId: String): Unit = withContext(Dispatchers.IO) {
         try {
             userService.unfollowPlaylist(playlistId)
             Log.d("UserRepository", "Successfully unfollowed playlist with ID: $playlistId")
@@ -203,11 +203,9 @@ class UserRepository @Inject constructor(
     //    Function to check if current user follows playlist
     suspend fun checkIfCurrentUserFollowsPlaylist(
         playlistId: String,
-        ids: List<String>
-    ): List<Boolean> = withContext(Dispatchers.IO) {
+    ): Boolean = withContext(Dispatchers.IO) {
         try {
-            val idsParam = ids.joinToString(",")
-            val response = userService.checkIfCurrentUserFollowsPlaylist(playlistId, idsParam)
+            val response = userService.checkIfCurrentUserFollowsPlaylist(playlistId)
             Log.d("UserRepository", "Checked if current user follows playlist: $response")
             response
         } catch (e: HttpException) {

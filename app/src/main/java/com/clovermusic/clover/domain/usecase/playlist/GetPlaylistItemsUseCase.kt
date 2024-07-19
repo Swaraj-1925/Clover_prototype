@@ -3,21 +3,21 @@ package com.clovermusic.clover.domain.usecase.playlist
 import android.util.Log
 import com.clovermusic.clover.data.repository.PlaylistRepository
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
-import com.clovermusic.clover.domain.mapper.toUserPlaylist
-import com.clovermusic.clover.domain.model.UserPlaylist
+import com.clovermusic.clover.domain.mapper.toPlaylistItems
+import com.clovermusic.clover.domain.model.PlaylistItems
 import javax.inject.Inject
 
-class UsersPlaylistsUseCase @Inject constructor(
+class GetPlaylistItemsUseCase @Inject constructor(
     private val repository: PlaylistRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    //    Get current users(Logged in) playlists
-    suspend operator fun invoke(): List<UserPlaylist> {
+    //    Get items in playlist for a playlist
+    suspend operator fun invoke(playlistId: String): List<PlaylistItems> {
         return runCatching {
             authRepository.ensureValidAccessToken()
-            repository.getCurrentUsersPlaylists().toUserPlaylist()
+            repository.getPlaylistItems(playlistId).toPlaylistItems()
         }.onFailure { e ->
-            Log.e("TopArtistUseCase", "Error fetching top artists", e)
+            Log.e("PlaylistItemsUseCase", "Error fetching playlist items", e)
         }.getOrThrow()
     }
 }

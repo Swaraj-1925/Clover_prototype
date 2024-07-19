@@ -91,11 +91,13 @@ class ArtistRepository @Inject constructor(
             }
         }
 
-    suspend fun getArtistRelatedArtists(id: String): TrackArtistResponseDto =
+    suspend fun getArtistRelatedArtists(id: String): List<TrackArtistResponseDto> =
         withContext(Dispatchers.IO) {
+            val artists = mutableListOf<TrackArtistResponseDto>()
             try {
                 val response = artistService.getArtistRelatedArtists(id)
-                response
+                artists.addAll(response.artists)
+                artists
             } catch (e: IOException) {
                 throw CustomException.NetworkException("ArtistRepository", "getArtistTopTracks", e)
             } catch (e: Exception) {
@@ -109,7 +111,7 @@ class ArtistRepository @Inject constructor(
                 SpotifyApiException.handleApiException("ArtistRepository", "getArtistTopTracks", e)
             }
         }
-    
+
 }
 
 
