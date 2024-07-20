@@ -15,7 +15,8 @@ class CurrentUsersPlaylistsUseCase @Inject constructor(
     suspend operator fun invoke(): List<UserPlaylist> {
         return runCatching {
             authRepository.ensureValidAccessToken()
-            repository.getCurrentUsersPlaylists().toUserPlaylist()
+            val res = repository.getCurrentUsersPlaylists().toUserPlaylist()
+            res
         }.onFailure { e ->
             Log.e("TopArtistUseCase", "Error fetching top artists", e)
         }.getOrThrow()

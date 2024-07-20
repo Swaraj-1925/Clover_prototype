@@ -86,7 +86,7 @@ dependencies {
 //    Hilt
     implementation libs.hilt.android
     kapt libs.hilt.compiler
-
+    implementation libs.androidx.hilt.navigation.compose
 
 //    Spotify
     implementation files("../app-remote-lib/spotify-app-remote-release-0.8.0.aar")
@@ -116,12 +116,14 @@ dependencies {
 
 //    Pager Layouts
     implementation libs.accompanist.pager
+    implementation libs.accompanist.pager.indicators
 
 //    palette for dominate color
     implementation libs.androidx.palette.ktx
 
-
+//    Lottie for loading animation
     implementation libs.lottie.compose
+
 }
 kapt {
     correctErrorTypes true

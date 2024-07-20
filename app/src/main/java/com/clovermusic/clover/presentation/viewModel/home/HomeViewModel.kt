@@ -3,9 +3,8 @@ package com.clovermusic.clover.presentation.viewModel.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
+import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
-import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.Resource
@@ -20,9 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
     private val playlistUseCases: PlaylistUseCases,
-    private val artistUseCases: ArtistUseCases
+    private val appUseCases: AppUseCases
 ) : ViewModel() {
 
     private val _homeUiState = MutableStateFlow<Resource<HomeScreenState>>(Resource.Loading())
@@ -49,16 +47,9 @@ class HomeViewModel @Inject constructor(
     private suspend fun fetchHomeScreenData(): HomeScreenState = coroutineScope {
 
 //       Start Fetch followed artists and User Playlist in parallel
-        val followedArtistsDeferred = async { userUseCases.followedArtists() }
         val currentUsersPlaylistsDeferred = async { playlistUseCases.currentUserPlaylist() }
-
-//        Wait for followed artists finish and the from that response map artists id to get albums
-        val followedArtists = followedArtistsDeferred.await()
-        val followedArtistsId = followedArtists.map { it.id }
-
 //        Start to fetch albums of followed artists
-        val followedArtistsAlbumsDeferred =
-            async { artistUseCases.artistAlbums(followedArtistsId, limit = 100) }
+        val followedArtistsAlbumsDeferred = async { appUseCases.latestReleasesUseCase(limit = 200) }
 
 //        Wait for albums and playlists to finish
         val followedArtistsAlbums = followedArtistsAlbumsDeferred.await()

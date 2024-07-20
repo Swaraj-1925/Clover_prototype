@@ -7,9 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.material3.Text
 import androidx.lifecycle.lifecycleScope
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
+import com.clovermusic.clover.presentation.composable.homeScreen.HomeScreen
 import com.clovermusic.clover.presentation.viewModel.home.HomeViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.CustomException
@@ -33,8 +33,7 @@ class MainActivity : ComponentActivity() {
                 authRepository.ensureValidAccessToken()
                 setContent {
                     CloverTheme() {
-                        viewModel.homeUiState
-                        Text(text = "main activity")
+                        HomeScreen()
                     }
                 }
             } catch (e: CustomException) {

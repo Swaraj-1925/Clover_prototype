@@ -1,5 +1,7 @@
 package com.clovermusic.clover.di
 
+import com.clovermusic.clover.domain.usecase.app.AppUseCases
+import com.clovermusic.clover.domain.usecase.app.NewReleasesOfFollowedArtistsUseCase
 import com.clovermusic.clover.domain.usecase.artist.ArtistAlbumsUseCase
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.artist.ArtistsTopTracksUseCase
@@ -31,6 +33,17 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
+    @Provides
+    @Singleton
+    fun provideAppUseCases(
+        latestReleasesUseCase: NewReleasesOfFollowedArtistsUseCase
+    ): AppUseCases {
+        return AppUseCases(
+            latestReleasesUseCase = latestReleasesUseCase
+        )
+    }
+
+
     @Provides
     @Singleton
     fun provideUserUseCases(
