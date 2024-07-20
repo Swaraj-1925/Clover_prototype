@@ -16,16 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.clovermusic.clover.domain.model.UserPlaylist
-import com.clovermusic.clover.presentation.composable.components.PlaylistCard
+import com.clovermusic.clover.domain.model.common.TrackArtists
+import com.clovermusic.clover.presentation.composable.components.ArtistCard
 
 @Composable
-fun PlaylistSection(
-    playlists: List<UserPlaylist>,
-    onPlaylistClick: () -> Unit,
-    onPlaylistNameClick: () -> Unit,
+fun TopArtistsSection(
+    artists: List<TrackArtists>,
+    onArtistClick: () -> Unit,
 ) {
     Column(
+
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +39,7 @@ fun PlaylistSection(
                 .padding(horizontal = 8.dp)
         ) {
             Text(
-                text = "Your Playlist",
+                text = "Top Artists",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -52,16 +52,14 @@ fun PlaylistSection(
         }
         LazyRow(
             contentPadding = PaddingValues(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(playlists) { playlist ->
-                playlist.image[0].url?.let { url ->
-                    PlaylistCard(
-                        url = url,
-                        playlistName = playlist.name,
-                        songCount = playlist.tracks,
-                        onNameClick = onPlaylistNameClick,
-                        onCardClick = onPlaylistClick
+            items(artists) { artist ->
+                artist.images?.get(0)?.url?.let {
+                    ArtistCard(
+                        artistName = artist.name,
+                        url = it,
+                        onArtistClick = onArtistClick
                     )
                 }
             }

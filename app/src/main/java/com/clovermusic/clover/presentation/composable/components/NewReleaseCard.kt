@@ -2,6 +2,7 @@ package com.clovermusic.clover.presentation.composable.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -36,7 +36,8 @@ fun NewReleaseCard(
     val playButton = painterResource(id = R.drawable.play)
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .aspectRatio(1.2f)
     ) {
         Card {
             AsyncImage(
@@ -45,7 +46,6 @@ fun NewReleaseCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-
             )
         }
         Box(
@@ -54,13 +54,13 @@ fun NewReleaseCard(
                 .fillMaxHeight(0.3f)
                 .align(Alignment.BottomEnd)
                 .background(
-                    Brush.linearGradient(
+                    Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
                             MaterialTheme.colorScheme.primaryContainer
                         ),
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, Float.POSITIVE_INFINITY)
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
                     )
                 )
         )
@@ -87,7 +87,6 @@ fun NewReleaseCard(
                 contentDescription = "play button",
             )
         }
-
     }
 }
 

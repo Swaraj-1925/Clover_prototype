@@ -14,11 +14,13 @@ val DarkPrimaryContainer = Color(0xFF2C2C2C) // Album , playlist
 val DarkSecondaryContainer = Color(0xFF252525) // Search and other filed text filed
 val DarkSecondaryContainerOn = Color(0xFF929292)
 
+val DarkBackground = Color(0xFF171717)
+
 val DarkOutline = Color(0xFFE6E8E9)
 val DarkOutlineVariant = Color(0xFFF2F4F5)
 
 val DarkSurface = Color(0xFF242424)
-val DarkSurafaceOn = DarkPrimary
+val DarkSurfaceOn = DarkPrimary
 
 // Light Theme Colors
 val LightPrimary = Color(0xFF0D0D0D)
@@ -35,6 +37,7 @@ val LightSecondaryContainerOn = Color(0xFF858585)
 val LightOutline = Color(0xFF191c1d)
 val LightOutlineVariant = Color(0xFF40484b)
 
+val LightBackground = Color(0xFFF9F9F9)
 val LightSurface = Color(0xFFF8FAFA)
 val LightSurfaceOn = LightPrimary
 

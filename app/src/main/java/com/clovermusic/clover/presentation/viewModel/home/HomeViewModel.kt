@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
+import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.Resource
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
-    private val appUseCases: AppUseCases
+    private val appUseCases: AppUseCases,
+    private val userUseCases: UserUseCases
 ) : ViewModel() {
 
     private val _homeUiState = MutableStateFlow<Resource<HomeScreenState>>(Resource.Loading())
@@ -51,13 +53,17 @@ class HomeViewModel @Inject constructor(
 //        Start to fetch albums of followed artists
         val followedArtistsAlbumsDeferred = async { appUseCases.latestReleasesUseCase(limit = 200) }
 
-//        Wait for albums and playlists to finish
-        val followedArtistsAlbums = followedArtistsAlbumsDeferred.await()
-        val currentUsersPlaylists = currentUsersPlaylistsDeferred.await()
+//        Start to fetch top artists
+        val topArtistsDeferred = async { userUseCases.topArtists("medium_term") }
 
+//        Wait for to finish and take limited number of items form the result
+        val followedArtistsAlbums = followedArtistsAlbumsDeferred.await()
+        val currentUsersPlaylists = currentUsersPlaylistsDeferred.await().take(5)
+        val topArtists = topArtistsDeferred.await().take(10)
         HomeScreenState(
             followedArtistsAlbums = followedArtistsAlbums,
-            currentUsersPlaylists = currentUsersPlaylists
+            currentUsersPlaylists = currentUsersPlaylists,
+            topArtists = topArtists
         )
     }
 

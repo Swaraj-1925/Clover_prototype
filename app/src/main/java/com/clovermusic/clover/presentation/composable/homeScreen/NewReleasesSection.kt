@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -90,12 +91,12 @@ fun NewReleasesSection(
                     modifier = Modifier
                         .fillMaxWidth(0.84f)
                         .fillMaxHeight()
-                        .padding(start = 8.dp, top = 8.dp)
+                        .padding(vertical = 16.dp, horizontal = 8.dp)
                 ) {
                     Text(
                         text = "New release by",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                     Text(
                         text = artistName,
@@ -125,6 +126,7 @@ fun NewReleasesSection(
             }
 
             HorizontalPager(
+                contentPadding = PaddingValues(horizontal = 8.dp),
                 state = pagerState,
                 pageSpacing = 16.dp,
                 userScrollEnabled = true,

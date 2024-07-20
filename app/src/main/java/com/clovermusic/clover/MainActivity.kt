@@ -6,11 +6,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.presentation.composable.homeScreen.HomeScreen
-import com.clovermusic.clover.presentation.viewModel.home.HomeViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.CustomException
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,13 +24,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        val viewModel by viewModels<HomeViewModel>()
         enableEdgeToEdge()
         lifecycleScope.launch {
             try {
                 authRepository.ensureValidAccessToken()
                 setContent {
-                    CloverTheme() {
+                    CloverTheme {
                         HomeScreen()
                     }
                 }
