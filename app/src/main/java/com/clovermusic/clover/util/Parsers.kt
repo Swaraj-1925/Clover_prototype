@@ -29,13 +29,25 @@ object Parsers {
         }
     }
 
-    fun convertMillisToHoursMinutes(millis: Int): String {
+    fun parseDurationMinutesSeconds(millis: Int): String {
+        val minutes = millis / (1000 * 60)
+        val seconds = (millis % (1000 * 60)) / 1000
+        return if (seconds < 1) {
+            "${minutes}min"
+        } else {
+            "${minutes}min ${seconds}sec"
+        }
+    }
+
+    fun parseDurationHoursMinutes(millis: Int): String {
         val hours = millis / (1000 * 60 * 60)
         val minutes = (millis % (1000 * 60 * 60)) / (1000 * 60)
+        val seconds = (millis % (1000 * 60)) / 1000
         return if (hours < 1) {
-            String.format("%02d min", minutes)
+            "${minutes}min ${seconds}sec"
         } else {
             "${hours}hr ${minutes}min"
         }
     }
+
 }
