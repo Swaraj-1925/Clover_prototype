@@ -77,21 +77,18 @@ fun NewReleasesSection(
             .fillMaxWidth(1f)
             .background(MaterialTheme.colorScheme.surface)
             .fillMaxHeight(0.5f)
-            .padding(vertical = 8.dp)
     ) {
         Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.24f)
-                    .padding(top = 26.dp)
             ) {
                 Column(
                     horizontalAlignment = AbsoluteAlignment.Left,
                     modifier = Modifier
                         .fillMaxWidth(0.84f)
                         .fillMaxHeight()
-                        .padding(vertical = 16.dp, horizontal = 8.dp)
                 ) {
                     Text(
                         text = "New release by",

@@ -8,15 +8,21 @@ object SpotifyApiException {
             401 -> throw CustomException.ApiException(
                 repository,
                 functionName,
-                "Unauthorized: The request requires user authentication or authorization has been refused.",
+                "Unable to authenticate with Spotify. Please try again later.",
                 e
             )
 
             429 -> throw CustomException.ApiException(
                 repository,
                 functionName,
-                "Too Many Requests : There are to many requests in a short period of time.",
+                "We are having problems with our servers. Please try again later.",
                 e
+            )
+
+            400 -> throw CustomException.ApiException(
+                repository,
+                functionName,
+                "We are unable to connect to your Spotify account. Please try again later."
             )
 
             else -> throw CustomException.ApiException(

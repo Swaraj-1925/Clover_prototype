@@ -3,9 +3,7 @@ package com.clovermusic.clover.presentation.composable.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.clovermusic.clover.R
@@ -32,73 +32,70 @@ fun NavigationBar(
     val search = painterResource(id = R.drawable.search)
     val library = painterResource(id = R.drawable.library)
     val profile = painterResource(id = R.drawable.profile)
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom,
+
+    Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
             modifier = Modifier
-                .padding(bottom = 30.dp)
+                .fillMaxWidth()
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(14.dp),
+                    clip = false
+                )
                 .clip(RoundedCornerShape(14.dp))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .size(55.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surface
-                    )
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(vertical = 8.dp)
+
+
             ) {
-                IconButton(
-                    onClick = { onHomeClick() },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                ) {
-                    Icon(
-                        painter = home,
-                        contentDescription = "Home screen icon",
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(
-                    onClick = { onSearchClick() },
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                ) {
-                    Icon(
-                        painter = search,
-                        contentDescription = "Home screen icon",
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(
-                    onClick = { onLibraryClick() },
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                ) {
-                    Icon(
-                        painter = library,
-                        contentDescription = "Home screen icon",
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                IconButton(
-                    onClick = { onProfileClick() },
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                ) {
-                    Icon(
-                        painter = profile,
-                        contentDescription = "Home screen icon",
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                NavigationItem(icon = home, contentDescription = "Home", onClick = onHomeClick)
+                NavigationItem(
+                    icon = search,
+                    contentDescription = "Search",
+                    onClick = onSearchClick
+                )
+                NavigationItem(
+                    icon = library,
+                    contentDescription = "Library",
+                    onClick = onLibraryClick
+                )
+                NavigationItem(
+                    icon = profile,
+                    contentDescription = "Profile",
+                    onClick = onProfileClick
+                )
             }
         }
+    }
+}
+
+@Composable
+fun NavigationItem(
+    icon: Painter,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(48.dp)
+    ) {
+        Icon(
+            painter = icon,
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }

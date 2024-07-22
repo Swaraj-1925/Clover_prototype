@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
     id 'com.google.dagger.hilt.android'
     id "dagger.hilt.android.plugin"
     id 'kotlin-kapt'
@@ -83,6 +85,8 @@ dependencies {
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
+//    Icon
+    implementation libs.material.icons.extended
 //    Hilt
     implementation libs.hilt.android
     kapt libs.hilt.compiler
@@ -124,6 +128,12 @@ dependencies {
 //    Lottie for loading animation
     implementation libs.lottie.compose
 
+//    Navigation
+    implementation libs.navigation.compose
+    implementation libs.kotlinx.serialization.json
+
+// Swipe Refresh
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.35.1-alpha'
 }
 kapt {
     correctErrorTypes true

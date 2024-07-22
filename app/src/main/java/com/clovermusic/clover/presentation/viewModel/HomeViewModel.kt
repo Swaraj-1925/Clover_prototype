@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation.viewModel.home
+package com.clovermusic.clover.presentation.viewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -41,7 +41,11 @@ class HomeViewModel @Inject constructor(
                 Log.d("HomeViewModel", "fetchHomeScreenData: Success ${homeUiState.value.data}")
 
             } catch (e: CustomException) {
-                _homeUiState.value = Resource.Error(e.message ?: "An unknown error occurred")
+                Log.e("HomeViewModel", "fetchHomeScreenData: Error", e)
+                _homeUiState.value = Resource.Error(e.message ?: "Something went wrong")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "fetchHomeScreenData: Error", e)
+                _homeUiState.value = Resource.Error("Something went wrong")
             }
         }
     }
@@ -70,4 +74,5 @@ class HomeViewModel @Inject constructor(
     fun refreshHomeScreen() {
         getHomeScreen()
     }
+
 }

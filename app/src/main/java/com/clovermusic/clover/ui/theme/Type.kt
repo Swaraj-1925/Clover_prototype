@@ -78,7 +78,7 @@ val Typography = Typography(
     ),
     bodyMedium = TextStyle(
         fontFamily = Jost,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Normal,
         fontSize = 12.sp  // changed
     ),
     bodySmall = TextStyle(

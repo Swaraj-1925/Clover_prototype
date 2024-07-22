@@ -37,7 +37,7 @@ val LightSecondaryContainerOn = Color(0xFF858585)
 val LightOutline = Color(0xFF191c1d)
 val LightOutlineVariant = Color(0xFF40484b)
 
-val LightBackground = Color(0xFFF9F9F9)
+val LightBackground = Color(0xFFFAF9F6)
 val LightSurface = Color(0xFFF8FAFA)
 val LightSurfaceOn = LightPrimary
 

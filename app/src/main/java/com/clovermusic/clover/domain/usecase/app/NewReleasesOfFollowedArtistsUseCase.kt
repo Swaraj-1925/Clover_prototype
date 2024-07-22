@@ -4,7 +4,7 @@ import android.util.Log
 import com.clovermusic.clover.domain.model.Albums
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
-import com.clovermusic.clover.util.parseReleaseDate
+import com.clovermusic.clover.util.Parsers.parseReleaseDate
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 

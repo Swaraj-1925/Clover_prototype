@@ -22,8 +22,8 @@ import com.clovermusic.clover.presentation.composable.components.PlaylistCard
 @Composable
 fun PlaylistSection(
     playlists: List<UserPlaylist>,
-    onPlaylistClick: () -> Unit,
-    onPlaylistNameClick: () -> Unit,
+    onPlaylistClick: (String) -> Unit,
+    onPlaylistNameClick: (String) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -60,8 +60,8 @@ fun PlaylistSection(
                         url = url,
                         playlistName = playlist.name,
                         songCount = playlist.tracks,
-                        onNameClick = onPlaylistNameClick,
-                        onCardClick = onPlaylistClick
+                        onNameClick = {},
+                        onCardClick = { onPlaylistNameClick(playlist.id) }
                     )
                 }
             }
