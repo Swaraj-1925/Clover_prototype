@@ -73,7 +73,4 @@ class SpotifyAuthViewModel @Inject constructor(
         }
     }
 
-    fun retryAuth() {
-        buildSpotifyAuthRequest()
-    }
 }

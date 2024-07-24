@@ -41,7 +41,7 @@ fun PlaylistSection(
             Text(
                 text = "Your Playlist",
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
             Text(
                 text = "More",

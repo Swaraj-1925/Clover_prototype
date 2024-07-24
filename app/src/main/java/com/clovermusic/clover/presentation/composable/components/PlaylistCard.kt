@@ -66,7 +66,9 @@ fun PlaylistCard(
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clickable {}
+                    modifier = Modifier
+                        .padding(vertical = 2.dp)
+                        .clickable {}
                 )
                 Text(
                     text = "$songCount Songs",
