@@ -1,6 +1,5 @@
 package com.clovermusic.clover.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -19,10 +18,11 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = DarkPrimaryContainer,
     secondaryContainer = DarkSecondaryContainer,
     onSecondaryContainer = DarkSecondaryContainerOn,
+    background = DarkBackground,
     outline = DarkOutline,
     outlineVariant = DarkOutlineVariant,
     surface = DarkSurface,
-    onSurface = DarkSurafaceOn,
+    onSurface = DarkSurfaceOn,
     surfaceVariant = SurfaceVariant,
     onSurfaceVariant = SurfaceVariantOn,
     error = Error
@@ -38,6 +38,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondaryContainer = LightSecondaryContainerOn,
     outline = LightOutline,
     outlineVariant = LightOutlineVariant,
+    background = LightBackground,
     surface = LightSurface,
     onSurface = LightSurfaceOn,
     surfaceVariant = SurfaceVariant,

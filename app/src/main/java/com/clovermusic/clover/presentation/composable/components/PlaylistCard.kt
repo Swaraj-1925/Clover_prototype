@@ -1,74 +1,81 @@
 package com.clovermusic.clover.presentation.composable.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.clovermusic.clover.ui.theme.CloverTheme
+
 
 @Composable
 fun PlaylistCard(
     url: String,
     playlistName: String,
     songCount: Int,
-    onCardClick: () -> Unit,
-    onNameClick: () -> Unit,
+    onNameClick: (String) -> Unit,
+    onCardClick: (String) -> Unit,
 ) {
     Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
-            .fillMaxWidth(0.5f)
-            .fillMaxHeight(0.6f)
-            .padding(8.dp)
+            .width(160.dp)
+            .clickable { onCardClick(playlistName) }
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(0.4f)
-                .fillMaxHeight()
+                .fillMaxSize()
+                .padding(14.dp)
         ) {
-
             AsyncImage(
-                model = url,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(url)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = playlistName,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxHeight(0.75f)
+                    .height(140.dp)
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
             )
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(0.3f)
-                    .fillMaxHeight()
+                modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = playlistName,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .width(80.dp)
-                        .clickable { onNameClick() }
+                        .padding(vertical = 2.dp)
+                        .clickable {}
                 )
                 Text(
                     text = "$songCount Songs",
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
-                )
+
+                    )
             }
         }
     }

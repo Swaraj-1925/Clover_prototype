@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
     id 'com.google.dagger.hilt.android'
     id "dagger.hilt.android.plugin"
     id 'kotlin-kapt'
@@ -83,15 +85,17 @@ dependencies {
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
+//    Icon
+    implementation libs.material.icons.extended
 //    Hilt
     implementation libs.hilt.android
     kapt libs.hilt.compiler
-
+    implementation libs.androidx.hilt.navigation.compose
 
 //    Spotify
     implementation files("../app-remote-lib/spotify-app-remote-release-0.8.0.aar")
     implementation libs.auth
-
+    implementation libs.gson
 
 //    Retrofit
     implementation libs.retrofit
@@ -116,12 +120,26 @@ dependencies {
 
 //    Pager Layouts
     implementation libs.accompanist.pager
+    implementation libs.accompanist.pager.indicators
 
 //    palette for dominate color
     implementation libs.androidx.palette.ktx
 
-
+//    Lottie for loading animation
     implementation libs.lottie.compose
+
+//    Navigation
+    implementation libs.navigation.compose
+    implementation libs.kotlinx.serialization.json
+
+// pull down Refresh
+    implementation libs.accompanist.swiperefresh
+
+//    ExoPlayer
+    implementation libs.androidx.media3.exoplayer
+    implementation libs.media3.session
+    implementation libs.androidx.media3.ui
+
 }
 kapt {
     correctErrorTypes true

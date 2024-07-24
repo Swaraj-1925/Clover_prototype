@@ -63,7 +63,7 @@ class SpotifyAuthViewModel @Inject constructor(
                     val errorMessage = when (e) {
                         is CustomException.AuthException -> "Authentication error. Please try again."
                         is CustomException.NetworkException -> "Network error. Please check your connection and try again."
-                        is CustomException.EmptyResponseException -> "Received an empty response from Spotify. Please try again."
+                        is CustomException.EmptyResponseException -> "Something went wrong. During Connecting to Spotify Please try again."
                         else -> "An unexpected error occurred. Please try again later."
                     }
                     _authUiState.value = Resource.Error(errorMessage)
@@ -73,7 +73,4 @@ class SpotifyAuthViewModel @Inject constructor(
         }
     }
 
-    fun retryAuth() {
-        buildSpotifyAuthRequest()
-    }
 }

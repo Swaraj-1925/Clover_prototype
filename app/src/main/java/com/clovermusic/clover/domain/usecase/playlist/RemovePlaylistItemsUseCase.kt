@@ -3,21 +3,18 @@ package com.clovermusic.clover.domain.usecase.playlist
 import android.util.Log
 import com.clovermusic.clover.data.repository.PlaylistRepository
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
-import com.clovermusic.clover.domain.mapper.toPlaylistItems
-import com.clovermusic.clover.domain.model.PlaylistItems
 import javax.inject.Inject
 
-class PlaylistItemsUseCase @Inject constructor(
+class RemovePlaylistItemsUseCase @Inject constructor(
     private val repository: PlaylistRepository,
     private val authRepository: SpotifyAuthRepository
 ) {
-    //    Get items in playlist for a playlist
-    suspend operator fun invoke(playlistId: String): List<PlaylistItems> {
+    suspend operator fun invoke(playlistId: String, tracks: List<String>) {
         return runCatching {
             authRepository.ensureValidAccessToken()
-            repository.getPlaylistItems(playlistId).toPlaylistItems()
+            repository.removePlaylistItems(playlistId, tracks)
         }.onFailure { e ->
-            Log.e("PlaylistItemsUseCase", "Error fetching playlist items", e)
+            Log.e("RemovePlaylistItemsUseCase", "Error removing playlist items", e)
         }.getOrThrow()
     }
 }
