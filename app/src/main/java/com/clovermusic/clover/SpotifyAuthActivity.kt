@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import com.clovermusic.clover.presentation.composable.spotifyAuth.SpotifyAuthScreen
 import com.clovermusic.clover.presentation.viewModel.SpotifyAuthViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
-import com.spotify.sdk.android.auth.AuthorizationClient
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -43,7 +42,7 @@ class SpotifyAuthActivity : ComponentActivity() {
             CloverTheme(darkTheme = false) {
                 SpotifyAuthScreen(
                     viewModel = viewModel,
-                    onConnectClick = { startSpotifyAuthentication() },
+                    onConnectClick = { viewModel.buildSpotifyAuthRequestAndGetIntent(this) },
                     onTermsClick = {},
                 )
             }
@@ -55,12 +54,7 @@ class SpotifyAuthActivity : ComponentActivity() {
      * Start Spotify authentication flow.
      */
     private fun startSpotifyAuthentication() {
-        viewModel.buildSpotifyAuthRequest()
-        val request = viewModel.authorizationRequest
 
-        val intent =
-            AuthorizationClient.createLoginActivityIntent(this@SpotifyAuthActivity, request)
-        authResultLauncher.launch(intent)
     }
 
     private fun navigateToMainActivity() {
