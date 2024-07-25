@@ -1,5 +1,6 @@
 package com.clovermusic.clover.presentation.composable.spotifyAuth
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,13 +19,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,42 +35,46 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
+import com.clovermusic.clover.MainActivity
 import com.clovermusic.clover.R
-import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
 import com.clovermusic.clover.presentation.viewModel.SpotifyAuthViewModel
 import com.clovermusic.clover.util.Resource
 
 
 @Composable
 fun SpotifyAuthScreen(
-    viewModel: SpotifyAuthViewModel,
+    viewModel: SpotifyAuthViewModel = hiltViewModel(),
     onConnectClick: () -> Unit,
     onTermsClick: () -> Unit,
 ) {
-    val authUiState by viewModel.authUiState.collectAsState()
-    val context = LocalContext.current
+    val authUiState by viewModel.authUiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    when (val state = authUiState) {
-        is Resource.Error -> {
-            LaunchedEffect(state.message) {
+    val context = LocalContext.current
+    val navController = rememberNavController()
+    LaunchedEffect(authUiState) {
+        when (authUiState) {
+            is Resource.Error -> {
                 snackbarHostState.showSnackbar(
-                    message = state.message ?: "Unknown error",
-                    duration = SnackbarDuration.Short
+                    message = (authUiState as Resource.Error).message ?: "An error occurred"
                 )
             }
-        }
 
-        is Resource.Loading -> {
-            LoadingAnimation()
-        }
+            is Resource.Loading -> {
+                // You can add loading indicator logic here if needed
+            }
 
-        is Resource.Success -> {
-            LaunchedEffect(state.data) {
-                context.startActivity(state.data)
+            is Resource.Success -> {
+                val intent = Intent(context, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                context.startActivity(intent)
+                snackbarHostState.showSnackbar(message = "Authentication successful")
             }
         }
     }
+
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -208,6 +211,8 @@ fun AuthScreenFooter(
     onConnectClick: () -> Unit,
     onTermsClick: () -> Unit
 ) {
+    var intent: Intent
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -218,7 +223,6 @@ fun AuthScreenFooter(
         Button(
             onClick = {
                 onConnectClick()
-
             },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),

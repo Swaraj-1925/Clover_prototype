@@ -6,6 +6,9 @@ import com.clovermusic.clover.domain.usecase.artist.ArtistAlbumsUseCase
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.artist.ArtistsTopTracksUseCase
 import com.clovermusic.clover.domain.usecase.artist.GetArtistRelatedArtistsUseCase
+import com.clovermusic.clover.domain.usecase.auth.CreateSpotifyAuthIntentUseCase
+import com.clovermusic.clover.domain.usecase.auth.HandleSpotifyAuthIntentResponseUseCase
+import com.clovermusic.clover.domain.usecase.auth.SpotifyAuthUseCases
 import com.clovermusic.clover.domain.usecase.playlist.AddItemsToPlaylistUseCase
 import com.clovermusic.clover.domain.usecase.playlist.CreateNewPlaylistUseCase
 import com.clovermusic.clover.domain.usecase.playlist.CurrentUsersPlaylistsUseCase
@@ -43,6 +46,17 @@ object UseCaseModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideSpotifyAuthUseCases(
+        createIntentUseCase: CreateSpotifyAuthIntentUseCase,
+        handleAuthResponseUseCase: HandleSpotifyAuthIntentResponseUseCase
+    ): SpotifyAuthUseCases {
+        return SpotifyAuthUseCases(
+            createIntent = createIntentUseCase,
+            handleAuthResponse = handleAuthResponseUseCase
+        )
+    }
 
     @Provides
     @Singleton

@@ -124,6 +124,7 @@ class SpotifyAuthRepository @Inject constructor(
                 clientId = clientId,
                 clientSecret = clientSecret
             )
+            tokenManager.clearAllTokens()
             tokenManager.saveAccessToken(response.access_token)
             response.refresh_token?.let { tokenManager.saveRefreshToken(it) }
             tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)

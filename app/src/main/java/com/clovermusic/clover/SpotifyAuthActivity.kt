@@ -1,11 +1,9 @@
 package com.clovermusic.clover
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.clovermusic.clover.presentation.composable.spotifyAuth.SpotifyAuthScreen
@@ -23,45 +21,32 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SpotifyAuthActivity : ComponentActivity() {
 
-    private lateinit var authResultLauncher: ActivityResultLauncher<Intent>
     private val viewModel: SpotifyAuthViewModel by viewModels()
+    private val authLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            viewModel.handleAuthResponse(result)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        authResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                viewModel.handleAuthResponse(
-                    result,
-                    onSuccess = { navigateToMainActivity() },
-                )
-            }
+
 
         setContent {
             CloverTheme(darkTheme = false) {
                 SpotifyAuthScreen(
-                    viewModel = viewModel,
-                    onConnectClick = { viewModel.buildSpotifyAuthRequestAndGetIntent(this) },
+                    onConnectClick = {
+                        viewModel.buildSpotifyAuthRequestAndGetIntent(
+                            this,
+                            authLauncher
+                        )
+                    },
                     onTermsClick = {},
                 )
             }
         }
 
     }
-
-    /**
-     * Start Spotify authentication flow.
-     */
-    private fun startSpotifyAuthentication() {
-
-    }
-
-    private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
 
 }

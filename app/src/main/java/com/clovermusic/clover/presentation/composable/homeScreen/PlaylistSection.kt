@@ -60,8 +60,8 @@ fun PlaylistSection(
                         url = url,
                         playlistName = playlist.name,
                         songCount = playlist.tracks,
-                        onNameClick = {},
-                        onCardClick = { onPlaylistNameClick(playlist.id) }
+                        onNameClick = { onPlaylistNameClick(playlist.id) },
+                        onCardClick = {}
                     )
                 }
             }

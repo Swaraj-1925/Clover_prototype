@@ -100,7 +100,6 @@ fun HomeScreen(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun HomeContent(
     data: HomeScreenState,
