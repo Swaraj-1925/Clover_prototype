@@ -7,7 +7,9 @@ import androidx.activity.result.ActivityResult
 import com.clovermusic.clover.data.spotify.api.service.SpotifyAuthService
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyApiScopes
-import com.clovermusic.clover.util.SpotifyAuthConfig
+import com.clovermusic.clover.util.SpotifyAuthConfig.CLIENT_ID
+import com.clovermusic.clover.util.SpotifyAuthConfig.CLIENT_SECRET
+import com.clovermusic.clover.util.SpotifyAuthConfig.REDIRECT_URI
 import com.clovermusic.clover.util.SpotifyTokenManager
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
@@ -15,6 +17,7 @@ import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,10 +32,6 @@ class SpotifyAuthRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-
-    private val clientId = SpotifyAuthConfig.CLIENT_ID
-    private val clientSecret = SpotifyAuthConfig.CLIENT_SECRET
-    private val redirectUri = SpotifyAuthConfig.REDIRECT_URI
     private val spotifyPackage = "com.spotify.music"
 
     //    Builds the Spotify authorization request.
@@ -47,9 +46,9 @@ class SpotifyAuthRepository @Inject constructor(
             } else {
                 val authRequest = AuthorizationRequest
                     .Builder(
-                        clientId,
+                        CLIENT_ID,
                         AuthorizationResponse.Type.CODE,
-                        redirectUri
+                        REDIRECT_URI
                     )
                     .setScopes(SpotifyApiScopes.getAllScopes())
                     .build()
@@ -120,9 +119,9 @@ class SpotifyAuthRepository @Inject constructor(
             val response = api.exchangeCodeForTokens(
                 grantType = "authorization_code",
                 code = code,
-                redirectUri = redirectUri,
-                clientId = clientId,
-                clientSecret = clientSecret
+                redirectUri = REDIRECT_URI,
+                clientId = CLIENT_ID,
+                clientSecret = CLIENT_SECRET
             )
             tokenManager.clearAllTokens()
             tokenManager.saveAccessToken(response.access_token)
@@ -171,8 +170,8 @@ class SpotifyAuthRepository @Inject constructor(
             val response = api.refreshAccessToken(
                 grantType = "refresh_token",
                 refreshToken = refreshToken,
-                clientId = clientId,
-                clientSecret = SpotifyAuthConfig.CLIENT_SECRET
+                clientId = CLIENT_ID,
+                clientSecret = CLIENT_SECRET
             )
             tokenManager.saveAccessToken(response.access_token)
             tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
@@ -181,6 +180,18 @@ class SpotifyAuthRepository @Inject constructor(
         } catch (e: Exception) {
             when (e) {
                 is CustomException -> throw e
+                is HttpException -> {
+                    if (e.code() == 400 && e.message().contains("invalid_grant")) {
+                        tokenManager.clearAllTokens()
+                        throw CustomException.AuthException(
+                            "SpotifyAuthRepository",
+                            "refreshAccessToken",
+                            Throwable("Refresh token expired. User needs to re-authenticate.")
+                        )
+                    }
+                    throw e
+                }
+
                 else -> throw CustomException.UnknownException(
                     "SpotifyAuthRepository",
                     "refreshAccessToken",
@@ -194,7 +205,7 @@ class SpotifyAuthRepository @Inject constructor(
     //    Checks if the access token has expired.
     private fun isTokenExpired(): Boolean {
         val expirationTime = tokenManager.getTokenExpirationTime()
-        return System.currentTimeMillis() > expirationTime
+        return System.currentTimeMillis() > (expirationTime - 5 * 60 * 1000)
     }
 
     //    Checks if Spotify is installed on the device.

@@ -5,29 +5,55 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import java.util.UUID
 import javax.inject.Inject
 
 class SpotifyTokenManager @Inject constructor(
     private val context: Context
 ) {
-    private val _prefsName = "com.clovermusic.clover.PREFERENCES"
+    private val _prefsName by lazy {
+        val prefs = context.getSharedPreferences("app_instance", Context.MODE_PRIVATE)
+        var instanceId = prefs.getString("instance_id", null)
+        if (instanceId == null) {
+            instanceId = UUID.randomUUID().toString()
+            prefs.edit().putString("instance_id", instanceId).apply()
+        }
+        "com.clovermusic.clover.PREFERENCES_$instanceId"
+    }
     private val _accessToken = "access_token"
     private val _refreshToken = "refresh_token"
     private val _tokenExpirationTime = "token_expiration_time"
 
     //    Function to create encrypted shared preferences
     private fun getEncryptedSharedPreferences(): SharedPreferences {
-        val masterKeyAlias = MasterKey
-            .Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        return EncryptedSharedPreferences.create(
-            context,
-            _prefsName,
-            masterKeyAlias,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        return try {
+            val masterKeyAlias = MasterKey
+                .Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            EncryptedSharedPreferences.create(
+                context,
+                _prefsName,
+                masterKeyAlias,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+        } catch (e: Exception) {
+            Log.e("TokenManager", "Error creating encrypted shared preferences", e)
+            when (e) {
+                is javax.crypto.AEADBadTagException -> {
+                    context.getSharedPreferences(_prefsName, Context.MODE_PRIVATE)
+                        .edit()
+                        .clear()
+                        .apply()
+                    return getEncryptedSharedPreferences()
+                }
+
+                else -> throw e
+            }
+        }
+
     }
 
     //    Function to save access token in shared preferences
@@ -38,6 +64,7 @@ class SpotifyTokenManager @Inject constructor(
             editor.apply()
             Log.i("TokenManager", "TOKEN SAVED")
         } catch (e: Exception) {
+            Log.e("TokenManager", "Error saving access token", e)
             throw CustomException.DatabaseException("TokenManager", "saveAccessToken", e)
         }
     }

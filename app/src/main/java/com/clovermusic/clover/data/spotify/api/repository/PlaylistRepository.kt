@@ -53,6 +53,7 @@ class PlaylistRepository @Inject constructor(
                     e
                 )
             } catch (e: Exception) {
+                Log.e("PlaylistRepository", "getCurrentUsersPlaylists: $e")
                 throw CustomException.UnknownException(
                     "PlaylistRepository",
                     "getCurrentUsersPlaylists",

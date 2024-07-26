@@ -68,7 +68,7 @@ fun PlaylistCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(vertical = 2.dp)
-                        .clickable {}
+                        .clickable { onNameClick(playlistName) }
                 )
                 Text(
                     text = "$songCount Songs",

@@ -44,6 +44,7 @@ class UserRepository @Inject constructor(
             } catch (e: IOException) {
                 throw CustomException.NetworkException("UserRepository", "getFollowedArtists", e)
             } catch (e: Exception) {
+                Log.e("UserRepository", "getFollowedArtists: ", e)
                 throw CustomException.UnknownException(
                     "UserRepository",
                     "getFollowedArtists",
