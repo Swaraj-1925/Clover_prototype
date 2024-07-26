@@ -1,7 +1,7 @@
 package com.clovermusic.clover.domain.usecase.auth
 
 import androidx.activity.result.ActivityResult
-import com.clovermusic.clover.data.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
 import com.clovermusic.clover.util.CustomException
 import javax.inject.Inject
 

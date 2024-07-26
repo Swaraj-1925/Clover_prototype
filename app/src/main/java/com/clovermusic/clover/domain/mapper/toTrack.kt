@@ -1,6 +1,6 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.api.spotify.response.common.TrackItemsResponseDto
+import com.clovermusic.clover.data.spotify.api.response.common.TrackItemsResponseDto
 import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
 import com.clovermusic.clover.domain.model.Track
 

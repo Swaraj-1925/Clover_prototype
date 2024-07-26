@@ -1,8 +1,8 @@
 package com.clovermusic.clover.di
 
 import android.content.Context
-import com.clovermusic.clover.data.api.spotify.service.SpotifyAuthService
-import com.clovermusic.clover.data.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.service.SpotifyAuthService
 import com.clovermusic.clover.util.SpotifyTokenManager
 import dagger.Module
 import dagger.Provides

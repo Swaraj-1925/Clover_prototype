@@ -1,9 +1,9 @@
 package com.clovermusic.clover.di
 
 
-import com.clovermusic.clover.data.api.spotify.service.ArtistService
-import com.clovermusic.clover.data.api.spotify.service.PlaylistService
-import com.clovermusic.clover.data.api.spotify.service.UserService
+import com.clovermusic.clover.data.spotify.api.service.ArtistService
+import com.clovermusic.clover.data.spotify.api.service.PlaylistService
+import com.clovermusic.clover.data.spotify.api.service.UserService
 import com.clovermusic.clover.util.SpotifyAuthInterceptor
 import dagger.Module
 import dagger.Provides

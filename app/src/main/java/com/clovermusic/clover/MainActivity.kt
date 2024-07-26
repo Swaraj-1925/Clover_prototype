@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
-import com.clovermusic.clover.data.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
 import com.clovermusic.clover.presentation.navigation.Navigation
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.CustomException

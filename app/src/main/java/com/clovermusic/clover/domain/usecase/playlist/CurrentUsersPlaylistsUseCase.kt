@@ -1,8 +1,8 @@
 package com.clovermusic.clover.domain.usecase.playlist
 
 import android.util.Log
-import com.clovermusic.clover.data.repository.PlaylistRepository
-import com.clovermusic.clover.data.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.repository.PlaylistRepository
+import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
 import com.clovermusic.clover.domain.mapper.toUserPlaylist
 import com.clovermusic.clover.domain.model.UserPlaylist
 import javax.inject.Inject
