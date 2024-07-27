@@ -16,11 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.clovermusic.clover.domain.model.UserPlaylist
 import com.clovermusic.clover.presentation.composable.components.PlaylistCard
+import com.clovermusic.clover.presentation.viewModel.PlaylistViewModel
 
 @Composable
 fun PlaylistSection(
+    viewModel: PlaylistViewModel = hiltViewModel(),
     playlists: List<UserPlaylist>,
     onPlaylistClick: (String) -> Unit,
     onPlaylistNameClick: (String) -> Unit,
@@ -61,7 +64,7 @@ fun PlaylistSection(
                         playlistName = playlist.name,
                         songCount = playlist.tracks,
                         onNameClick = { onPlaylistNameClick(playlist.id) },
-                        onCardClick = {}
+                        onCardClick = { viewModel.playPlaylist(playlist.uri) }
                     )
                 }
             }

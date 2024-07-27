@@ -5,11 +5,12 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import javax.inject.Inject
 
 class SpotifyTokenManager @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     private val _prefsName by lazy {
         val prefs = context.getSharedPreferences("app_instance", Context.MODE_PRIVATE)

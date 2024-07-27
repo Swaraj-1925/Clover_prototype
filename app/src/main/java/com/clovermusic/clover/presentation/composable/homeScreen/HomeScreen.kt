@@ -102,6 +102,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
+    viewModel: HomeViewModel= hiltViewModel(),
     data: HomeScreenState,
     onPlaylistClick: (String) -> Unit,
     onPlaylistNameClick: (String) -> Unit,
@@ -123,7 +124,7 @@ private fun HomeContent(
                     NewReleasesSection(
                         albums = data.followedArtistsAlbums,
                         onArtistClick = { /*TODO*/ },
-                        onPlayClick = { /*TODO*/ },
+                        onPlayClick = {},
                         onSettingsClick = { /*TODO*/ }
                     )
                 }

@@ -1,5 +1,5 @@
 package com.clovermusic.clover.di
-
+/*
 import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.app.NewReleasesOfFollowedArtistsUseCase
 import com.clovermusic.clover.domain.usecase.artist.ArtistAlbumsUseCase
@@ -120,3 +120,5 @@ object UseCaseModule {
         )
     }
 }
+
+ */
