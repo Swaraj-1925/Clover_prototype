@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun NewReleasesSection(
     onArtistClick: () -> Unit,
-    onPlayClick: () -> Unit,
     onSettingsClick: () -> Unit,
     albums: List<Albums>
 ) {
@@ -130,7 +129,6 @@ fun NewReleasesSection(
             ) { currentPage ->
                 NewReleaseCard(
                     album = albums[currentPage],
-                    onPlayClick = { onPlayClick() }
                 )
             }
         }

@@ -21,20 +21,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
 import com.clovermusic.clover.domain.model.Albums
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
-import com.clovermusic.clover.ui.theme.CloverTheme
 
 @Composable
 fun NewReleaseCard(
     viewModel: HomeViewModel = hiltViewModel(),
     album: Albums,
-    onPlayClick: () -> Unit,
 ) {
     val playButton = painterResource(id = R.drawable.play)
     Box(
@@ -79,7 +76,7 @@ fun NewReleaseCard(
                 .padding(16.dp)
         )
         IconButton(
-            onClick = {viewModel.playPlaylist(album.uri)},
+            onClick = { viewModel.playPlaylist(album.uri) },
             modifier = Modifier
                 .wrapContentSize()
                 .align(Alignment.BottomEnd)
@@ -90,16 +87,5 @@ fun NewReleaseCard(
                 contentDescription = "play button",
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TestA() {
-    val url =
-        "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8444c4d18c2ac6c7b6e8ae8100"
-    val artistName = "Post melon"
-    val releaseName = "Better now"
-    CloverTheme(darkTheme = true) {
     }
 }

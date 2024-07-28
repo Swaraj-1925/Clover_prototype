@@ -8,6 +8,7 @@ import com.clovermusic.clover.domain.usecase.playback.RemotePlaybackHandlerUseCa
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
+import com.clovermusic.clover.presentation.uiState.MusicPlayerUiState
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.Resource
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -30,6 +31,10 @@ class HomeViewModel @Inject constructor(
 
     private val _homeUiState = MutableStateFlow<Resource<HomeScreenState>>(Resource.Loading())
     val homeUiState: StateFlow<Resource<HomeScreenState>> = _homeUiState.asStateFlow()
+
+    private val _playerUiState = MutableStateFlow<MusicPlayerUiState>(MusicPlayerUiState.Stopped)
+    val playerUiState: StateFlow<MusicPlayerUiState> = _playerUiState.asStateFlow()
+
     private var spotifyAppRemote: SpotifyAppRemote? = null
 
     init {
@@ -78,6 +83,7 @@ class HomeViewModel @Inject constructor(
     fun playPlaylist(playlistId: String) {
         viewModelScope.launch {
             try {
+                _playerUiState.value = MusicPlayerUiState.Loading
                 spotifyAppRemote = playback.connectToRemote()
 
                 spotifyAppRemote?.let { remote ->
@@ -86,6 +92,8 @@ class HomeViewModel @Inject constructor(
                     "SpotifyAppRemote",
                     "playPlaylist"
                 )
+                Log.d("HomeViewModel", "playPlaylist: Success")
+                _playerUiState.value = MusicPlayerUiState.Playing
             } catch (e: Exception) {
                 Log.e("PlaylistViewModel", "Error playing playlist", e)
             }

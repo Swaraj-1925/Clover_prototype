@@ -26,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.clovermusic.clover.presentation.composable.components.BottomBar
 import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
-import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
@@ -52,12 +52,7 @@ fun HomeScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
-            NavigationBar(
-                onHomeClick = { /*TODO*/ },
-                onSearchClick = { /*TODO*/ },
-                onLibraryClick = { /*TODO*/ },
-                onProfileClick = { /*TODO*/ }
-            )
+            BottomBar()
         },
     ) { paddingValues ->
 
@@ -102,7 +97,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeContent(
-    viewModel: HomeViewModel= hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     data: HomeScreenState,
     onPlaylistClick: (String) -> Unit,
     onPlaylistNameClick: (String) -> Unit,
@@ -124,7 +119,6 @@ private fun HomeContent(
                     NewReleasesSection(
                         albums = data.followedArtistsAlbums,
                         onArtistClick = { /*TODO*/ },
-                        onPlayClick = {},
                         onSettingsClick = { /*TODO*/ }
                     )
                 }
