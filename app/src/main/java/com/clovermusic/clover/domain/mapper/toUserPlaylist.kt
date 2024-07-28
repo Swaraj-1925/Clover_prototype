@@ -4,7 +4,7 @@ import com.clovermusic.clover.data.api.spotify.response.playlists.UsersPlaylistI
 import com.clovermusic.clover.domain.mapper.Util.toImages
 import com.clovermusic.clover.domain.mapper.Util.toOwner
 import com.clovermusic.clover.domain.model.UserPlaylist
-
+// Object of UserPlayListItemDto are mapped into List of UserPlayList
 fun List<UsersPlaylistItemDto>.toUserPlaylist(): List<UserPlaylist> {
     return map { apiItem ->
         UserPlaylist(

@@ -10,7 +10,7 @@ import com.clovermusic.clover.domain.model.common.AlbumArtist
 import com.clovermusic.clover.domain.model.common.Image
 import com.clovermusic.clover.domain.model.common.Owner
 import com.clovermusic.clover.domain.model.common.TrackArtists
-
+// Objects of AlbumArtistResponseDto are mapped in ArtistAlbums() and creates List of AlbumArtist objects
 object Util {
     fun List<AlbumArtistResponseDto>.toAlbumArtist(): List<AlbumArtist> {
         return map { apiArtist ->
@@ -22,7 +22,7 @@ object Util {
             )
         }
     }
-
+//Object of ImageResponseDto are mapped into list Of Images()
     fun List<ImageResponseDto>.toImages(): List<Image> {
         return map { apiImage ->
             Image(
@@ -40,7 +40,7 @@ object Util {
             width = width
         )
     }
-
+//Calls OwnerResponseDto
     fun OwnerResponseDto.toOwner(): Owner {
         return Owner(
             display_name = display_name,
@@ -49,7 +49,7 @@ object Util {
             uri = uri
         )
     }
-
+// Maps TrackArtistResponseDto into TrackArtists
     fun List<TrackArtistResponseDto>.toTrackArtists(): List<TrackArtists> {
         return map { apiArtist ->
             TrackArtists(
@@ -63,7 +63,7 @@ object Util {
             )
         }
     }
-
+// Maps AlbumResponseDto into Album()
     fun AlbumResponseDto.toAlbum(): Albums {
         return Albums(
             artists = artists.toAlbumArtist(),

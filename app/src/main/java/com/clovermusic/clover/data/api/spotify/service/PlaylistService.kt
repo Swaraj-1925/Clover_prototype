@@ -12,45 +12,45 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
-
+// All the function used in Playlist Repository are declared here
 interface PlaylistService {
-
+// Return the playlist created or followed by artist
     @GET("me/playlists")
     suspend fun getCurrentUsersPlaylists(
         @Query("offset") offset: Int,
         @Query("limit") limit: Int = 50
     ): CurrentUsersPlaylistResponseDto
 
-
+// Return the track of the playlist
     @GET("playlists/{playlist_id}/tracks")
     suspend fun getPlaylistItems(
         @Path("playlist_id") playlistId: String,
         @Query("offset") offset: Int? = null
     ): ItemsInPlaylistResponseDto
-
+// Get the entire playlist
     @GET("playlists/{playlist_id}")
     suspend fun getPlaylist(
         @Path("playlist_id") playlistId: String,
     ): PlaylistResponseDto
-
+// Add track to playlist
     @POST("playlists/{playlist_id}/tracks")
     suspend fun addItemsToPlaylist(
         @Path("playlist_id") playlistId: String,
         @Body uris: Array<String>
     )
-
+// Delete track from the playlist
     @DELETE("playlists/{playlist_id}/tracks")
     suspend fun removePlaylistItems(
         @Path("playlist_id") playlistId: String,
         @Query("tracks") tracks: List<String>
     )
-
+// Create a new playlist
     @POST("users/{user_id}/playlists")
     suspend fun createPlaylist(
         @Path("user_id") userId: String,
         @Body body: CreatePlaylistRequest
     ): PlaylistResponseDto
-
+// Add Cover image to the playlist
     @PUT("playlists/{playlist_id}/images")
     suspend fun uploadPlaylistCoverImage(
         @Path("playlist_id") playlistId: String,

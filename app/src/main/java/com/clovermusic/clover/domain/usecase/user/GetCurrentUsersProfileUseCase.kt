@@ -6,7 +6,7 @@ import com.clovermusic.clover.data.repository.UserRepository
 import com.clovermusic.clover.domain.mapper.toUserProfile
 import com.clovermusic.clover.domain.model.UserProfile
 import javax.inject.Inject
-
+// Fetching the profile of the current user
 class GetCurrentUsersProfileUseCase @Inject constructor(
     private val authRepository: SpotifyAuthRepository,
     private val repository: UserRepository

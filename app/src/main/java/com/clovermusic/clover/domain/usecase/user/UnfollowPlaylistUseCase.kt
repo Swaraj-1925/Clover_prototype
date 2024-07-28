@@ -4,7 +4,7 @@ import android.util.Log
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
 import javax.inject.Inject
-
+// Unfollowing a playlist
 class UnfollowPlaylistUseCase @Inject constructor(
     private val authRepository: SpotifyAuthRepository,
     private val repository: UserRepository

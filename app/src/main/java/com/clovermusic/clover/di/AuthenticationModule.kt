@@ -13,11 +13,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
-
+// Class for the Authentication of the Spotify account
 @Module
 @InstallIn(SingletonComponent::class)
 class AuthenticationModule {
-
+// Builds the instance of retrofit
     @Provides
     @Singleton
     @Named("authRetrofit")
@@ -27,23 +27,23 @@ class AuthenticationModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
+//Implements the authentication services
     @Provides
     @Singleton
     fun provideSpotifyAuthService(@Named("authRetrofit") retrofit: Retrofit): SpotifyAuthService {
         return retrofit.create(SpotifyAuthService::class.java)
     }
-
+//Application context
     @Provides
     @Singleton
     fun provideContext(@ApplicationContext context: Context): Context = context
-
+//Instance to manage the tokens
     @Provides
     @Singleton
     fun provideSpotifyTokenManager(context: Context): SpotifyTokenManager {
         return SpotifyTokenManager(context)
     }
-
+// Authenticates using Services and repository
     @Provides
     @Singleton
     fun provideSpotifyAuthRepository(

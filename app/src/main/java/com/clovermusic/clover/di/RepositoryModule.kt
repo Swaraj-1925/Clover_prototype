@@ -12,11 +12,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-
+//Class for all the repositories
 @Module
 @InstallIn(SingletonComponent::class)
 class RepositoryModule {
-
+    //Return/create UserRepository using user services and authentication
     @Provides
     @Singleton
     fun providesUserRepository(
@@ -25,13 +25,13 @@ class RepositoryModule {
     ): UserRepository {
         return UserRepository(userService, spotifyAuthRepository)
     }
-
+// Return/create the ArtistRepository using Artist service
     @Provides
     @Singleton
     fun providesArtistRepository(artistService: ArtistService): ArtistRepository {
         return ArtistRepository(artistService)
     }
-
+// Return/create the playlist repository using the playlist service
     @Provides
     @Singleton
     fun providesPlaylistRepository(playlistService: PlaylistService): PlaylistRepository {

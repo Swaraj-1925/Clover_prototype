@@ -90,7 +90,7 @@ class ArtistRepository @Inject constructor(
                 SpotifyApiException.handleApiException("ArtistRepository", "getArtistTopTracks", e)
             }
         }
-
+// the function that return the artist related to the current artist
     suspend fun getArtistRelatedArtists(id: String): List<TrackArtistResponseDto> =
         withContext(Dispatchers.IO) {
             val artists = mutableListOf<TrackArtistResponseDto>()

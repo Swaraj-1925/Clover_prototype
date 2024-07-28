@@ -3,7 +3,7 @@ package com.clovermusic.clover.domain.mapper
 import com.clovermusic.clover.data.api.spotify.response.common.TrackItemsResponseDto
 import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
 import com.clovermusic.clover.domain.model.Track
-
+// Object of TrackItemsResponseDto are mapped into list of Tracks
 fun List<TrackItemsResponseDto>.toTrack(): List<Track> {
     return map { apiItem ->
         Track(

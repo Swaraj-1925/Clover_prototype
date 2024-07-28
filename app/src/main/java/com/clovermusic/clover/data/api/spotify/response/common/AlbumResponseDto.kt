@@ -1,5 +1,5 @@
 package com.clovermusic.clover.data.api.spotify.response.common
-
+//Declare the variables required for the description of the album and is used in the TrackItemsResponseDto.kt.
 data class AlbumResponseDto(
     val album_type: String,
     val artists: List<AlbumArtistResponseDto>,

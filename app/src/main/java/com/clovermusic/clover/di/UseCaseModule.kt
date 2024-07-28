@@ -43,7 +43,7 @@ object UseCaseModule {
         )
     }
 
-
+// Implement the UseCase of the user
     @Provides
     @Singleton
     fun provideUserUseCases(
@@ -69,7 +69,7 @@ object UseCaseModule {
             unfollowPlaylist = unfollowPlaylistUseCase
         )
     }
-
+// Implementation of Playlist UseCase
     @Provides
     @Singleton
     fun providePlaylistUseCases(
@@ -91,7 +91,7 @@ object UseCaseModule {
             currentUserPlaylist = currentUserPlaylistUseCases
         )
     }
-
+//Implementation of Artist UseCase
     @Provides
     @Singleton
     fun provideArtistUseCases(

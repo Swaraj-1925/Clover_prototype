@@ -7,7 +7,7 @@ import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.domain.mapper.toPlaylist
 import com.clovermusic.clover.domain.model.Playlist
 import javax.inject.Inject
-
+// Create new playlist using the request
 class CreateNewPlaylistUseCase @Inject constructor(
     private val repository: PlaylistRepository,
     private val authRepository: SpotifyAuthRepository

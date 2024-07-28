@@ -4,7 +4,7 @@ import com.clovermusic.clover.data.api.spotify.response.common.AlbumResponseDto
 import com.clovermusic.clover.domain.mapper.Util.toAlbumArtist
 import com.clovermusic.clover.domain.mapper.Util.toImages
 import com.clovermusic.clover.domain.model.Albums
-
+// Objects of AlbumResponseDto are mapped in ArtistAlbums() and creates List of Album objects
 fun List<AlbumResponseDto>.toArtistAlbums(): List<Albums> {
     return map { apiItem ->
         Albums(

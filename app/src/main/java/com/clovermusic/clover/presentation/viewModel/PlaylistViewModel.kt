@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+// Class is Set up to manage UI of playlist fetch them from PlayListUseCases
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val playlistUseCases: PlaylistUseCases

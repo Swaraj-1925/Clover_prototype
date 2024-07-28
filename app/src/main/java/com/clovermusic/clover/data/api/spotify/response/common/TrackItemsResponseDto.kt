@@ -1,5 +1,5 @@
 package com.clovermusic.clover.data.api.spotify.response.common
-
+// Data of the track
 data class TrackItemsResponseDto(
     val album: AlbumResponseDto,
     val artists: List<TrackArtistResponseDto>,

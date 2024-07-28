@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+//Manage the UI of Authentication
 @HiltViewModel
 class SpotifyAuthViewModel @Inject constructor(
     private val repository: SpotifyAuthRepository
@@ -33,11 +33,11 @@ class SpotifyAuthViewModel @Inject constructor(
                 val intent = AuthorizationClient.createLoginActivityIntent(activity, authRequest)
                 _authUiState.value = Resource.Success(intent)
             } catch (e: CustomException) {
-                Log.e("SpotifyAuthViewModel", "Error building auth request: ", e)
+                Log.e("SpotifyAuthViewModel", "Error building authentication request: ", e)
                 _authUiState.value =
-                    Resource.Error("Please make sure spotify us installed")
+                    Resource.Error("Please make sure spotify is installed")
             } catch (e: Exception) {
-                Log.e("SpotifyAuthViewModel", "Error building auth request", e)
+                Log.e("SpotifyAuthViewModel", "Error building authentication request", e)
                 _authUiState.value =
                     Resource.Error("Something went wrong while Connecting to Spotify")
             }

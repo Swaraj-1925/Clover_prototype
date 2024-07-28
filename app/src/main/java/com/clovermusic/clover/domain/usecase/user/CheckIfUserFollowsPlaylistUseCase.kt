@@ -4,7 +4,7 @@ import android.util.Log
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
 import javax.inject.Inject
-
+// Check whether the user follows the playlist or not
 class CheckIfUserFollowsPlaylistUseCase @Inject constructor(
     private val authRepository: SpotifyAuthRepository,
     private val repository: UserRepository

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-
+// Display of the Artist (image, name , url)
 @Composable
 fun ArtistCard(
     artistName: String,

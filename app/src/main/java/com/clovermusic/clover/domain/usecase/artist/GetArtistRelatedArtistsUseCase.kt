@@ -6,7 +6,7 @@ import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
 import com.clovermusic.clover.domain.model.common.TrackArtists
 import javax.inject.Inject
-
+// Get the artist related to the current artist
 class GetArtistRelatedArtistsUseCase @Inject constructor(
     private val authRepository: SpotifyAuthRepository,
     private val repository: ArtistRepository

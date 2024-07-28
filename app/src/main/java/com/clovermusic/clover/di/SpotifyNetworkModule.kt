@@ -38,19 +38,19 @@ object SpotifyNetworkModule {
             .build()
 
     }
-
+// Uses the retrofit instance to implement the UserService
     @Provides
     @Singleton
     fun provideUserService(retrofit: Retrofit): UserService {
         return retrofit.create(UserService::class.java)
     }
-
+// Uses retrofit instance to implement the ArtistService
     @Provides
     @Singleton
     fun provideArtistService(retrofit: Retrofit): ArtistService {
         return retrofit.create(ArtistService::class.java)
     }
-
+//Uses retrofit instance to implement the PlaylistService
     @Provides
     @Singleton
     fun providePlaylistService(retrofit: Retrofit): PlaylistService {

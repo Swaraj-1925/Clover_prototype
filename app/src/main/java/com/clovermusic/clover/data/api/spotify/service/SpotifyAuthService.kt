@@ -4,7 +4,7 @@ import com.clovermusic.clover.data.api.spotify.response.auth.SpotifyAuthResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-
+// All the function used in SpotifyAuthRepository are declared here
 interface SpotifyAuthService {
     @FormUrlEncoded
     @POST("api/token")

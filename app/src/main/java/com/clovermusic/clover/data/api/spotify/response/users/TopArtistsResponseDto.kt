@@ -1,7 +1,7 @@
 package com.clovermusic.clover.data.api.spotify.response.users
 
 import com.clovermusic.clover.data.api.spotify.response.common.TrackArtistResponseDto
-
+// Top artist data
 data class TopArtistsResponseDto(
     val href: String,
     val next: String?,

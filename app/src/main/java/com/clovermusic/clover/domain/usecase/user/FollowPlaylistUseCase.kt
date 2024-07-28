@@ -4,7 +4,7 @@ import android.util.Log
 import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.repository.UserRepository
 import javax.inject.Inject
-
+// Follow a Playlist
 class FollowPlaylistUseCase @Inject constructor(
     private val authRepository: SpotifyAuthRepository,
     private val repository: UserRepository

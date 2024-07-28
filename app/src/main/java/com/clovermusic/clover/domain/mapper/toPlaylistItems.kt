@@ -4,7 +4,7 @@ import com.clovermusic.clover.data.api.spotify.response.common.PlaylistTrackResp
 import com.clovermusic.clover.domain.mapper.Util.toAlbum
 import com.clovermusic.clover.domain.mapper.Util.toTrackArtists
 import com.clovermusic.clover.domain.model.PlaylistItems
-
+// Objects of PlaylistTrackResponseDto are mapped
 fun List<PlaylistTrackResponseDto>.toPlaylistItems(): List<PlaylistItems> {
     return map { apiItem ->
         PlaylistItems(

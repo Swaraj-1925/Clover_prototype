@@ -1,5 +1,5 @@
 package com.clovermusic.clover.data.api.spotify.response.common
-
+// Stored Artist info and used in getFollowedArtists() to fetch followed artist
 data class TrackArtistResponseDto(
     val followers: FollowersResponseDto?,
     val genres: List<String>?,

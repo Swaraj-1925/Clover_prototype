@@ -24,7 +24,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.clovermusic.clover.R
 import com.clovermusic.clover.ui.theme.CloverTheme
 
-
+// Animation when the page is Loading
 @Composable
 fun LoadingAnimation() {
     val compositionBlack by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.animation_preloader_black))

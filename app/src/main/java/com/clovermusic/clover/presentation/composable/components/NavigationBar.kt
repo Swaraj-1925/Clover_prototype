@@ -18,8 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.clovermusic.clover.R
+import com.clovermusic.clover.ui.theme.CloverTheme
 
 @Composable
 fun NavigationBar(
@@ -97,5 +99,19 @@ fun NavigationItem(
             tint = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.size(24.dp)
         )
+    }
+}
+
+@Preview
+@Composable
+fun NavBarPre()
+{
+    CloverTheme {
+        NavigationBar(
+            onHomeClick = { /*TODO*/ },
+            onSearchClick = { /*TODO*/ },
+            onLibraryClick = { /*TODO*/ }) {
+            
+        }
     }
 }

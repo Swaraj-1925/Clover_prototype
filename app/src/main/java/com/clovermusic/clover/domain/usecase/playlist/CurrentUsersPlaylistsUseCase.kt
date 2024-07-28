@@ -6,7 +6,7 @@ import com.clovermusic.clover.data.repository.SpotifyAuthRepository
 import com.clovermusic.clover.domain.mapper.toUserPlaylist
 import com.clovermusic.clover.domain.model.UserPlaylist
 import javax.inject.Inject
-
+// List of current playlist of user
 class CurrentUsersPlaylistsUseCase @Inject constructor(
     private val repository: PlaylistRepository,
     private val authRepository: SpotifyAuthRepository
