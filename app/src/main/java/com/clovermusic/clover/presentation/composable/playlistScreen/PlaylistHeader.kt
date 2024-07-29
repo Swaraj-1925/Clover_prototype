@@ -1,5 +1,7 @@
 package com.clovermusic.clover.presentation.composable.playlistScreen
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,20 +10,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -33,7 +43,11 @@ import com.clovermusic.clover.util.Parsers
 fun PlaylistHeader(
     playlist: Playlist
 ) {
-    val more = painterResource(id = R.drawable.more)
+    val more = painterResource(id = R.drawable.more2)
+    val shuffle = painterResource(id = R.drawable.shuffle1)
+    val play = painterResource(id = R.drawable.play2)
+    val playName = stringResource(id = R.string.play)
+    val shuffleText = stringResource(id = R.string.shuffle)
     Surface(
         color = Color.Transparent,
         modifier = Modifier
@@ -98,7 +112,6 @@ fun PlaylistHeader(
                                 color = MaterialTheme.colorScheme.tertiary
                             )
                         }
-
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -121,6 +134,76 @@ fun PlaylistHeader(
                                     .fillMaxSize(0.7f)
                             )
                         }
+                    }
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(vertical = 10.dp, horizontal = 14.dp)
+                    .background(color = Color.Transparent)
+            ) {
+                FilledTonalButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .fillMaxHeight(0.2f)
+                )  {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Icon(
+                            painter = shuffle,
+                            contentDescription = "Shuffle button",
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxHeight(0.5f)
+                                .weight(0.7f)
+                        )
+                        Text(
+                            text = shuffleText,
+                            modifier = Modifier
+                                .weight(0.8f)
+                        )
+                    }
+                }
+                OutlinedButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                )  {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Icon(
+                            painter = play,
+                            contentDescription = "Play button",
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .fillMaxHeight(0.5f)
+                                .weight(0.2f)
+                        )
+                        Text(
+                            text = playName,
+                            modifier = Modifier
+                                .weight(0.2f)
+                        )
                     }
 
                 }
