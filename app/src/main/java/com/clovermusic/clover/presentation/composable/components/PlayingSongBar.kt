@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,11 +39,11 @@ fun PlayingSongBar(
     val nextButton = Icons.Filled.SkipNext
     Card(
         onClick = { /*TODO*/ },
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .fillMaxHeight(0.1f)
+            .fillMaxHeight(0.07f)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -53,32 +54,34 @@ fun PlayingSongBar(
                 model = songDetails.image,
                 contentDescription = "Album art",
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(4.dp))
+                    .size(55.dp)
+                    .padding(start = 10.dp)
             )
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.4f)
+                    .fillMaxWidth(0.2f)
                     .padding(start = 8.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Text(
-                    text = songDetails.name,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
+                text = songDetails.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(top= 6.dp)
+                    .height(28.dp)
+            )
+                Text(
+                    text = songDetails.artists,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.tertiary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = songDetails.artists,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
-                )
+
             }
             IconButton(
                 onClick = { onPlayClick() },
@@ -90,20 +93,22 @@ fun PlayingSongBar(
                     imageVector = pauseButton,
                     contentDescription = "Play Button",
                     modifier = Modifier
-                        .fillMaxSize(0.6f)
+                        .size(40.dp)
                 )
             }
             IconButton(
                 onClick = { onNextClick() },
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(0.3f)
+                    .weight(0.5f)
+                    .padding(end = 10.dp)
             ) {
                 Icon(
                     imageVector = nextButton,
                     contentDescription = "Next Button",
                     modifier = Modifier
-                        .fillMaxSize(0.6f)
+                        .size(40.dp)
+
                 )
             }
         }
