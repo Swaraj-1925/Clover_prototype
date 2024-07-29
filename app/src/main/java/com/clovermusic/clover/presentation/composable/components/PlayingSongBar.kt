@@ -1,6 +1,6 @@
 package com.clovermusic.clover.presentation.composable.components
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -20,15 +22,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.ui.theme.CloverTheme
+import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
 
 @Composable
-fun PlayingSongBar() {
+fun PlayingSongBar(
+    songDetails: PlayingTrackDetails,
+    onPlayClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
     val image = painterResource(id = R.drawable.ablum1)
     val nameSong = "Name Song"
     val nameArtist = "Name Artist"
@@ -45,7 +52,14 @@ fun PlayingSongBar() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Image(painter = image, contentDescription = nameSong)
+            Log.i("PlayingSongCard", "image url ${songDetails.image}")
+            AsyncImage(
+                model = songDetails.image,
+                contentDescription = "Album art",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
@@ -55,13 +69,13 @@ fun PlayingSongBar() {
                     .weight(1f)
             ) {
                 Text(
-                    text = nameSong,
+                    text = songDetails.name,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = nameArtist,
+                    text = songDetails.artists,
                     style = MaterialTheme.typography.labelMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -70,7 +84,7 @@ fun PlayingSongBar() {
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onPlayClick() },
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(0.3f)
@@ -83,7 +97,7 @@ fun PlayingSongBar() {
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onNextClick() },
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(0.3f)
@@ -96,13 +110,5 @@ fun PlayingSongBar() {
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun PlayingSongBarPreview() {
-    CloverTheme {
-        PlayingSongBar()
     }
 }

@@ -3,6 +3,7 @@ package com.clovermusic.clover.presentation.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
 import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.playback.RemotePlaybackHandlerUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
@@ -10,9 +11,11 @@ import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.util.CustomException
+import com.clovermusic.clover.util.Parsers.convertSpotifyImageUriToUrl
 import com.clovermusic.clover.util.Resource
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.PlayerState
+import com.spotify.protocol.types.Track
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -140,9 +143,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun updatePlaybackState(playerState: PlayerState) {
+        val trackDetails = playerState.track.let { track: Track ->
+            PlayingTrackDetails(
+                name = track.name,
+                songUri = track.uri,
+                artists = track.artist.name,
+                artistsUri = track.artist.uri,
+                image = track.imageUri.raw!!.convertSpotifyImageUriToUrl()
+            )
+        }
+
         val newState = when {
-            playerState.isPaused -> PlaybackState.Paused
-            else -> PlaybackState.Playing
+            playerState.isPaused -> PlaybackState.Paused(trackDetails)
+            else -> PlaybackState.Playing(trackDetails)
         }
         Log.d("HomeViewModel", "Playback state updated: $newState")
         _playbackState.value = newState
