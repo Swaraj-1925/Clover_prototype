@@ -1,5 +1,6 @@
 package com.clovermusic.clover.domain.usecase.auth
 
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
 import com.clovermusic.clover.util.CustomException
@@ -13,6 +14,7 @@ class HandleSpotifyAuthIntentResponseUseCase @Inject constructor(
             val res = authRepository.handleAuthResponse(result)
             res
         }.onFailure { e ->
+            Log.e("HandleSpotifyAuthIntentResponseUseCase","Error:",e)
             val errorMessage = when (e) {
                 is CustomException.AuthException -> Throwable("Authentication error. Please try again.")
                 is CustomException.NetworkException -> Throwable("Network error. Please check your connection and try again.")
