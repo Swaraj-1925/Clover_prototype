@@ -57,24 +57,12 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             Column {
-                when (val state = playbackState) {
-                    is PlaybackState.Playing -> {
-                        PlayingSongBar(
-                            songDetails = state.songDetails,
-                            onPlayClick = { viewModel.togglePlayPause() },
-                            onNextClick = { viewModel.skipToNext() }
-                        )
-                    }
-
-                    is PlaybackState.Paused -> {
-                        PlayingSongBar(
-                            songDetails = state.songDetails,
-                            onPlayClick = {},
-                            onNextClick = {}
-                        )
-                    }
-
-                    else -> {}
+                if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
+                    PlayingSongBar(
+                        playbackState = playbackState,
+                        onPlayPauseClick = { viewModel.togglePlayPause() },
+                        onNextClick = { viewModel.skipToNext() }
+                    )
                 }
                 NavigationBar(
                     onHomeClick = { /*TODO*/ },

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,16 +26,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
+import com.clovermusic.clover.presentation.uiState.PlaybackState
 
 @Composable
 fun PlayingSongBar(
-    songDetails: PlayingTrackDetails,
-    onPlayClick: () -> Unit,
+    playbackState: PlaybackState,
+    onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
+    val songDetails = when (playbackState) {
+        is PlaybackState.Playing -> playbackState.songDetails
+        is PlaybackState.Paused -> playbackState.songDetails
+        else -> throw IllegalStateException("Unexpected state")
+    }
 
-    val pauseButton = Icons.Filled.Pause
+    val playPauseIcon =
+        if (playbackState is PlaybackState.Playing) Icons.Filled.Pause else Icons.Filled.PlayArrow
     val nextButton = Icons.Filled.SkipNext
     Card(
         onClick = { /*TODO*/ },
@@ -81,13 +88,13 @@ fun PlayingSongBar(
                 )
             }
             IconButton(
-                onClick = { onPlayClick() },
+                onClick = { onPlayPauseClick() },
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(0.3f)
             ) {
                 Icon(
-                    imageVector = pauseButton,
+                    imageVector = playPauseIcon,
                     contentDescription = "Play Button",
                     modifier = Modifier
                         .fillMaxSize(0.6f)

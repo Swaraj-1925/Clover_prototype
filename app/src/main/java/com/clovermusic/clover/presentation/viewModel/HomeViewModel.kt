@@ -72,13 +72,15 @@ class HomeViewModel @Inject constructor(
     fun togglePlayPause() {
         viewModelScope.launch {
             try {
-                if (playback.isMusicPlaying()) {
+                val currentState = _playbackState.value
+                if (currentState is PlaybackState.Playing) {
                     playback.pauseMusic()
-                    Log.d("HomeViewModel", "pauseMusic: Success")
-                } else {
+                    _playbackState.value = PlaybackState.Paused(currentState.songDetails)
+                } else if (currentState is PlaybackState.Paused) {
                     playback.resumeMusic()
-                    Log.d("HomeViewModel", "resumeMusic: Success")
+                    _playbackState.value = PlaybackState.Playing(currentState.songDetails)
                 }
+//                refreshPlaybackState()
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error toggling play/pause", e)
                 _playbackState.value =
@@ -128,7 +130,7 @@ class HomeViewModel @Inject constructor(
             while (isActive) {
                 try {
                     updatePlaybackState()
-                    delay(1000) // Check every second
+                    delay(1000)
                 } catch (e: Exception) {
                     Log.e("HomeViewModel", "Error in playback monitoring", e)
                     _playbackState.value =

@@ -1,6 +1,7 @@
 package com.clovermusic.clover.data.spotify.appRemote
 
 import android.content.Context
+import android.util.Log
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyAuthConfig.CLIENT_ID
 import com.clovermusic.clover.util.SpotifyAuthConfig.REDIRECT_URI
@@ -37,6 +38,7 @@ class SpotifyAppRemoteRepository @Inject constructor(
                     }
 
                     override fun onFailure(error: Throwable) {
+                        Log.e("SpotifyAppRemote", "Error connecting to Spotify App Remote", error)
                         cont.resumeWith(
                             Result.failure(
                                 when (error) {
