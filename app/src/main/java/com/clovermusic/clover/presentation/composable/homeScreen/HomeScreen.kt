@@ -61,8 +61,8 @@ fun HomeScreen(
                     is PlaybackState.Playing -> {
                         PlayingSongBar(
                             songDetails = state.songDetails,
-                            onPlayClick = {},
-                            onNextClick = {}
+                            onPlayClick = { viewModel.togglePlayPause() },
+                            onNextClick = { viewModel.skipToNext() }
                         )
                     }
 

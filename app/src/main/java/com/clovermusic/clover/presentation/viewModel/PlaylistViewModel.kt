@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.clovermusic.clover.domain.model.Playlist
 import com.clovermusic.clover.domain.usecase.playback.RemotePlaybackHandlerUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
-import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.Resource
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,14 +39,7 @@ class PlaylistViewModel @Inject constructor(
     fun playPlaylist(playlistId: String) {
         viewModelScope.launch {
             try {
-                spotifyAppRemote = playback.connectToRemote()
-
-                spotifyAppRemote?.let { remote ->
-                    playback.playMusic(remote, playlistId)
-                } ?: throw CustomException.EmptyResponseException(
-                    "SpotifyAppRemote",
-                    "playPlaylist"
-                )
+                playback.playMusic(playlistId)
             } catch (e: Exception) {
                 Log.e("PlaylistViewModel", "Error playing playlist", e)
             }

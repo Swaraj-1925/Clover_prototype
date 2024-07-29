@@ -10,12 +10,8 @@ import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
-import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.Parsers.convertSpotifyImageUriToUrl
 import com.clovermusic.clover.util.Resource
-import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.protocol.types.PlayerState
-import com.spotify.protocol.types.Track
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -42,30 +38,58 @@ class HomeViewModel @Inject constructor(
     private val _playbackState = MutableStateFlow<PlaybackState>(PlaybackState.Loading)
     val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
 
-    private var spotifyAppRemote: SpotifyAppRemote? = null
-    private var playbackStateJob: Job? = null
+    private var playbackMonitoringJob: Job? = null
 
     init {
         Log.d("HomeViewModel", "Initializing HomeViewModel")
         getHomeScreen()
-        connectToSpotify()
+        startPlaybackMonitoring()
     }
 
     fun playPlaylist(playlistId: String) {
         viewModelScope.launch {
             try {
-                spotifyAppRemote = playback.connectToRemote()
-                spotifyAppRemote?.let { remote ->
-                    playback.playMusic(remote, playlistId)
-                } ?: throw CustomException.EmptyResponseException(
-                    "SpotifyAppRemote",
-                    "playPlaylist"
-                )
+                playback.playMusic(playlistId)
                 Log.d("HomeViewModel", "playPlaylist: Success")
             } catch (e: Exception) {
                 Log.e("PlaylistViewModel", "Error playing playlist", e)
+                _playbackState.value = PlaybackState.Error("Error playing playlist: ${e.message}")
             }
         }
+    }
+
+    fun skipToNext() {
+        viewModelScope.launch {
+            try {
+                playback.skipToNext()
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error skipping to next", e)
+                _playbackState.value = PlaybackState.Error("Error skipping to next: ${e.message}")
+            }
+        }
+    }
+
+    fun togglePlayPause() {
+        viewModelScope.launch {
+            try {
+                if (playback.isMusicPlaying()) {
+                    playback.pauseMusic()
+                    Log.d("HomeViewModel", "pauseMusic: Success")
+                } else {
+                    playback.resumeMusic()
+                    Log.d("HomeViewModel", "resumeMusic: Success")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error toggling play/pause", e)
+                _playbackState.value =
+                    PlaybackState.Error("Error toggling play/pause: ${e.message}")
+            }
+        }
+    }
+
+    fun refreshHomeScreen() {
+        getHomeScreen()
+        refreshPlaybackState()
     }
 
     private fun getHomeScreen() {
@@ -75,13 +99,9 @@ class HomeViewModel @Inject constructor(
                 val homeScreenState = fetchHomeScreenData()
                 _homeUiState.value = Resource.Success(homeScreenState)
                 Log.d("HomeViewModel", "fetchHomeScreenData: Success ${homeUiState.value.data}")
-
-            } catch (e: CustomException) {
-                Log.e("HomeViewModel", "fetchHomeScreenData: Error", e)
-                _homeUiState.value = Resource.Error(e.message ?: "Something went wrong")
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "fetchHomeScreenData: Error", e)
-                _homeUiState.value = Resource.Error("Something went wrong")
+                _homeUiState.value = Resource.Error(e.message ?: "Something went wrong")
             }
         }
     }
@@ -102,35 +122,12 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-
-    private fun connectToSpotify() {
-        Log.d("HomeViewModel", "Attempting to connect to Spotify")
-        viewModelScope.launch {
-            try {
-                spotifyAppRemote = playback.connectToRemote()
-                if (spotifyAppRemote != null) {
-                    Log.d("HomeViewModel", "Connected to Spotify successfully")
-                    startPlaybackMonitoring()
-                } else {
-                    Log.e("HomeViewModel", "Failed to connect to Spotify: SpotifyAppRemote is null")
-                    _playbackState.value = PlaybackState.Error("Failed to connect to Spotify")
-                }
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error connecting to Spotify", e)
-                _playbackState.value =
-                    PlaybackState.Error("Error connecting to Spotify: ${e.message}")
-            }
-        }
-    }
-
     private fun startPlaybackMonitoring() {
         Log.d("HomeViewModel", "Starting playback monitoring")
-        playbackStateJob = viewModelScope.launch {
+        playbackMonitoringJob = viewModelScope.launch {
             while (isActive) {
                 try {
-                    spotifyAppRemote?.playerApi?.playerState?.setResultCallback { playerState ->
-                        updatePlaybackState(playerState)
-                    }
+                    updatePlaybackState()
                     delay(1000) // Check every second
                 } catch (e: Exception) {
                     Log.e("HomeViewModel", "Error in playback monitoring", e)
@@ -142,31 +139,32 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun updatePlaybackState(playerState: PlayerState) {
-        val trackDetails = playerState.track.let { track: Track ->
-            PlayingTrackDetails(
-                name = track.name,
-                songUri = track.uri,
-                artists = track.artist.name,
-                artistsUri = track.artist.uri,
-                image = track.imageUri.raw!!.convertSpotifyImageUriToUrl()
-            )
-        }
+    private suspend fun updatePlaybackState() {
+        playback.performRemoteAction { remote ->
+            remote.playerApi.playerState.setResultCallback { playerState ->
+                val trackDetails = playerState.track.let { track ->
+                    PlayingTrackDetails(
+                        name = track.name,
+                        songUri = track.uri,
+                        artists = track.artist.name,
+                        artistsUri = track.artist.uri,
+                        image = track.imageUri.raw!!.convertSpotifyImageUriToUrl()
+                    )
+                }
 
-        val newState = when {
-            playerState.isPaused -> PlaybackState.Paused(trackDetails)
-            else -> PlaybackState.Playing(trackDetails)
+                _playbackState.value = if (playerState.isPaused) {
+                    PlaybackState.Paused(trackDetails)
+                } else {
+                    PlaybackState.Playing(trackDetails)
+                }
+            }
         }
-        Log.d("HomeViewModel", "Playback state updated: $newState")
-        _playbackState.value = newState
     }
 
-    fun refreshPlaybackState() {
+    private fun refreshPlaybackState() {
         viewModelScope.launch {
             try {
-                spotifyAppRemote?.playerApi?.playerState?.setResultCallback { playerState ->
-                    updatePlaybackState(playerState)
-                }
+                updatePlaybackState()
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error refreshing playback state", e)
                 _playbackState.value =
@@ -177,12 +175,6 @@ class HomeViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        spotifyAppRemote?.let {
-            SpotifyAppRemote.disconnect(it)
-        }
-    }
-
-    fun refreshHomeScreen() {
-        getHomeScreen()
+        playbackMonitoringJob?.cancel()
     }
 }

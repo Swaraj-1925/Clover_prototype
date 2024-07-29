@@ -3,78 +3,51 @@ package com.clovermusic.clover.domain.usecase.playback
 import android.util.Log
 import com.clovermusic.clover.data.spotify.appRemote.SpotifyAppRemoteRepository
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class RemotePlaybackHandlerUseCase @Inject constructor(
     private val appRemoteRepository: SpotifyAppRemoteRepository
 ) {
-    suspend fun connectToRemote(): SpotifyAppRemote {
-        return runCatching {
-            appRemoteRepository.connectToAppRemote()
-        }.onFailure { e ->
-            Log.e("RemotePlaybackHandlerUseCase", "Error connecting to Spotify app remote", e)
-        }.getOrThrow()
-    }
-
-    suspend fun playMusic(remote: SpotifyAppRemote, uri: String) {
-        performRemoteAction(remote) {
-            it.playerApi.play(uri)
-        }
-    }
-
-    suspend fun pauseMusic(remote: SpotifyAppRemote) {
-        performRemoteAction(remote) {
-            it.playerApi.pause()
-        }
-    }
-
-    suspend fun resumeMusic(remote: SpotifyAppRemote) {
-        performRemoteAction(remote) {
-            it.playerApi.resume()
-        }
-    }
-
-    suspend fun skipToNext(remote: SpotifyAppRemote) {
-        performRemoteAction(remote) {
-            it.playerApi.skipNext()
-        }
-    }
-
-    suspend fun skipToPrevious(remote: SpotifyAppRemote) {
-        performRemoteAction(remote) {
-            it.playerApi.skipPrevious()
-        }
-    }
-
-    suspend fun toggleShuffle(remote: SpotifyAppRemote) {
-        performRemoteAction(remote) {
-            it.playerApi.toggleShuffle()
-        }
-    }
-
-    suspend fun toggleRepeat(remote: SpotifyAppRemote) {
-        performRemoteAction(remote) {
-            it.playerApi.toggleRepeat()
-        }
-    }
-
-    suspend fun isMusicPlaying(remote: SpotifyAppRemote, callback: (Boolean) -> Unit) {
-        performRemoteAction(remote) {
-            it.playerApi.playerState.setResultCallback { playerState ->
-                callback(!playerState.isPaused)
-            }
-        }
-    }
-
-
-    private suspend fun performRemoteAction(
-        remote: SpotifyAppRemote,
-        action: (SpotifyAppRemote) -> Unit
-    ) {
+    suspend fun performRemoteAction(action: suspend (SpotifyAppRemote) -> Unit) {
         try {
-            action(appRemoteRepository.assertAppRemoteConnected(remote))
+            val remote = appRemoteRepository.getConnectedAppRemote()
+            action(remote)
         } catch (e: Exception) {
             Log.e("RemotePlaybackHandlerUseCase", "Error performing remote action", e)
+            throw e
         }
     }
+
+    suspend fun playMusic(uri: String) = performRemoteAction { it.playerApi.play(uri) }
+    suspend fun pauseMusic() = performRemoteAction {
+        try {
+
+            it.playerApi.pause()
+        } catch (e: Exception) {
+            Log.e("RemotePlaybackHandlerUseCase", "Error pausing music")
+        }
+    }
+
+    suspend fun resumeMusic() = performRemoteAction { it.playerApi.resume() }
+    suspend fun skipToNext() = performRemoteAction { it.playerApi.skipNext() }
+    suspend fun skipToPrevious() = performRemoteAction { it.playerApi.skipPrevious() }
+    suspend fun toggleShuffle() = performRemoteAction { it.playerApi.toggleShuffle() }
+    suspend fun toggleRepeat() = performRemoteAction { it.playerApi.toggleRepeat() }
+
+    suspend fun isMusicPlaying(): Boolean = coroutineScope {
+        try {
+            var isPlaying = false
+            performRemoteAction { remote ->
+                remote.playerApi.playerState.setResultCallback { playerState ->
+                    isPlaying = !playerState.isPaused
+                }
+            }
+            isPlaying
+        } catch (e: Exception) {
+            Log.e("RemotePlaybackHandlerUseCase", "Error checking if music is playing", e)
+            throw e
+        }
+    }
+
 }

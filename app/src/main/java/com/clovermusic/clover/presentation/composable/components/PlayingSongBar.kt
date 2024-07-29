@@ -33,6 +33,7 @@ fun PlayingSongBar(
     onPlayClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
+
     val pauseButton = Icons.Filled.Pause
     val nextButton = Icons.Filled.SkipNext
     Card(
