@@ -1,6 +1,5 @@
 package com.clovermusic.clover.presentation.composable.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,11 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.clovermusic.clover.R
 import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
 
 @Composable
@@ -36,23 +33,21 @@ fun PlayingSongBar(
     onPlayClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
-    val image = painterResource(id = R.drawable.ablum1)
-    val nameSong = "Name Song"
-    val nameArtist = "Name Artist"
-    val playButton = Icons.Filled.PlayArrow
     val pauseButton = Icons.Filled.Pause
     val nextButton = Icons.Filled.SkipNext
     Card(
         onClick = { /*TODO*/ },
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .fillMaxHeight(0.1f)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
         ) {
-            Log.i("PlayingSongCard", "image url ${songDetails.image}")
             AsyncImage(
                 model = songDetails.image,
                 contentDescription = "Album art",
@@ -70,16 +65,17 @@ fun PlayingSongBar(
             ) {
                 Text(
                     text = songDetails.name,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = songDetails.artists,
                     style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.weight(1f, fill = false)
                 )
             }
