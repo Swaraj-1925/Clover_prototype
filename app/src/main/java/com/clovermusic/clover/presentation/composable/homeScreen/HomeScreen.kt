@@ -2,7 +2,7 @@ package com.clovermusic.clover.presentation.composable.homeScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +18,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.clovermusic.clover.presentation.composable.components.BottomBar
 import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
+import com.clovermusic.clover.presentation.composable.components.NavigationBar
+import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
+import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.Resource
@@ -40,23 +41,34 @@ fun HomeScreen(
     onPlaylistNameClick: (String) -> Unit,
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
-    val homeUiState by viewModel.homeUiState.collectAsState()
-    val isRefreshing by viewModel.homeUiState.collectAsStateWithLifecycle()
+
+    val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+
+    val isPlaying by viewModel.playbackState.collectAsStateWithLifecycle()
+
     val snackbarHostState = remember { SnackbarHostState() }
-    val pullRefresh = rememberPullRefreshState(
-        refreshing = isRefreshing is Resource.Loading,
-        onRefresh = {
-            viewModel.refreshHomeScreen()
-        }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = homeUiState is Resource.Loading,
+        onRefresh = { viewModel.refreshHomeScreen() }
     )
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
-            BottomBar()
+            Column {
+                if (isPlaying != PlaybackState.Paused) {
+                    PlayingSongBar()
+                }
+
+                NavigationBar(
+                    onHomeClick = { /*TODO*/ },
+                    onSearchClick = { /*TODO*/ },
+                    onLibraryClick = { /*TODO*/ },
+                    onProfileClick = { /*TODO*/ }
+                )
+            }
         },
     ) { paddingValues ->
-
-
         when (val state = homeUiState) {
             is Resource.Loading -> {
                 LoadingAnimation()
@@ -74,19 +86,18 @@ fun HomeScreen(
             is Resource.Success -> {
                 Box(
                     modifier = Modifier
-                        .pullRefresh(pullRefresh),
+                        .pullRefresh(pullRefreshState)
+                        .padding(paddingValues)
                 ) {
                     HomeContent(
                         data = state.data!!,
                         onPlaylistClick = onPlaylistClick,
-                        onPlaylistNameClick = onPlaylistNameClick,
-                        contentPadding = paddingValues
+                        onPlaylistNameClick = onPlaylistNameClick
                     )
                     PullRefreshIndicator(
-                        isRefreshing is Resource.Loading,
-                        pullRefresh,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
+                        refreshing = homeUiState is Resource.Loading,
+                        state = pullRefreshState,
+                        modifier = Modifier.align(Alignment.TopCenter)
                     )
                 }
             }
@@ -94,14 +105,11 @@ fun HomeScreen(
     }
 }
 
-
 @Composable
 private fun HomeContent(
-    viewModel: HomeViewModel = hiltViewModel(),
     data: HomeScreenState,
     onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (String) -> Unit,
-    contentPadding: PaddingValues
+    onPlaylistNameClick: (String) -> Unit
 ) {
     CloverTheme {
         Surface(
@@ -111,7 +119,6 @@ private fun HomeContent(
                 .fillMaxSize()
         ) {
             LazyColumn(
-                contentPadding = contentPadding,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
