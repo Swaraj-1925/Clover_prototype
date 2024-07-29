@@ -44,7 +44,8 @@ fun HomeScreen(
 
     val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
 
-    val isPlaying by viewModel.playbackState.collectAsStateWithLifecycle()
+
+    val playbackState by viewModel.playbackState.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val pullRefreshState = rememberPullRefreshState(
@@ -56,10 +57,25 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             Column {
-                if (isPlaying != PlaybackState.Paused) {
-                    PlayingSongBar()
-                }
+                when (val state = playbackState) {
+                    is PlaybackState.Playing -> {
+                        PlayingSongBar(
+                            songDetails = state.songDetails,
+                            onPlayClick = {},
+                            onNextClick = {}
+                        )
+                    }
 
+                    is PlaybackState.Paused -> {
+                        PlayingSongBar(
+                            songDetails = state.songDetails,
+                            onPlayClick = {},
+                            onNextClick = {}
+                        )
+                    }
+
+                    else -> {}
+                }
                 NavigationBar(
                     onHomeClick = { /*TODO*/ },
                     onSearchClick = { /*TODO*/ },

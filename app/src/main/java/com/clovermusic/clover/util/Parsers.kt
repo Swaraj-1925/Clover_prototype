@@ -50,4 +50,9 @@ object Parsers {
         }
     }
 
+    fun String.convertSpotifyImageUriToUrl(): String {
+        val imageId = this.split(":").last()
+        return "https://i.scdn.co/image/$imageId"
+    }
+
 }
