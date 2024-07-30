@@ -31,6 +31,7 @@ import com.clovermusic.clover.presentation.composable.components.PlayingSongBar2
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.Resource
 
@@ -40,17 +41,17 @@ fun HomeScreen(
     onPlaylistClick: (String) -> Unit,
     onPlaylistNameClick: (String) -> Unit,
 ) {
-    val viewModel: HomeViewModel = hiltViewModel()
+    val homeScreenViewModel: HomeViewModel = hiltViewModel()
+    val musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
 
-    val homeUiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val homeUiState by homeScreenViewModel.homeUiState.collectAsStateWithLifecycle()
 
-
-    val playbackState by viewModel.playbackState.collectAsStateWithLifecycle()
+    val playbackState by musicPlayerViewModel.playbackState.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val pullRefreshState = rememberPullRefreshState(
         refreshing = homeUiState is Resource.Loading,
-        onRefresh = { viewModel.refreshHomeScreen() }
+        onRefresh = { homeScreenViewModel.refreshHomeScreen() }
     )
 
     Scaffold(
@@ -60,8 +61,8 @@ fun HomeScreen(
                 if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
                     PlayingSongBar2(
                         playbackState = playbackState,
-                        onPlayPauseClick = { viewModel.togglePlayPause() },
-                        onNextClick = { viewModel.skipToNext() }
+                        onPlayPauseClick = { musicPlayerViewModel.togglePlayPause() },
+                        onNextClick = { musicPlayerViewModel.skipToNext() }
                     )
                 }
                 NavigationBar(

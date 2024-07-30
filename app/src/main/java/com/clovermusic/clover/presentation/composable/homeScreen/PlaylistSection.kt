@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.clovermusic.clover.domain.model.UserPlaylist
 import com.clovermusic.clover.presentation.composable.components.PlaylistCard
-import com.clovermusic.clover.presentation.viewModel.PlaylistViewModel
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 
 @Composable
 fun PlaylistSection(
-    viewModel: PlaylistViewModel = hiltViewModel(),
+    viewModel: MusicPlayerViewModel = hiltViewModel(),
     playlists: List<UserPlaylist>,
     onPlaylistClick: (String) -> Unit,
     onPlaylistNameClick: (String) -> Unit,

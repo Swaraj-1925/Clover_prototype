@@ -1,10 +1,8 @@
 package com.clovermusic.clover.presentation.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clovermusic.clover.domain.model.Playlist
-import com.clovermusic.clover.domain.usecase.playback.RemotePlaybackHandlerUseCase
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.util.Resource
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -18,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
-    private val playback: RemotePlaybackHandlerUseCase
 ) : ViewModel() {
     private val _playlistUiState = MutableStateFlow<Resource<Playlist>>(Resource.Loading())
     val playlistUiState: StateFlow<Resource<Playlist>> = _playlistUiState.asStateFlow()
@@ -36,13 +33,4 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
-    fun playPlaylist(playlistId: String) {
-        viewModelScope.launch {
-            try {
-                playback.playMusic(playlistId)
-            } catch (e: Exception) {
-                Log.e("PlaylistViewModel", "Error playing playlist", e)
-            }
-        }
-    }
 }
