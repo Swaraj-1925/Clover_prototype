@@ -1,13 +1,9 @@
 package com.clovermusic.clover.di
 
-import android.content.Context
-import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
 import com.clovermusic.clover.data.spotify.api.service.SpotifyAuthService
-import com.clovermusic.clover.util.SpotifyTokenManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,26 +28,6 @@ class AuthenticationModule {
     @Singleton
     fun provideSpotifyAuthService(@Named("authRetrofit") retrofit: Retrofit): SpotifyAuthService {
         return retrofit.create(SpotifyAuthService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideContext(@ApplicationContext context: Context): Context = context
-
-    @Provides
-    @Singleton
-    fun provideSpotifyTokenManager(context: Context): SpotifyTokenManager {
-        return SpotifyTokenManager(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideSpotifyAuthRepository(
-        tokenManager: SpotifyTokenManager,
-        spotifyAuthService: SpotifyAuthService,
-        context: Context
-    ): SpotifyAuthRepository {
-        return SpotifyAuthRepository(tokenManager, spotifyAuthService, context)
     }
 
 }

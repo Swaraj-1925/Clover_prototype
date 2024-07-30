@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val userService: UserService,
-    private val spotifyAuthRepository: SpotifyAuthRepository
 ) {
     /**
      * Function will 1st make a request get 50 artists from the api and then if there is more than 50

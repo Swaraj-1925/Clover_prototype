@@ -1,6 +1,8 @@
 package com.clovermusic.clover.domain.usecase.user
 
-data class UserUseCases(
+import javax.inject.Inject
+
+data class UserUseCases @Inject constructor(
     val checkIfUserFollowsArtist: CheckIfUserFollowsArtistUseCases,
     val checkIfUserFollowsPlaylist: CheckIfUserFollowsPlaylistUseCase,
     val checkIfUserFollowsUsers: CheckIfUserFollowsUsersUseCases,

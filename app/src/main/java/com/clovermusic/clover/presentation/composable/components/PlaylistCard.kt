@@ -30,15 +30,15 @@ fun PlaylistCard(
     url: String,
     playlistName: String,
     songCount: Int,
-    onNameClick: (String) -> Unit,
-    onCardClick: (String) -> Unit,
+    onNameClick: () -> Unit,
+    onCardClick: () -> Unit,
 ) {
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .width(160.dp)
-            .clickable { onCardClick(playlistName) }
+            .clickable { onCardClick() }
     ) {
         Column(
             modifier = Modifier
@@ -68,7 +68,7 @@ fun PlaylistCard(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(vertical = 2.dp)
-                        .clickable { onNameClick(playlistName) }
+                        .clickable { onNameClick() }
                 )
                 Text(
                     text = "$songCount Songs",

@@ -29,6 +29,8 @@ import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.clovermusic.clover.R
@@ -40,7 +42,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun NewReleasesSection(
     onArtistClick: () -> Unit,
-    onPlayClick: () -> Unit,
     onSettingsClick: () -> Unit,
     albums: List<Albums>
 ) {
@@ -89,6 +90,7 @@ fun NewReleasesSection(
                     modifier = Modifier
                         .fillMaxWidth(0.84f)
                         .fillMaxHeight()
+                        .padding(7.dp)
                 ) {
                     Text(
                         text = "New release by",
@@ -108,9 +110,8 @@ fun NewReleasesSection(
                 IconButton(
                     onClick = { onSettingsClick() },
                     modifier = Modifier
-                        .fillMaxSize(0.67f)
+                        .fillMaxSize(0.7f)
                         .align(Alignment.CenterVertically)
-                        .padding(4.dp)
                 ) {
                     Icon(
                         painter = settingsButton,
@@ -130,7 +131,6 @@ fun NewReleasesSection(
             ) { currentPage ->
                 NewReleaseCard(
                     album = albums[currentPage],
-                    onPlayClick = { onPlayClick() }
                 )
             }
         }

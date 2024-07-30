@@ -40,7 +40,7 @@ fun SongListCard(
         onClick = { /* TODO: Implement click action */ },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 10.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -53,12 +53,12 @@ fun SongListCard(
                 text = index.toString(),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.width(20.dp)
+                modifier = Modifier.width(22.dp)
             )
             Card(
                 modifier = Modifier
                     .weight(0.35f)
-                    .padding(4.dp)
+                    .padding(start = 14.dp)
             ) {
                 AsyncImage(
                     model = track.albums.image?.firstOrNull()?.url,
@@ -71,7 +71,7 @@ fun SongListCard(
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier
-                    .padding(start = 4.dp)
+                    .padding(start = 12.dp)
                     .weight(1f)
             ) {
                 Text(

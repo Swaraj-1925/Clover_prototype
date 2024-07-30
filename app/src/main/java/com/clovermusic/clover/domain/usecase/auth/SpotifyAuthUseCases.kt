@@ -1,6 +1,8 @@
 package com.clovermusic.clover.domain.usecase.auth
 
-data class SpotifyAuthUseCases(
+import javax.inject.Inject
+
+data class SpotifyAuthUseCases @Inject constructor(
     val createIntent: CreateSpotifyAuthIntentUseCase,
     val handleAuthResponse: HandleSpotifyAuthIntentResponseUseCase
 )

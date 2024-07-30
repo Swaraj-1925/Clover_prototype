@@ -21,17 +21,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
 import com.clovermusic.clover.domain.model.Albums
-import com.clovermusic.clover.ui.theme.CloverTheme
+import com.clovermusic.clover.presentation.viewModel.HomeViewModel
 
 @Composable
 fun NewReleaseCard(
+    viewModel: HomeViewModel = hiltViewModel(),
     album: Albums,
-    onPlayClick: () -> Unit,
 ) {
     val playButton = painterResource(id = R.drawable.play)
     Box(
@@ -57,7 +57,7 @@ fun NewReleaseCard(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            MaterialTheme.colorScheme.primaryContainer
+                            Color(0xFF2C2C2C)
                         ),
                         startY = 0f,
                         endY = Float.POSITIVE_INFINITY
@@ -67,7 +67,7 @@ fun NewReleaseCard(
         Text(
             text = album.albumName,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
+            color = Color(0xFFEAEAEA),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -76,7 +76,7 @@ fun NewReleaseCard(
                 .padding(16.dp)
         )
         IconButton(
-            onClick = { onPlayClick() },
+            onClick = { viewModel.playPlaylist(album.uri) },
             modifier = Modifier
                 .wrapContentSize()
                 .align(Alignment.BottomEnd)
@@ -85,18 +85,8 @@ fun NewReleaseCard(
             Icon(
                 painter = playButton,
                 contentDescription = "play button",
+                tint = Color(0xFFEAEAEA)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TestA() {
-    val url =
-        "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8444c4d18c2ac6c7b6e8ae8100"
-    val artistName = "Post melon"
-    val releaseName = "Better now"
-    CloverTheme(darkTheme = true) {
     }
 }

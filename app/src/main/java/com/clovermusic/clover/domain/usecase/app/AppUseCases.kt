@@ -1,5 +1,7 @@
 package com.clovermusic.clover.domain.usecase.app
 
-data class AppUseCases(
+import javax.inject.Inject
+
+data class AppUseCases @Inject constructor(
     val latestReleasesUseCase: NewReleasesOfFollowedArtistsUseCase
 )
