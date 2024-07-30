@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -45,35 +47,39 @@ fun PlaylistHeader(
         color = Color.Transparent,
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.3f)
+            .heightIn(max = 250.dp)
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
             ) {
                 Card(
                     modifier = Modifier
-                        .fillMaxSize(0.25f)
-                        .weight(0.7f)
+                        .fillMaxSize(0.6f)
+                        .weight(0.4f)
                 ) {
                     AsyncImage(
                         model = playlist.image.firstOrNull()?.url,
                         contentDescription = playlist.name,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
+                Spacer(modifier = Modifier.width(4.dp))
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 14.dp)
-                        .weight(1f)
+                        .weight(0.7f)
+                        .padding(8.dp)
                 ) {
                     PlaylistInfo(playlist)
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
             Buttons()
         }
     }
@@ -101,12 +107,11 @@ fun PlaylistInfo(playlist: Playlist) {
     )
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .wrapContentSize()
+        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier.wrapContentSize()
     ) {
         Text(
-            text = "${playlist.owner.display_name} ${if (playlist.followers!! < 1) " • " else ""}",
+            text = "${playlist.owner.display_name} ${if (playlist.followers!! > 1) " • " else ""}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.tertiary
         )
@@ -120,6 +125,7 @@ fun PlaylistInfo(playlist: Playlist) {
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
     ) {
         IconButton(
             onClick = { /*TODO*/ },
@@ -127,16 +133,14 @@ fun PlaylistInfo(playlist: Playlist) {
             Icon(
                 imageVector = Icons.Outlined.AddCircle,
                 contentDescription = "followed",
-                modifier = Modifier
-                    .fillMaxSize(0.7f)
+                modifier = Modifier.size(24.dp)
             )
         }
         IconButton(onClick = { /*TODO*/ }) {
             Icon(
                 painter = more,
                 contentDescription = "More",
-                modifier = Modifier
-                    .fillMaxSize(0.7f)
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -159,28 +163,25 @@ fun Buttons() {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
             modifier = Modifier
-                .height(64.dp)
                 .weight(1f)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxHeight(0.95f)
+                    .fillMaxWidth()
             ) {
                 Icon(
                     painter = shuffle,
                     contentDescription = "Shuffle button",
-                    modifier = Modifier
-                        .fillMaxHeight(0.5f)
-                        .size(32.dp)
+                    modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = "Shuffle",
                     color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
         }
@@ -190,28 +191,25 @@ fun Buttons() {
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
             modifier = Modifier
-                .height(64.dp)
                 .weight(1f)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.95f)
             ) {
                 Icon(
                     painter = play,
                     contentDescription = "Play button",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .fillMaxHeight(0.5f)
+                    modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = "Play",
                     color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
         }
