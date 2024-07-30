@@ -1,6 +1,6 @@
 package com.clovermusic.clover.data.spotify.api.service
 
-import com.clovermusic.clover.data.spotify.api.response.auth.SpotifyAuthResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.auth.SpotifyAuthResponseDto
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST

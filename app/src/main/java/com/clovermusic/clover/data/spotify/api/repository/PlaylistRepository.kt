@@ -1,11 +1,11 @@
 package com.clovermusic.clover.data.spotify.api.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.spotify.api.response.common.ImageResponseDto
-import com.clovermusic.clover.data.spotify.api.response.common.PlaylistTrackResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.CreatePlaylistRequest
-import com.clovermusic.clover.data.spotify.api.response.playlists.PlaylistResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.UsersPlaylistItemDto
+import com.clovermusic.clover.data.spotify.api.dto.common.ImageResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.PlaylistTrackResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.CreatePlaylistRequest
+import com.clovermusic.clover.data.spotify.api.dto.playlists.PlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.UsersPlaylistItemDto
 import com.clovermusic.clover.data.spotify.api.service.PlaylistService
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyApiException

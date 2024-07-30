@@ -1,10 +1,10 @@
 package com.clovermusic.clover.data.spotify.api.service
 
-import com.clovermusic.clover.data.spotify.api.response.common.ImageResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.CreatePlaylistRequest
-import com.clovermusic.clover.data.spotify.api.response.playlists.CurrentUsersPlaylistResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.ItemsInPlaylistResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.PlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.ImageResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.CreatePlaylistRequest
+import com.clovermusic.clover.data.spotify.api.dto.playlists.CurrentUsersPlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.ItemsInPlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.PlaylistResponseDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

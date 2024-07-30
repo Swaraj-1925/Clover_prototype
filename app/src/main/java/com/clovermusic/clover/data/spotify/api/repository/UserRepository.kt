@@ -1,8 +1,8 @@
 package com.clovermusic.clover.data.spotify.api.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.spotify.api.response.common.TrackArtistResponseDto
-import com.clovermusic.clover.data.spotify.api.response.users.UsersProfileResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
 import com.clovermusic.clover.data.spotify.api.service.UserService
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyApiException
