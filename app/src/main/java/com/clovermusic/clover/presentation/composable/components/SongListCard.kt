@@ -3,6 +3,7 @@ package com.clovermusic.clover.presentation.composable.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,13 +55,15 @@ fun SongListCard(
                 text = index.toString(),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.width(24.dp)
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .width(IntrinsicSize.Min)
             )
             Card(
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 4.dp)
                     .aspectRatio(1f)
-                    .weight(0.35f)
+                    .weight(0.3f)
             ) {
                 AsyncImage(
                     model = track.albums.image?.firstOrNull()?.url,
