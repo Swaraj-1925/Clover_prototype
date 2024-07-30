@@ -53,6 +53,17 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
+    fun skipToPrevious() {
+        viewModelScope.launch {
+            try {
+                playback.skipToPrevious()
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error skipping to next", e)
+                _playbackState.value = PlaybackState.Error("Error skipping to next: ${e.message}")
+            }
+        }
+    }
+
     fun togglePlayPause() {
         viewModelScope.launch {
             try {
@@ -68,6 +79,39 @@ class MusicPlayerViewModel @Inject constructor(
                 Log.e("HomeViewModel", "Error toggling play/pause", e)
                 _playbackState.value =
                     PlaybackState.Error("Error toggling play/pause: ${e.message}")
+            }
+        }
+    }
+
+    fun toggleRepeat() {
+        viewModelScope.launch {
+            try {
+                playback.toggleRepeat()
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error skipping to next", e)
+                _playbackState.value = PlaybackState.Error("Error skipping to next: ${e.message}")
+            }
+        }
+    }
+
+    fun toggleShuffle() {
+        viewModelScope.launch {
+            try {
+                playback.toggleShuffle()
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error skipping to next", e)
+                _playbackState.value = PlaybackState.Error("Error skipping to next: ${e.message}")
+            }
+        }
+    }
+
+    fun seekTo(position: Long) {
+        viewModelScope.launch {
+            try {
+                playback.seekTo(position)
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error skipping to next", e)
+                _playbackState.value = PlaybackState.Error("Error skipping to next: ${e.message}")
             }
         }
     }

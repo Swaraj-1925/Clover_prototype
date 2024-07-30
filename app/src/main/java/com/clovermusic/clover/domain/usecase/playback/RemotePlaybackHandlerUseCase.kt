@@ -27,6 +27,7 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
     suspend fun toggleShuffle() = performRemoteAction { it.playerApi.toggleShuffle() }
     suspend fun toggleRepeat() = performRemoteAction { it.playerApi.toggleRepeat() }
     suspend fun seekTo(position: Long) = performRemoteAction { it.playerApi.seekTo(position) }
+    suspend fun 
     suspend fun isMusicPlaying(): Boolean = coroutineScope {
         try {
             var isPlaying = true
