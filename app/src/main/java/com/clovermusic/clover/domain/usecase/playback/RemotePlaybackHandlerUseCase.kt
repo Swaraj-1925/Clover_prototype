@@ -20,15 +20,7 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
     }
 
     suspend fun playMusic(uri: String) = performRemoteAction { it.playerApi.play(uri) }
-    suspend fun pauseMusic() = performRemoteAction {
-        try {
-
-            it.playerApi.pause()
-        } catch (e: Exception) {
-            Log.e("RemotePlaybackHandlerUseCase", "Error pausing music")
-        }
-    }
-
+    suspend fun pauseMusic() = performRemoteAction { it.playerApi.pause() }
     suspend fun resumeMusic() = performRemoteAction { it.playerApi.resume() }
     suspend fun skipToNext() = performRemoteAction { it.playerApi.skipNext() }
     suspend fun skipToPrevious() = performRemoteAction { it.playerApi.skipPrevious() }
@@ -37,7 +29,7 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
 
     suspend fun isMusicPlaying(): Boolean = coroutineScope {
         try {
-            var isPlaying = false
+            var isPlaying = true
             performRemoteAction { remote ->
                 remote.playerApi.playerState.setResultCallback { playerState ->
                     isPlaying = !playerState.isPaused
