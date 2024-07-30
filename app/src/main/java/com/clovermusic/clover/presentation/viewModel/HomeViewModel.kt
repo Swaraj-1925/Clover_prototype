@@ -80,7 +80,6 @@ class HomeViewModel @Inject constructor(
                     playback.resumeMusic()
                     _playbackState.value = PlaybackState.Playing(currentState.songDetails)
                 }
-//                refreshPlaybackState()
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error toggling play/pause", e)
                 _playbackState.value =
