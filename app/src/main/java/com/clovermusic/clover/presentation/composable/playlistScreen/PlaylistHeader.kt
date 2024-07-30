@@ -1,6 +1,5 @@
 package com.clovermusic.clover.presentation.composable.playlistScreen
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,15 +21,11 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -46,7 +41,6 @@ import com.clovermusic.clover.util.Parsers
 fun PlaylistHeader(
     playlist: Playlist
 ) {
-
     Surface(
         color = Color.Transparent,
         modifier = Modifier
@@ -79,16 +73,14 @@ fun PlaylistHeader(
                 ) {
                     PlaylistInfo(playlist)
                 }
-
             }
             Buttons()
-
         }
     }
 }
 
 @Composable
-fun PlaylistInfo(playlist: Playlist){
+fun PlaylistInfo(playlist: Playlist) {
     val more = painterResource(id = R.drawable.more2)
 
     Text(
@@ -148,17 +140,16 @@ fun PlaylistInfo(playlist: Playlist){
             )
         }
     }
-
 }
+
 @Composable
-fun Buttons(){
+fun Buttons() {
     val shuffle = painterResource(id = R.drawable.shuffle1)
     val play = painterResource(id = R.drawable.play2)
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
             .padding(vertical = 8.dp, horizontal = 14.dp)
             .background(color = Color.Transparent)
     ) {
@@ -169,8 +160,8 @@ fun Buttons(){
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
             modifier = Modifier
                 .height(64.dp)
-                .fillMaxWidth(0.5f)
-        )  {
+                .weight(1f)
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -200,14 +191,13 @@ fun Buttons(){
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
             modifier = Modifier
                 .height(64.dp)
-                .fillMaxWidth()
-        )  {
+                .weight(1f)
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxSize()
-
             ) {
                 Icon(
                     painter = play,
@@ -215,7 +205,6 @@ fun Buttons(){
                     modifier = Modifier
                         .size(32.dp)
                         .fillMaxHeight(0.5f)
-
                 )
                 Text(
                     text = "Play",
@@ -225,7 +214,6 @@ fun Buttons(){
                         .padding(horizontal = 8.dp)
                 )
             }
-
         }
     }
 }

@@ -57,7 +57,7 @@ fun NewReleaseCard(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            MaterialTheme.colorScheme.primaryContainer
+                            Color(0xFF2C2C2C)
                         ),
                         startY = 0f,
                         endY = Float.POSITIVE_INFINITY
@@ -67,7 +67,7 @@ fun NewReleaseCard(
         Text(
             text = album.albumName,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
+            color = Color(0xFFEAEAEA),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -85,6 +85,7 @@ fun NewReleaseCard(
             Icon(
                 painter = playButton,
                 contentDescription = "play button",
+                tint = Color(0xFFEAEAEA)
             )
         }
     }
