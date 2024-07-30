@@ -28,7 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar2
-import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
@@ -58,24 +57,12 @@ fun HomeScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             Column {
-                when (val state = playbackState) {
-                    is PlaybackState.Playing -> {
-                        PlayingSongBar2(
-                            songDetails = state.songDetails,
-                            onPlayClick = { viewModel.togglePlayPause() },
-                            onNextClick = { viewModel.skipToNext() }
-                        )
-                    }
-
-                    is PlaybackState.Paused -> {
-                        PlayingSongBar2(
-                            songDetails = state.songDetails,
-                            onPlayClick = {},
-                            onNextClick = {}
-                        )
-                    }
-
-                    else -> {}
+                if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
+                    PlayingSongBar2(
+                        playbackState = playbackState,
+                        onPlayPauseClick = { viewModel.togglePlayPause() },
+                        onNextClick = { viewModel.skipToNext() }
+                    )
                 }
                 NavigationBar(
                     onHomeClick = { /*TODO*/ },
