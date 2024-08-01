@@ -4,21 +4,27 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
-import com.clovermusic.clover.data.local.crossRef.PlaylistTrackCrossRef
-import com.clovermusic.clover.data.local.entity.UserPlaylistEntity
-import com.clovermusic.clover.data.local.relation.PlaylistWithTracks
+import com.clovermusic.clover.data.local.entity.PlaylistEntity
+import com.clovermusic.clover.data.local.entity.PlaylistTrackEntity
 
 @Dao
 interface PlaylistDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUserPlaylist(playlist: UserPlaylistEntity)
+    @Query("SELECT * FROM playlist")
+    suspend fun getAllPlaylists(): List<PlaylistEntity>
+
+    @Query("SELECT * FROM playlist WHERE uri = :playlistUri")
+    suspend fun getPlaylist(playlistUri: String): PlaylistEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlaylistTrackCrossRef(crossRef: PlaylistTrackCrossRef)
+    suspend fun insertPlaylist(playlist: List<PlaylistEntity>)
 
-    @Transaction
-    @Query("SELECT * FROM playlists WHERE id = :playlistId")
-    suspend fun getPlaylistWithTracks(playlistId: String): PlaylistWithTracks
+    @Query("SELECT * FROM playlist_track WHERE playlistUri = :playlistUri")
+    suspend fun getPlaylistTracks(playlistUri: String): List<PlaylistTrackEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTracks(tracks: List<PlaylistTrackEntity>)
+
+    @Query("DELETE FROM playlist_track WHERE playlistUri = :playlistUri")
+    suspend fun deleteTracksByPlaylist(playlistUri: String)
 }

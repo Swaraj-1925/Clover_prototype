@@ -110,7 +110,7 @@ class PlaylistRepository @Inject constructor(
             }
         }
 
-    // Function to get enter playlist and all the data related to it
+    // Function to get entire playlist and all the data related to it
     suspend fun getPlaylist(playlistId: String): PlaylistResponseDto =
         withContext(Dispatchers.IO) {
             try {

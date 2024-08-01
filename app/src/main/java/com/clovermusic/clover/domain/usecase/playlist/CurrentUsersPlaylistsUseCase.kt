@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class CurrentUsersPlaylistsUseCase @Inject constructor(
     private val repository: PlaylistRepository,
-    private val authRepository: SpotifyAuthRepository
+    private val authRepository: SpotifyAuthRepository,
 ) {
     //    Get current users(Logged in) playlists
     suspend operator fun invoke(): List<UserPlaylist> {
