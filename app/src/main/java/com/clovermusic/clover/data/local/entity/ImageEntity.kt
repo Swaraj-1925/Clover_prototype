@@ -5,10 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "image")
 data class ImageEntity(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val url: String,
     val height: Int?,
     val width: Int?,
-    val url: String,
+    val ownerId: String,
     val type: ImageType
 )
 

@@ -45,6 +45,7 @@ class PlaylistRepository @Inject constructor(
                     "PlaylistRepository",
                     "getCurrentUsersPlaylists: Success, total playlists: ${userPlaylists.size}"
                 )
+
                 userPlaylists
             } catch (e: IOException) {
                 throw CustomException.NetworkException(

@@ -3,13 +3,13 @@ package com.clovermusic.clover.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "playlist")
-data class PlaylistEntity(
+@Entity(tableName = "playlists")
+data class UserPlaylistEntity(
     @PrimaryKey val id: String,
     val collaborative: Boolean,
     val description: String,
-    val followers: Int? = 0,
     val name: String,
     val snapshotId: String,
-    val uri: String
+    val uri: String,
+    val tracks: Int
 )
