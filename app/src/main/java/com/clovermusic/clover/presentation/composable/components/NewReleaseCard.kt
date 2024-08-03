@@ -25,13 +25,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.domain.model.Albums
+import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
 
 @Composable
 fun NewReleaseCard(
     viewModel: HomeViewModel = hiltViewModel(),
-    album: Albums,
+    album: AlbumEntity,
 ) {
     val playButton = painterResource(id = R.drawable.play)
     Box(
@@ -41,8 +41,8 @@ fun NewReleaseCard(
     ) {
         Card {
             AsyncImage(
-                model = album.image?.firstOrNull()?.url,
-                contentDescription = album.albumName,
+                model = album.imageUrl,
+                contentDescription = album.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
@@ -65,7 +65,7 @@ fun NewReleaseCard(
                 )
         )
         Text(
-            text = album.albumName,
+            text = album.name,
             style = MaterialTheme.typography.titleMedium,
             color = Color(0xFFEAEAEA),
             maxLines = 1,

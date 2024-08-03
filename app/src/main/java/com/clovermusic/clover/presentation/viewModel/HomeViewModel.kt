@@ -89,15 +89,15 @@ class HomeViewModel @Inject constructor(
     }
 
     fun refreshHomeScreen() {
-        getHomeScreen()
+        getHomeScreen(forceRefresh = true)
         refreshPlaybackState()
     }
 
-    private fun getHomeScreen() {
+    private fun getHomeScreen(forceRefresh: Boolean = false) {
         viewModelScope.launch {
             _homeUiState.value = Resource.Loading()
             try {
-                val homeScreenState = fetchHomeScreenData()
+                val homeScreenState = fetchHomeScreenData(forceRefresh)
                 _homeUiState.value = Resource.Success(homeScreenState)
                 Log.d("HomeViewModel", "fetchHomeScreenData: Success ${homeUiState.value.data}")
             } catch (e: Exception) {
@@ -107,21 +107,29 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchHomeScreenData(): HomeScreenState = coroutineScope {
-        val currentUsersPlaylistsDeferred = async { playlistUseCases.currentUserPlaylist() }
-        val followedArtistsAlbumsDeferred = async { appUseCases.latestReleasesUseCase(limit = 100) }
-        val topArtistsDeferred = async { userUseCases.topArtists("medium_term") }
+    private suspend fun fetchHomeScreenData(forceRefresh: Boolean): HomeScreenState =
+        coroutineScope {
+            val currentUsersPlaylistsDeferred =
+                async { playlistUseCases.currentUserPlaylist(forceRefresh) }
+            val followedArtistsAlbumsDeferred =
+                async { appUseCases.latestReleasesUseCase(forceRefresh, limit = 200) }
+            val topArtistsDeferred = async {
+                userUseCases.topArtists(
+                    timeRange = "medium_term",
+                    forceRefresh = forceRefresh
+                )
+            }
 
-        val followedArtistsAlbums = followedArtistsAlbumsDeferred.await()
-        val currentUsersPlaylists = currentUsersPlaylistsDeferred.await().take(5)
-        val topArtists = topArtistsDeferred.await().take(10)
+            val followedArtistsAlbums = followedArtistsAlbumsDeferred.await()
+            val currentUsersPlaylists = currentUsersPlaylistsDeferred.await().take(5)
+            val topArtists = topArtistsDeferred.await().take(10)
 
-        HomeScreenState(
-            followedArtistsAlbums = followedArtistsAlbums,
-            currentUsersPlaylists = currentUsersPlaylists,
-            topArtists = topArtists
-        )
-    }
+            HomeScreenState(
+                followedArtistsAlbums = followedArtistsAlbums,
+                currentUsersPlaylists = currentUsersPlaylists,
+                topArtists = topArtists
+            )
+        }
 
     private fun startPlaybackMonitoring() {
         Log.d("HomeViewModel", "Starting playback monitoring")

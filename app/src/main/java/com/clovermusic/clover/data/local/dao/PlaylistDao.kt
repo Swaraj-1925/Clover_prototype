@@ -4,27 +4,33 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.clovermusic.clover.data.local.entity.PlaylistEntity
+import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.PlaylistTrackEntity
 
 @Dao
 interface PlaylistDao {
 
     @Query("SELECT * FROM playlist")
-    suspend fun getAllPlaylists(): List<PlaylistEntity>
+    suspend fun getAllPlaylists(): List<PlaylistInfoEntity>
 
-    @Query("SELECT * FROM playlist WHERE uri = :playlistUri")
-    suspend fun getPlaylist(playlistUri: String): PlaylistEntity?
+    @Query("SELECT * FROM playlist WHERE id = :playlistId")
+    suspend fun getPlaylist(playlistId: String): PlaylistInfoEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlaylist(playlist: List<PlaylistEntity>)
+    suspend fun insertPlaylists(playlist: List<PlaylistInfoEntity>)
 
-    @Query("SELECT * FROM playlist_track WHERE playlistUri = :playlistUri")
-    suspend fun getPlaylistTracks(playlistUri: String): List<PlaylistTrackEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPlaylist(playlist: PlaylistInfoEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPlaylist(playlist: List<PlaylistInfoEntity>)
+
+    @Query("SELECT * FROM playlist_track WHERE playlistId = :playlistId")
+    suspend fun getPlaylistTracks(playlistId: String): List<PlaylistTrackEntity>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTracks(tracks: List<PlaylistTrackEntity>)
 
-    @Query("DELETE FROM playlist_track WHERE playlistUri = :playlistUri")
-    suspend fun deleteTracksByPlaylist(playlistUri: String)
+    @Query("DELETE FROM playlist_track WHERE playlistId = :playlistId")
+    suspend fun deleteTracksByPlaylist(playlistId: String)
 }

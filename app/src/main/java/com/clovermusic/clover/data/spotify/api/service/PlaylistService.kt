@@ -5,6 +5,7 @@ import com.clovermusic.clover.data.spotify.api.dto.playlists.CreatePlaylistReque
 import com.clovermusic.clover.data.spotify.api.dto.playlists.CurrentUsersPlaylistResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.playlists.ItemsInPlaylistResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.playlists.PlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.TracksDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -12,6 +13,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface PlaylistService {
 
@@ -56,4 +58,7 @@ interface PlaylistService {
         @Path("playlist_id") playlistId: String,
         @Body image: String // Base64-encoded JPEG image data
     ): ImageResponseDto
+
+    @GET
+    suspend fun getPlaylistTracks(@Url url: String): TracksDto
 }

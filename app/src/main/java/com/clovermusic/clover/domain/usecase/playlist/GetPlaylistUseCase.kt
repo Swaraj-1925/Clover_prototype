@@ -1,21 +1,26 @@
 package com.clovermusic.clover.domain.usecase.playlist
 
 import android.util.Log
-import com.clovermusic.clover.data.spotify.api.repository.PlaylistRepository
+import com.clovermusic.clover.data.providers.Providers
+import com.clovermusic.clover.data.providers.playlist.Playlist
 import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
-import com.clovermusic.clover.domain.mapper.toPlaylist
-import com.clovermusic.clover.domain.model.Playlist
 import javax.inject.Inject
 
 class GetPlaylistUseCase @Inject constructor(
-    private val repository: PlaylistRepository,
+    private val providers: Providers,
     private val authRepository: SpotifyAuthRepository
 ) {
     //    Get a single playlist and all details about it
-    suspend operator fun invoke(playlistId: String): Playlist {
+    suspend operator fun invoke(
+        forceRefresh: Boolean,
+        playlistId: String,
+    ): Playlist? {
         return runCatching {
             authRepository.ensureValidAccessToken()
-            repository.getPlaylist(playlistId).toPlaylist()
+            providers.getPlaylist(
+                forceRefresh = forceRefresh,
+                playlistId = playlistId,
+            )
         }.onFailure { e ->
             Log.e("PlaylistUseCase", "Error fetching playlist", e)
         }.getOrThrow()

@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.clovermusic.clover.domain.model.Playlist
+import com.clovermusic.clover.data.providers.playlist.Playlist
 import com.clovermusic.clover.presentation.composable.components.SongListCard
 
 @Composable
@@ -24,7 +24,7 @@ fun PlaylistContent(
                 PlaylistHeader(playlist = playlist)
             }
         }
-        itemsIndexed(playlist?.tracks ?: emptyList()) { index, track ->
+        itemsIndexed(playlist!!.tracks ?: emptyList()) { index, track ->
             SongListCard(track = track, index = index + 1)
         }
     }

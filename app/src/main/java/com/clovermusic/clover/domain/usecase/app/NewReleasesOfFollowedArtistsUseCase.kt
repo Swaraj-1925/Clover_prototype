@@ -1,7 +1,7 @@
 package com.clovermusic.clover.domain.usecase.app
 
 import android.util.Log
-import com.clovermusic.clover.domain.model.Albums
+import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.util.Parsers.parseReleaseDate
@@ -18,24 +18,33 @@ class NewReleasesOfFollowedArtistsUseCase @Inject constructor(
     private val userUseCases: UserUseCases,
     private val artistsUseCase: ArtistUseCases
 ) {
-    suspend operator fun invoke(limit: Int?): List<Albums> = coroutineScope {
-        runCatching {
-            val followedArtists = userUseCases.followedArtists()
-            val artistIds = followedArtists.map { it.id }
+    suspend operator fun invoke(forceRefresh: Boolean, limit: Int?): List<AlbumEntity> =
+        coroutineScope {
+            runCatching {
+                val followedArtists = userUseCases.followedArtists(forceRefresh)
+                val artistIds = followedArtists.map { it.artistsId }
 
-            val latestReleases = artistsUseCase.artistAlbums(artistIds, limit)
+                val latestReleases = artistsUseCase.artistAlbums(
+                    forceRefresh = forceRefresh,
+                    artistIds = artistIds,
+                    limit = limit
+                )
 
-            val data = latestReleases.sortedByDescending { res ->
-                parseReleaseDate(res.releaseDate)
-            }.take(6)
-            Log.i(
-                "LatestReleasesUseCase",
-                "getLatestReleasesOfFollowedArtists: Success, total albums: $data"
-            )
-            data
-        }.onFailure { e ->
-            Log.e("LatestReleasesUseCase", "Error fetching latest releases of followed artists", e)
-        }.getOrThrow()
+                val data = latestReleases.sortedByDescending { res ->
+                    parseReleaseDate(res.releaseDate)
+                }.take(6)
+                Log.i(
+                    "LatestReleasesUseCase",
+                    "getLatestReleasesOfFollowedArtists: Success, total albums: $data"
+                )
+                data
+            }.onFailure { e ->
+                Log.e(
+                    "LatestReleasesUseCase",
+                    "Error fetching latest releases of followed artists",
+                    e
+                )
+            }.getOrThrow()
 
-    }
+        }
 }

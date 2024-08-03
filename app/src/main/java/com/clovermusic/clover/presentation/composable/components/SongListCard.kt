@@ -29,12 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.domain.model.PlaylistItems
+import com.clovermusic.clover.data.local.entity.PlaylistTrackEntity
 import com.clovermusic.clover.util.Parsers
 
 @Composable
 fun SongListCard(
-    track: PlaylistItems,
+    track: PlaylistTrackEntity,
     index: Int
 ) {
     Card(
@@ -66,7 +66,7 @@ fun SongListCard(
                     .weight(0.3f)
             ) {
                 AsyncImage(
-                    model = track.albums.image?.firstOrNull()?.url,
+                    model = track.imageUrl,
                     contentDescription = track.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -92,7 +92,7 @@ fun SongListCard(
                         .fillMaxSize()
                 ) {
                     Text(
-                        text = track.artists.joinToString(", ") { it.name },
+                        text = track.artistName,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

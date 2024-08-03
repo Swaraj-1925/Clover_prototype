@@ -23,10 +23,10 @@ data class PlaylistResponseDto(
 
 data class TracksDto(
     val href: String,
-    val items: List<PlaylistTrackResponseDto>,
+    var items: List<PlaylistTrackResponseDto>,
     val limit: Int,
-    val next: String,
+    val next: String?,
     val offset: Int,
-    val previous: String,
+    val previous: String?,
     val total: Int
 )

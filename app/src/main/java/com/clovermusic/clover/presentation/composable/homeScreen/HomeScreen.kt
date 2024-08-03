@@ -38,7 +38,7 @@ import com.clovermusic.clover.util.Resource
 @Composable
 fun HomeScreen(
     onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (String) -> Unit,
+    onPlaylistNameClick: (id: String) -> Unit,
 ) {
     val viewModel: HomeViewModel = hiltViewModel()
 
@@ -113,7 +113,7 @@ fun HomeScreen(
 private fun HomeContent(
     data: HomeScreenState,
     onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (String) -> Unit
+    onPlaylistNameClick: (id: String) -> Unit
 ) {
     CloverTheme {
         Surface(

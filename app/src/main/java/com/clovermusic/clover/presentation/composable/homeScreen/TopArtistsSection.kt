@@ -16,12 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.clovermusic.clover.domain.model.common.TrackArtists
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.presentation.composable.components.ArtistCard
 
 @Composable
 fun TopArtistsSection(
-    artists: List<TrackArtists>,
+    artists: List<ArtistsEntity>,
     onArtistClick: () -> Unit,
 ) {
     Column(
@@ -55,13 +55,11 @@ fun TopArtistsSection(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(artists) { artist ->
-                artist.images?.get(0)?.url?.let {
-                    ArtistCard(
-                        artistName = artist.name,
-                        url = it,
-                        onArtistClick = onArtistClick
-                    )
-                }
+                ArtistCard(
+                    artistName = artist.name,
+                    url = artist.imageUrl,
+                    onArtistClick = {}
+                )
             }
         }
     }

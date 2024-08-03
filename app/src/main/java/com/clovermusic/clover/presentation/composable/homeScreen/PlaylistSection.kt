@@ -17,16 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.clovermusic.clover.domain.model.UserPlaylist
+import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.presentation.composable.components.PlaylistCard
 import com.clovermusic.clover.presentation.viewModel.PlaylistViewModel
 
 @Composable
 fun PlaylistSection(
     viewModel: PlaylistViewModel = hiltViewModel(),
-    playlists: List<UserPlaylist>,
+    playlists: List<PlaylistInfoEntity>,
     onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (String) -> Unit,
+    onPlaylistNameClick: (id: String) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -42,7 +42,7 @@ fun PlaylistSection(
                 .padding(horizontal = 8.dp)
         ) {
             Text(
-                text = "Your Playlist",
+                text = "Your GetPlaylist",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -58,11 +58,11 @@ fun PlaylistSection(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(playlists) { playlist ->
-                playlist.image[0].url?.let { url ->
+                playlist.imageUrl?.let {
                     PlaylistCard(
-                        url = url,
+                        url = it,
                         playlistName = playlist.name,
-                        songCount = playlist.tracks,
+                        songCount = playlist.totalTrack,
                         onNameClick = { onPlaylistNameClick(playlist.id) },
                         onCardClick = { viewModel.playPlaylist(playlist.uri) }
                     )
