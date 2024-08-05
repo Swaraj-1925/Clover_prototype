@@ -5,8 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "artists")
 data class ArtistsEntity(
-    @PrimaryKey val uri: String,
-    val artistsId: String,
+    @PrimaryKey(autoGenerate = false)
+    val artistId: String,
+    val uri: String,
+    val genres: List<String>,
     val imageUrl: String,
     val name: String,
     val isFollowed: Boolean = false,

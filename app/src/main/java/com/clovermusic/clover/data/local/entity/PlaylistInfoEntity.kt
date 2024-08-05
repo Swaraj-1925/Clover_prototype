@@ -5,15 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "playlist")
 data class PlaylistInfoEntity(
-    @PrimaryKey val uri: String,
-    val id: String,
+    @PrimaryKey(autoGenerate = false)
+    val playlistId: String,
+    val userId: String = " ",
+    val uri: String,
     val collaborative: Boolean,
     val description: String?,
     val name: String,
-    val primaryColor: String?,
-    val owner: String,
-    val ownerId: String,
-    val isPublic: Boolean,
     val snapshotId: String?,
     val totalTrack: Int,
     val imageUrl: String?,

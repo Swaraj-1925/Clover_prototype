@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.presentation.composable.components.PlaylistCard
-import com.clovermusic.clover.presentation.viewModel.PlaylistViewModel
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 
 @Composable
 fun PlaylistSection(
-    viewModel: PlaylistViewModel = hiltViewModel(),
+    viewModel: MusicPlayerViewModel = hiltViewModel(),
     playlists: List<PlaylistInfoEntity>,
     onPlaylistClick: (String) -> Unit,
     onPlaylistNameClick: (id: String) -> Unit,
@@ -63,8 +63,8 @@ fun PlaylistSection(
                         url = it,
                         playlistName = playlist.name,
                         songCount = playlist.totalTrack,
-                        onNameClick = { onPlaylistNameClick(playlist.id) },
-                        onCardClick = { viewModel.playPlaylist(playlist.uri) }
+                        onNameClick = { onPlaylistNameClick(playlist.playlistId) },
+                        onCardClick = { viewModel.playTrack(playlist.uri) }
                     )
                 }
             }

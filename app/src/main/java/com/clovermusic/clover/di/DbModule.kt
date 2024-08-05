@@ -3,9 +3,8 @@ package com.clovermusic.clover.di
 import android.content.Context
 import androidx.room.Room
 import com.clovermusic.clover.data.local.AppDatabase
-import com.clovermusic.clover.data.local.dao.AlbumDao
-import com.clovermusic.clover.data.local.dao.ArtistDao
-import com.clovermusic.clover.data.local.dao.PlaylistDao
+import com.clovermusic.clover.data.local.dao.InsertDataDao
+import com.clovermusic.clover.data.local.dao.ProvideDataDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,19 +28,14 @@ object DbModule {
 
     @Singleton
     @Provides
-    fun providePlaylistDao(appDatabase: AppDatabase): PlaylistDao {
-        return appDatabase.playlistDao()
+    fun provideInsertDataDao(appDatabase: AppDatabase): InsertDataDao {
+        return appDatabase.insertDataDao()
     }
 
     @Singleton
     @Provides
-    fun provideAlbumDao(appDatabase: AppDatabase): AlbumDao {
-        return appDatabase.albumDao()
+    fun provideAlbumDao(appDatabase: AppDatabase): ProvideDataDao {
+        return appDatabase.provideDataDao()
     }
 
-    @Singleton
-    @Provides
-    fun provideArtistDao(appDatabase: AppDatabase): ArtistDao {
-        return appDatabase.artistDao()
-    }
 }

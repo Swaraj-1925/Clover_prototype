@@ -22,7 +22,7 @@ interface ArtistService {
         @Path("artistId") artistId: String,
     ): ArtistsTopTracksResponseDto
 
-    @GET("artists/{id}/related-artists")
+    @GET("artists/{trackId}/related-artists")
     suspend fun getArtistRelatedArtists(
         @Path("id") id: String
     ): ArtistRelatedArtistsResponseDto
