@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "playlist")
 data class PlaylistInfoEntity(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey
     val playlistId: String,
     val userId: String = " ",
     val uri: String,
@@ -15,6 +15,6 @@ data class PlaylistInfoEntity(
     val snapshotId: String?,
     val totalTrack: Int,
     val imageUrl: String?,
-    val followers: Int,
+    val followers: Int = 0,
     val timestamp: Long
 )

@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "collaborators")
 data class CollaboratorsEntity(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey
     val collaboratorId: String,
     val name: String = " ",
     val imageUrl: String = " ",

@@ -29,12 +29,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.data.local.entity.PlaylistTrackEntity
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.util.Parsers
 
 @Composable
 fun SongListCard(
-    track: PlaylistTrackEntity,
+    track: TrackEntity,
+    artists: List<ArtistsEntity>,
     index: Int
 ) {
     Card(
@@ -92,7 +94,7 @@ fun SongListCard(
                         .fillMaxSize()
                 ) {
                     Text(
-                        text = track.artistName,
+                        text = artists.joinToString(", ") { it.name },
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

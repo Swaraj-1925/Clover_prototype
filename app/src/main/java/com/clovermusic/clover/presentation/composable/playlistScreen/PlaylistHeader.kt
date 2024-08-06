@@ -36,12 +36,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.data.providers.playlist.Playlist
+import com.clovermusic.clover.data.local.entity.crossRef.PlaylistWithDetails
 import com.clovermusic.clover.util.Parsers
 
 @Composable
 fun PlaylistHeader(
-    playlist: Playlist
+    playlist: PlaylistWithDetails
 ) {
     Surface(
         color = Color.Transparent,
@@ -64,8 +64,8 @@ fun PlaylistHeader(
                         .weight(0.4f)
                 ) {
                     AsyncImage(
-                        model = playlist.playlistInfo!!.imageUrl,
-                        contentDescription = playlist.playlistInfo.name,
+                        model = playlist.playlist.imageUrl,
+                        contentDescription = playlist.playlist.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -86,20 +86,21 @@ fun PlaylistHeader(
 }
 
 @Composable
-fun PlaylistInfo(playlist: Playlist) {
+fun PlaylistInfo(playlist: PlaylistWithDetails) {
     val more = painterResource(id = R.drawable.more2)
 
     Text(
-        text = "${playlist.tracks!!.size} songs • ${
+        text = "${playlist.playlist.totalTrack} songs • ${
             Parsers.parseDurationHoursMinutes(
-                playlist.tracks.sumOf { it.durationMs })
+                playlist.tracks.sumOf { it.track.durationMs }
+            )
         }",
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.secondary
     )
 
     Text(
-        text = playlist.playlistInfo!!.name,
+        text = playlist.playlist.name,
         style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.primary,
         maxLines = 2,
@@ -111,13 +112,13 @@ fun PlaylistInfo(playlist: Playlist) {
         modifier = Modifier.wrapContentSize()
     ) {
         Text(
-            text = "${playlist.playlistInfo.owner} ${if (playlist.playlistInfo.followers > 1) " • " else ""}",
+            text = "abc ${if (playlist.playlist.followers > 1) " • " else ""}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.tertiary
         )
-        if (playlist.playlistInfo.followers < 1) {
+        if (playlist.playlist.followers < 1) {
             Text(
-                text = "${playlist.playlistInfo.followers} followers",
+                text = "${playlist.playlist.followers} followers",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary
             )

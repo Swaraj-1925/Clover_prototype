@@ -5,6 +5,7 @@ import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.util.Parsers.parseReleaseDate
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
@@ -21,8 +22,8 @@ class NewReleasesOfFollowedArtistsUseCase @Inject constructor(
     suspend operator fun invoke(forceRefresh: Boolean, limit: Int?): List<AlbumEntity> =
         coroutineScope {
             runCatching {
-                val followedArtists = userUseCases.followedArtists(forceRefresh)
-                val artistIds = followedArtists.map { it.artistsId }
+                val followedArtists = async { userUseCases.followedArtists(forceRefresh) }.await()
+                val artistIds = followedArtists.map { it.artistId }
 
                 val latestReleases = artistsUseCase.artistAlbums(
                     forceRefresh = forceRefresh,

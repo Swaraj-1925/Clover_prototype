@@ -26,11 +26,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
 import com.clovermusic.clover.data.local.entity.AlbumEntity
-import com.clovermusic.clover.presentation.viewModel.HomeViewModel
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 
 @Composable
 fun NewReleaseCard(
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: MusicPlayerViewModel = hiltViewModel(),
     album: AlbumEntity,
 ) {
     val playButton = painterResource(id = R.drawable.play)
@@ -76,7 +76,7 @@ fun NewReleaseCard(
                 .padding(16.dp)
         )
         IconButton(
-            onClick = { viewModel.playPlaylist(album.uri) },
+            onClick = { viewModel.playTrack(album.uri) },
             modifier = Modifier
                 .wrapContentSize()
                 .align(Alignment.BottomEnd)

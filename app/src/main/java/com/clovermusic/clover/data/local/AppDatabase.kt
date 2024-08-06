@@ -2,6 +2,7 @@ package com.clovermusic.clover.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.clovermusic.clover.data.local.dao.InsertDataDao
 import com.clovermusic.clover.data.local.dao.ProvideDataDao
@@ -14,7 +15,6 @@ import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.crossRef.CollaboratorsTrackCrossRef
 import com.clovermusic.clover.data.local.entity.crossRef.PlaylistTrackCrossRef
 import com.clovermusic.clover.data.local.entity.crossRef.TrackArtistsCrossRef
-import com.clovermusic.clover.data.providers.Converters
 
 
 @Database(
@@ -36,4 +36,12 @@ import com.clovermusic.clover.data.providers.Converters
 abstract class AppDatabase : RoomDatabase() {
     abstract fun insertDataDao(): InsertDataDao
     abstract fun provideDataDao(): ProvideDataDao
+}
+
+class Converters {
+    @TypeConverter
+    fun fromStringList(value: List<String>): String = value.joinToString(",")
+
+    @TypeConverter
+    fun toStringList(value: String): List<String> = value.split(",").filter { it.isNotEmpty() }
 }

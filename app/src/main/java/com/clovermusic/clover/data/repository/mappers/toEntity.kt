@@ -1,0 +1,140 @@
+package com.clovermusic.clover.data.repository.mappers
+
+import com.clovermusic.clover.data.local.entity.AlbumEntity
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
+import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.TrackEntity
+import com.clovermusic.clover.data.spotify.api.dto.common.AddedByResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.PlaylistTrackResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.TrackItemsResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.PlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.UsersPlaylistItemDto
+
+fun List<UsersPlaylistItemDto>.toEntity(userId: String = ""): List<PlaylistInfoEntity> {
+    return map {
+        PlaylistInfoEntity(
+            playlistId = it.id,
+            userId = userId,
+            uri = it.uri,
+            collaborative = it.collaborative,
+            description = it.description,
+            name = it.name,
+            snapshotId = it.snapshot_id,
+            totalTrack = it.tracks.total,
+            imageUrl = it.images.firstOrNull()?.url ?: "",
+            timestamp = System.currentTimeMillis(),
+        )
+    }
+}
+
+fun PlaylistResponseDto.toEntity(userId: String = ""): PlaylistInfoEntity {
+    return PlaylistInfoEntity(
+        playlistId = id,
+        userId = userId,
+        uri = uri,
+        collaborative = collaborative,
+        description = description,
+        name = name,
+        snapshotId = snapshot_id,
+        totalTrack = tracks.items.size,
+        imageUrl = images.firstOrNull()?.url ?: "",
+        timestamp = System.currentTimeMillis(),
+    )
+}
+
+fun List<PlaylistTrackResponseDto>.toEntity(): List<TrackEntity> {
+    return map {
+        TrackEntity(
+            trackId = it.track.id,
+            albumId = it.track.album.id,
+            uri = it.track.uri,
+            durationMs = it.track.duration_ms,
+            name = it.track.name,
+            imageUrl = it.track.album.images.firstOrNull()?.url ?: "",
+            previewUrl = it.track.preview_url,
+            timestamp = System.currentTimeMillis(),
+        )
+    }
+}
+
+fun AddedByResponseDto.toEntity(name: String = "", imageUrl: String = ""): CollaboratorsEntity {
+    return CollaboratorsEntity(
+        collaboratorId = id,
+        name = name,
+        imageUrl = imageUrl,
+        timeStamps = System.currentTimeMillis()
+    )
+}
+
+fun List<TrackArtistResponseDto>.toEntity(
+    followed: Boolean = false,
+    top: Boolean = false
+): List<ArtistsEntity> {
+    return map {
+        ArtistsEntity(
+            artistId = it.id,
+            uri = it.uri,
+            genres = it.genres ?: emptyList(),
+            imageUrl = it.images?.firstOrNull()?.url ?: "",
+            name = it.name,
+            isFollowed = followed,
+            isTopArtist = top,
+            timestamp = System.currentTimeMillis(),
+        )
+    }
+}
+
+fun AlbumResponseDto.toEntity(artistId: String): AlbumEntity {
+    return AlbumEntity(
+        albumId = id,
+        uri = uri,
+        name = name,
+        imageUrl = images.firstOrNull()?.url ?: "",
+        releaseDate = release_date_precision,
+        timestamp = System.currentTimeMillis(),
+        artistId = artistId
+    )
+}
+
+@JvmName("toAlbumEntity")
+fun List<AlbumResponseDto>.toEntity(artistId: String): List<AlbumEntity> {
+    return map {
+        AlbumEntity(
+            albumId = it.id,
+            artistId = artistId,
+            uri = it.uri,
+            name = it.name,
+            imageUrl = it.images.firstOrNull()?.url ?: "",
+            releaseDate = it.release_date_precision,
+            timestamp = System.currentTimeMillis(),
+        )
+    }
+}
+
+fun PlaylistResponseDto.toEntity() = PlaylistInfoEntity(
+    playlistId = this.id,
+    userId = this.owner.id,
+    uri = this.uri,
+    collaborative = this.collaborative,
+    description = this.description,
+    name = this.name,
+    snapshotId = this.snapshot_id,
+    totalTrack = this.tracks.total,
+    imageUrl = this.images.firstOrNull()?.url,
+    followers = this.followers.total ?: 0,
+    timestamp = System.currentTimeMillis()
+)
+
+fun TrackItemsResponseDto.toEntity() = TrackEntity(
+    trackId = this.id,
+    albumId = this.album.id,
+    uri = this.uri,
+    durationMs = this.duration_ms,
+    name = this.name,
+    imageUrl = this.album.images.firstOrNull()?.url ?: "",
+    previewUrl = this.preview_url,
+    timestamp = System.currentTimeMillis()
+)

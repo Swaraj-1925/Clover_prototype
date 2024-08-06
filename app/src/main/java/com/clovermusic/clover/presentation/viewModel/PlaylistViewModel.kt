@@ -2,10 +2,9 @@ package com.clovermusic.clover.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.clovermusic.clover.domain.model.Playlist
+import com.clovermusic.clover.data.local.entity.crossRef.PlaylistWithDetails
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.util.Resource
-import com.spotify.android.appremote.api.SpotifyAppRemote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,17 +12,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
 ) : ViewModel() {
-    private val _playlistUiState = MutableStateFlow<Resource<Playlist>>(Resource.Loading())
-    val playlistUiState: StateFlow<Resource<Playlist>> = _playlistUiState.asStateFlow()
-    private var spotifyAppRemote: SpotifyAppRemote? = null
+    private val _playlistUiState =
+        MutableStateFlow<Resource<PlaylistWithDetails>>(Resource.Loading())
+    val playlistUiState: StateFlow<Resource<PlaylistWithDetails>> =
+        _playlistUiState.asStateFlow()
 
-
-    fun getPlaylist(id: String, forceRefresh: Boolean = false) {
+    fun getPlaylist(id: String, forceRefresh: Boolean = true) {
         viewModelScope.launch {
             _playlistUiState.value = Resource.Loading()
             _playlistUiState.value = try {
@@ -38,5 +36,4 @@ class PlaylistViewModel @Inject constructor(
             }
         }
     }
-
 }
