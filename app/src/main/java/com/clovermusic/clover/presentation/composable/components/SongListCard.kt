@@ -27,15 +27,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.domain.model.PlaylistItems
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.data.local.entity.TrackEntity
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
 
 @Composable
 fun SongListCard(
-    track: PlaylistItems,
-    index: Int
+    track: TrackEntity,
+    artists: List<ArtistsEntity>,
+    index: Int,
+    viewModel: MusicPlayerViewModel = hiltViewModel()
 ) {
     Card(
         colors = CardDefaults.cardColors(Color.Transparent),
@@ -60,13 +65,14 @@ fun SongListCard(
                     .width(IntrinsicSize.Min)
             )
             Card(
+                onClick = { viewModel.playTrack(track.uri) },
                 modifier = Modifier
                     .padding(start = 4.dp)
                     .aspectRatio(1f)
                     .weight(0.3f)
             ) {
                 AsyncImage(
-                    model = track.albums.image?.firstOrNull()?.url,
+                    model = track.imageUrl,
                     contentDescription = track.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -92,7 +98,7 @@ fun SongListCard(
                         .fillMaxSize()
                 ) {
                     Text(
-                        text = track.artists.joinToString(", ") { it.name },
+                        text = artists.joinToString(", ") { it.name },
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

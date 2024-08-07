@@ -1,11 +1,22 @@
 package com.clovermusic.clover.domain.usecase.app
 
 import android.util.Log
-import com.clovermusic.clover.domain.model.Albums
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
 import com.clovermusic.clover.domain.usecase.artist.ArtistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
-import com.clovermusic.clover.util.Parsers.parseReleaseDate
-import kotlinx.coroutines.coroutineScope
+import com.clovermusic.clover.util.DataState
+import com.clovermusic.clover.util.Parsers
+import com.clovermusic.clover.util.customErrorHandling
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -18,24 +29,59 @@ class NewReleasesOfFollowedArtistsUseCase @Inject constructor(
     private val userUseCases: UserUseCases,
     private val artistsUseCase: ArtistUseCases
 ) {
-    suspend operator fun invoke(limit: Int?): List<Albums> = coroutineScope {
-        runCatching {
-            val followedArtists = userUseCases.followedArtists()
-            val artistIds = followedArtists.map { it.id }
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
-            val latestReleases = artistsUseCase.artistAlbums(artistIds, limit)
+    suspend operator fun invoke(
+        forceRefresh: Boolean,
+        limit: Int? = null // This limit is for albums per artist
+    ): Flow<DataState<List<ArtistWithAlbums>>> = flow {
+        emit(DataState.Loading)
 
-            val data = latestReleases.sortedByDescending { res ->
-                parseReleaseDate(res.releaseDate)
-            }.take(6)
-            Log.i(
-                "LatestReleasesUseCase",
-                "getLatestReleasesOfFollowedArtists: Success, total albums: $data"
+        try {
+            // Fetch followed artists
+            val artistIds = userUseCases.followedArtists(forceRefresh)
+                .filterIsInstance<DataState.NewData<List<ArtistsEntity>>>()
+                .map { it.data.map { artist -> artist.artistId } }
+                .first()
+
+            // Fetch artist albums
+            artistsUseCase.artistAlbums(
+                artistIds = artistIds,
+                limit = limit,
+                forceRefresh = forceRefresh
+            ).collect { state ->
+                when (state) {
+                    is DataState.Loading -> emit(state)
+                    is DataState.Error -> emit(state)
+                    is DataState.OldData -> {
+                        val latestReleases = processAlbums(state.data)
+                        emit(DataState.OldData(latestReleases))
+                    }
+
+                    is DataState.NewData -> {
+                        val latestReleases = processAlbums(state.data)
+                        emit(DataState.NewData(latestReleases))
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e(
+                "NewReleasesOfFollowedArtistsUseCase",
+                "Error fetching new releases of followed artists",
+                e
             )
-            data
-        }.onFailure { e ->
-            Log.e("LatestReleasesUseCase", "Error fetching latest releases of followed artists", e)
-        }.getOrThrow()
+            emit(DataState.Error(customErrorHandling(e)))
+        }
+    }.flowOn(Dispatchers.Default)
 
+    private fun processAlbums(albums: List<ArtistWithAlbums>): List<ArtistWithAlbums> {
+        return albums.map { artistWithAlbums ->
+            val latestAlbum = artistWithAlbums.albums
+                .maxByOrNull { Parsers.parseReleaseDate(it.releaseDate) }
+            artistWithAlbums.copy(albums = listOfNotNull(latestAlbum))
+        }.sortedByDescending {
+            it.albums.firstOrNull()?.let { album -> Parsers.parseReleaseDate(album.releaseDate) }
+        }.take(6)
     }
 }

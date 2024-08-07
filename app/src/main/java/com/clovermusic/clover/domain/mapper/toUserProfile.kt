@@ -1,6 +1,6 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.spotify.api.response.users.UsersProfileResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
 import com.clovermusic.clover.domain.mapper.Util.toImages
 import com.clovermusic.clover.domain.model.UserProfile
 

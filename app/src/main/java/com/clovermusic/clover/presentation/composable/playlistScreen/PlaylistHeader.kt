@@ -34,9 +34,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.domain.model.Playlist
+import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
 
 @Composable
@@ -64,8 +66,8 @@ fun PlaylistHeader(
                         .weight(0.4f)
                 ) {
                     AsyncImage(
-                        model = playlist.image.firstOrNull()?.url,
-                        contentDescription = playlist.name,
+                        model = playlist.playlist.imageUrl,
+                        contentDescription = playlist.playlist.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -80,7 +82,7 @@ fun PlaylistHeader(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Buttons()
+            Buttons(playlist = playlist)
         }
     }
 }
@@ -90,16 +92,17 @@ fun PlaylistInfo(playlist: Playlist) {
     val more = painterResource(id = R.drawable.more2)
 
     Text(
-        text = "${playlist.tracks.size} songs • ${
+        text = "${playlist.playlist.totalTrack} songs • ${
             Parsers.parseDurationHoursMinutes(
-                playlist.tracks.sumOf { it.durationMs })
+                playlist.tracks.sumOf { it.track.durationMs }
+            )
         }",
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.secondary
     )
 
     Text(
-        text = playlist.name,
+        text = playlist.playlist.name,
         style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.primary,
         maxLines = 2,
@@ -111,13 +114,13 @@ fun PlaylistInfo(playlist: Playlist) {
         modifier = Modifier.wrapContentSize()
     ) {
         Text(
-            text = "${playlist.owner.display_name} ${if (playlist.followers!! > 1) " • " else ""}",
+            text = "${playlist.playlist.owner}  ${if (playlist.playlist.followers > 1) " • " else ""}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.tertiary
         )
-        if (playlist.followers < 1) {
+        if (playlist.playlist.followers < 1) {
             Text(
-                text = "${playlist.followers} followers",
+                text = "${playlist.playlist.followers} followers",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.tertiary
             )
@@ -147,7 +150,10 @@ fun PlaylistInfo(playlist: Playlist) {
 }
 
 @Composable
-fun Buttons() {
+fun Buttons(
+    viewModel: MusicPlayerViewModel = hiltViewModel(),
+    playlist: Playlist
+) {
     val shuffle = painterResource(id = R.drawable.shuffle1)
     val play = painterResource(id = R.drawable.play2)
     Row(
@@ -158,7 +164,7 @@ fun Buttons() {
             .background(color = Color.Transparent)
     ) {
         FilledTonalButton(
-            onClick = {},
+            onClick = { viewModel.shuffleMusic() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
@@ -186,7 +192,7 @@ fun Buttons() {
             }
         }
         Button(
-            onClick = {},
+            onClick = { viewModel.playTrack(playlist.playlist.uri) },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),

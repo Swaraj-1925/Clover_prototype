@@ -80,17 +80,3 @@ fun PlaylistCard(
         }
     }
 }
-
-@Preview
-@Composable
-fun Test3() {
-    CloverTheme(darkTheme = true) {
-        PlaylistCard(
-            url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da849d1c40eef499de6d2957877d",
-            playlistName = "Ingajisddfvfvfvf gani",
-            songCount = 97,
-            onCardClick = { /*TODO*/ },
-            onNameClick = { /*TODO*/ })
-
-    }
-}

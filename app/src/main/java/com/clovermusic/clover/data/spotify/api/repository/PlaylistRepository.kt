@@ -1,11 +1,11 @@
 package com.clovermusic.clover.data.spotify.api.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.spotify.api.response.common.ImageResponseDto
-import com.clovermusic.clover.data.spotify.api.response.common.PlaylistTrackResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.CreatePlaylistRequest
-import com.clovermusic.clover.data.spotify.api.response.playlists.PlaylistResponseDto
-import com.clovermusic.clover.data.spotify.api.response.playlists.UsersPlaylistItemDto
+import com.clovermusic.clover.data.spotify.api.dto.common.ImageResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.PlaylistTrackResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.CreatePlaylistRequest
+import com.clovermusic.clover.data.spotify.api.dto.playlists.PlaylistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.playlists.UsersPlaylistItemDto
 import com.clovermusic.clover.data.spotify.api.service.PlaylistService
 import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyApiException
@@ -15,7 +15,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-// Repository for Playlist related api call
+// Repository for GetPlaylist related api call
 class PlaylistRepository @Inject constructor(
     private val playlistService: PlaylistService
 ) {
@@ -45,6 +45,7 @@ class PlaylistRepository @Inject constructor(
                     "PlaylistRepository",
                     "getCurrentUsersPlaylists: Success, total playlists: ${userPlaylists.size}"
                 )
+
                 userPlaylists
             } catch (e: IOException) {
                 throw CustomException.NetworkException(
@@ -109,41 +110,47 @@ class PlaylistRepository @Inject constructor(
             }
         }
 
-    // Function to get enter playlist and all the data related to it
-    suspend fun getPlaylist(playlistId: String): PlaylistResponseDto =
-        withContext(Dispatchers.IO) {
-            try {
-                var playlist: PlaylistResponseDto
-                var offset = 0
-                var total: Int
-                do {
-                    playlist = playlistService.getPlaylist(playlistId)
-                    total = playlist.tracks.total
-                    offset += playlist.tracks.limit
-                    Log.d(
-                        "PlaylistRepository",
-                        "getPlaylist: fetched batch, size: ${playlist.tracks.total} and offset: $offset"
-                    )
-                } while (offset < total)
+    // Function to get entire playlist and all the data related to it
+    suspend fun getPlaylist(playlistId: String): PlaylistResponseDto = withContext(Dispatchers.IO) {
+        try {
+            val playlist: PlaylistResponseDto
+            val playlistItems = mutableListOf<PlaylistTrackResponseDto>()
+            var nextUrl: String? = null
+            val res = playlistService.getPlaylist(playlistId = playlistId)
+            playlist = res
+            nextUrl = res.tracks.next
+            playlistItems.addAll(res.tracks.items)  // Add the first batch of items
 
+            while (nextUrl != null) {
+                val response = playlistService.getPlaylistTracks(nextUrl)
+                playlistItems.addAll(response.items)
+                nextUrl = response.next
                 Log.d(
                     "PlaylistRepository",
-                    "getPlaylist: total items fetched: ${playlist.tracks.items.size}"
+                    "Fetched batch: ${response.items.size}, Total fetched: ${playlistItems.size}"
                 )
-                playlist
-            } catch (e: Exception) {
-                throw CustomException.UnknownException(
-                    "PlaylistRepository",
-                    "getPlaylist",
-                    "Unknown error",
-                    e
-                )
-            } catch (e: IOException) {
-                throw CustomException.NetworkException("PlaylistRepository", "getPlaylist", e)
-            } catch (e: HttpException) {
-                SpotifyApiException.handleApiException("PlaylistRepository", "getPlaylist", e)
             }
+
+            playlist.tracks.items = playlistItems
+
+            Log.d(
+                "PlaylistRepository",
+                "getPlaylist: total items fetched: ${playlistItems.size}"
+            )
+            playlist
+        } catch (e: Exception) {
+            throw CustomException.UnknownException(
+                "PlaylistRepository",
+                "getPlaylist",
+                "Unknown error",
+                e
+            )
+        } catch (e: IOException) {
+            throw CustomException.NetworkException("PlaylistRepository", "getPlaylist", e)
+        } catch (e: HttpException) {
+            SpotifyApiException.handleApiException("PlaylistRepository", "getPlaylist", e)
         }
+    }
 
     //    Function to add items to playlist
     suspend fun addItemsToPlaylist(playlistId: String, uris: List<String>): Unit =

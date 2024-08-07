@@ -1,10 +1,10 @@
 package com.clovermusic.clover.domain.mapper
 
-import com.clovermusic.clover.data.spotify.api.response.common.AlbumArtistResponseDto
-import com.clovermusic.clover.data.spotify.api.response.common.AlbumResponseDto
-import com.clovermusic.clover.data.spotify.api.response.common.ImageResponseDto
-import com.clovermusic.clover.data.spotify.api.response.common.OwnerResponseDto
-import com.clovermusic.clover.data.spotify.api.response.common.TrackArtistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.AlbumArtistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.ImageResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.OwnerResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
 import com.clovermusic.clover.domain.model.Albums
 import com.clovermusic.clover.domain.model.common.AlbumArtist
 import com.clovermusic.clover.domain.model.common.Image

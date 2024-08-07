@@ -34,6 +34,7 @@ class SpotifyAuthViewModel @Inject constructor(
                 val intent = authUseCases.createIntent(activity)
                 authLauncher.launch(intent)
             } catch (e: Exception) {
+                Log.e("SpotifyAuthViewModel", "Error: ${e.message}", e)
                 _authUiState.value = Resource.Error(e.message.toString())
             }
         }

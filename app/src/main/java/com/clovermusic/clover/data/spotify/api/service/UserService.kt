@@ -1,8 +1,8 @@
 package com.clovermusic.clover.data.spotify.api.service
 
-import com.clovermusic.clover.data.spotify.api.response.users.FollowedArtistsDto
-import com.clovermusic.clover.data.spotify.api.response.users.TopArtistsResponseDto
-import com.clovermusic.clover.data.spotify.api.response.users.UsersProfileResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.users.FollowedArtistsDto
+import com.clovermusic.clover.data.spotify.api.dto.users.TopArtistsResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PUT

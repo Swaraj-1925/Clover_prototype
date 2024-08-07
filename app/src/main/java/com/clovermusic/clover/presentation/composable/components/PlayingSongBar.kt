@@ -72,7 +72,7 @@ fun PlayingSongBar(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = songDetails.artists,
+                    text = songDetails.artist,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     maxLines = 1,

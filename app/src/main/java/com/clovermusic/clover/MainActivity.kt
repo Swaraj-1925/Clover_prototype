@@ -7,10 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
-import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.networkDataAction.NetworkDataAction
 import com.clovermusic.clover.presentation.navigation.Navigation
 import com.clovermusic.clover.ui.theme.CloverTheme
-import com.clovermusic.clover.util.CustomException
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +18,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authRepository: SpotifyAuthRepository
+    lateinit var networkDataAction: NetworkDataAction
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -27,13 +26,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         lifecycleScope.launch {
             try {
-                authRepository.ensureValidAccessToken()
+                networkDataAction.authData.ensureValidAccessToken()
                 setContent {
                     CloverTheme {
                         Navigation()
                     }
                 }
-            } catch (e: CustomException) {
+            } catch (e: Exception) {
                 Log.e("MainActivity", "onCreate: ${e.message}")
                 navigateToSpotifyAuth()
             }

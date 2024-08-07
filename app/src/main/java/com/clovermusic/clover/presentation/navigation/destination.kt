@@ -6,4 +6,6 @@ import kotlinx.serialization.Serializable
 object HomeScreenRoute
 
 @Serializable
-data class PlaylistScreenRoute(val id: String)
+data class PlaylistScreenRoute(
+    val id: String,
+)

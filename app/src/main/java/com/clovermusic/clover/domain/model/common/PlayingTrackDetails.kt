@@ -3,7 +3,10 @@ package com.clovermusic.clover.domain.model.common
 data class PlayingTrackDetails(
     val name: String,
     val songUri: String,
-    val artists: String,
-    val artistsUri: String,
-    val image: String
+    val artist: String,
+    val artistUri: String,
+    val image: String,
+    val artists: List<String>,
+    val artistsUri: List<String>,
+    val duration: Long,
 )

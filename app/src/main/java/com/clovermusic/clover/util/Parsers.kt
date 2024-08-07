@@ -1,12 +1,16 @@
 package com.clovermusic.clover.util
 
-import android.util.Log
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object Parsers {
     fun parseReleaseDate(date: String): LocalDate {
+//        Log.d("Parsers", "parseReleaseDate: $date")
+        if (date.equals("day", ignoreCase = true)) {
+            return LocalDate.now()
+        }
+
         val formats = listOf(
             DateTimeFormatter.ISO_LOCAL_DATE,
             DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -15,11 +19,9 @@ object Parsers {
             try {
                 return LocalDate.parse(date, format)
             } catch (e: DateTimeParseException) {
-                Log.e("parseReleaseDate", "Failed to parse date: $date")
             }
         }
 
-        // Handle the case where the date is just a year
         return try {
             val year = date.toInt()
             LocalDate.of(year, 1, 1)
