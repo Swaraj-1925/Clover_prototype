@@ -34,14 +34,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
-import com.clovermusic.clover.data.local.entity.crossRef.PlaylistWithDetails
+import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
 
 @Composable
 fun PlaylistHeader(
-    playlist: PlaylistWithDetails
+    playlist: Playlist
 ) {
     Surface(
         color = Color.Transparent,
@@ -80,13 +82,13 @@ fun PlaylistHeader(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Buttons()
+            Buttons(playlist = playlist)
         }
     }
 }
 
 @Composable
-fun PlaylistInfo(playlist: PlaylistWithDetails) {
+fun PlaylistInfo(playlist: Playlist) {
     val more = painterResource(id = R.drawable.more2)
 
     Text(
@@ -148,7 +150,10 @@ fun PlaylistInfo(playlist: PlaylistWithDetails) {
 }
 
 @Composable
-fun Buttons() {
+fun Buttons(
+    viewModel: MusicPlayerViewModel = hiltViewModel(),
+    playlist: Playlist
+) {
     val shuffle = painterResource(id = R.drawable.shuffle1)
     val play = painterResource(id = R.drawable.play2)
     Row(
@@ -159,7 +164,7 @@ fun Buttons() {
             .background(color = Color.Transparent)
     ) {
         FilledTonalButton(
-            onClick = {},
+            onClick = { viewModel.shuffleMusic() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
@@ -187,7 +192,7 @@ fun Buttons() {
             }
         }
         Button(
-            onClick = {},
+            onClick = { viewModel.playTrack(playlist.playlist.uri) },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = ButtonDefaults.elevatedButtonElevation(3.dp),

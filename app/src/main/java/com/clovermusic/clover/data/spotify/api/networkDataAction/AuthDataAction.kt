@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.clovermusic.clover.data.spotify.api.networkDataSources.AuthDataSource
 import com.clovermusic.clover.data.spotify.api.service.SpotifyAuthService
-import com.clovermusic.clover.util.CustomException
 import com.clovermusic.clover.util.SpotifyAuthConfig.CLIENT_ID
 import com.clovermusic.clover.util.SpotifyAuthConfig.CLIENT_SECRET
 import com.clovermusic.clover.util.SpotifyAuthConfig.REDIRECT_URI
@@ -15,7 +14,6 @@ import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import javax.inject.Inject
 
 class AuthDataAction @Inject constructor(
@@ -38,39 +36,22 @@ class AuthDataAction @Inject constructor(
                     }
 
                     AuthorizationResponse.Type.ERROR -> {
-                        throw CustomException.AuthException(
-                            "SpotifyAuthRepository",
-                            "handleAuthResponse",
-                            Throwable(res.error)
-                        )
+                        Log.e("SpotifyAuthRepository", "Error handling auth response ${res.error}")
+                        throw Exception("Failed to authenticate with Spotify. Please try again.")
                     }
 
                     AuthorizationResponse.Type.EMPTY -> {
-                        throw CustomException.EmptyResponseException(
-                            "SpotifyAuthRepository",
-                            "handleAuthResponse"
-                        )
+
+                        Log.e("SpotifyAuthRepository", "Error handling auth response ${res.type}")
+                        throw Exception("Something went wrong while authenticating with Spotify.")
                     }
 
                     else -> {
-                        throw CustomException.UnknownException(
-                            "SpotifyAuthRepository",
-                            "handleAuthResponse",
-                            "Unknown response type",
-                            Throwable(res.type.name)
-                        )
+                        throw Exception("Something went wrong while authenticating with Spotify.")
                     }
                 }
             } catch (e: Exception) {
-                when (e) {
-                    is CustomException -> throw e
-                    else -> throw CustomException.UnknownException(
-                        "SpotifyAuthRepository",
-                        "handleAuthResponse",
-                        "Some error occured while handling response",
-                        e
-                    )
-                }
+                throw Exception(e)
             }
 
         }
@@ -80,6 +61,7 @@ class AuthDataAction @Inject constructor(
     private suspend fun exchangeCodeForTokens(
         code: String,
     ) {
+        Log.i("SpotifyAuthRepository", "Exchanging code for tokens")
         try {
             val response = api.exchangeCodeForTokens(
                 grantType = "authorization_code",
@@ -93,19 +75,9 @@ class AuthDataAction @Inject constructor(
             response.refresh_token?.let { tokenManager.saveRefreshToken(it) }
             tokenManager.saveTokenExpirationTime(System.currentTimeMillis() + response.expires_in * 1000)
 
-        } catch (e: IOException) {
-            throw CustomException.NetworkException(
-                "SpotifyAuthRepository",
-                "exchangeCodeForTokens",
-                e
-            )
         } catch (e: Exception) {
-            throw CustomException.UnknownException(
-                "SpotifyAuthRepository",
-                "exchangeCodeForTokens",
-                "An unexpected error occurred",
-                e
-            )
+            Log.e("SpotifyAuthRepository", "Error exchanging code for tokens", e)
+            throw e
         }
     }
 
@@ -114,11 +86,7 @@ class AuthDataAction @Inject constructor(
         if (isTokenExpired()) {
             authDataSource.refreshAccessToken()
         } else if (accessToken.isNullOrBlank()) {
-            throw CustomException.AuthException(
-                "SpotifyAuthRepository",
-                "ensureValidAccessToken",
-                Throwable("Access token is null or blank")
-            )
+            throw Exception("Access token is null or blank")
         }
     }
 

@@ -8,14 +8,14 @@ import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
-import com.clovermusic.clover.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,55 +26,56 @@ class HomeViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
 ) : ViewModel() {
 
-    private val _homeUiState = MutableStateFlow<Resource<HomeScreenState>>(Resource.Loading())
-    val homeUiState: StateFlow<Resource<HomeScreenState>> = _homeUiState.asStateFlow()
+    private val _homeScreenState = MutableStateFlow(HomeScreenState())
+    val homeScreenState: StateFlow<HomeScreenState> = _homeScreenState.asStateFlow()
 
-    private var playbackMonitoringJob: Job? = null
 
     init {
         Log.d("HomeViewModel", "Initializing HomeViewModel")
-        getHomeScreen()
+        fetchHomeScreenData(forceRefresh = false)
     }
 
     fun refreshHomeScreen() {
-        getHomeScreen()
+        fetchHomeScreenData(forceRefresh = true)
     }
 
-    private fun getHomeScreen() {
+    private fun fetchHomeScreenData(forceRefresh: Boolean) {
         viewModelScope.launch {
-            _homeUiState.value = Resource.Loading()
-            try {
-                val homeScreenState = fetchHomeScreenData()
-                _homeUiState.value = Resource.Success(homeScreenState)
-                Log.d("HomeViewModel", "fetchHomeScreenData: Success ${homeUiState.value.data}")
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "fetchHomeScreenData: Error", e)
-                _homeUiState.value = Resource.Error(e.message ?: "Something went wrong")
+            fetchUserData(forceRefresh)
+            fetchHomeScreenDataFlow(forceRefresh).collect { newState ->
+                _homeScreenState.value = newState
             }
         }
     }
 
-    private suspend fun fetchHomeScreenData(): HomeScreenState = coroutineScope {
-        val currentUsersPlaylistsDeferred =
-            async { playlistUseCases.currentUserPlaylist(forceRefresh = true) }
-        val followedArtistsAlbumsDeferred =
-            async { appUseCases.latestReleasesUseCase(forceRefresh = true, limit = 100) }
-        val topArtistsDeferred =
-            async { userUseCases.topArtists("medium_term", forceRefresh = true) }
+    private fun fetchHomeScreenDataFlow(forceRefresh: Boolean): Flow<HomeScreenState> = flow {
+        coroutineScope {
 
-        val followedArtistsAlbums = followedArtistsAlbumsDeferred.await()
-        val currentUsersPlaylists = currentUsersPlaylistsDeferred.await().take(5)
-        val topArtists = topArtistsDeferred.await().take(10)
+            val currentUsersPlaylistsFlow = playlistUseCases.currentUserPlaylist(forceRefresh)
+            val followedArtistsAlbumsFlow = appUseCases.latestReleasesUseCase(forceRefresh, 100)
+            val topArtistsFlow = userUseCases.topArtists("medium_term", forceRefresh)
 
-        HomeScreenState(
-            followedArtistsAlbums = followedArtistsAlbums,
-            currentUsersPlaylists = currentUsersPlaylists,
-            topArtists = topArtists
-        )
+            combine(
+                currentUsersPlaylistsFlow,
+                followedArtistsAlbumsFlow,
+                topArtistsFlow
+            ) { playlists, albums, artists ->
+                HomeScreenState(
+                    followedArtistsAlbums = albums,
+                    currentUsersPlaylists = playlists,
+                    topArtists = artists
+                )
+            }.collect { newState ->
+                emit(newState)
+            }
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        playbackMonitoringJob?.cancel()
+    private fun fetchUserData(forceRefresh: Boolean) {
+        viewModelScope.launch {
+            userUseCases.getCurrentUsersProfile(forceRefresh)
+        }
     }
+
+
 }

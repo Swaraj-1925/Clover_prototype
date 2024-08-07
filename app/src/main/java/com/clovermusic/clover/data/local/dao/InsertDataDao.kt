@@ -18,51 +18,65 @@ import com.clovermusic.clover.data.local.entity.crossRef.TrackArtistsCrossRef
 interface InsertDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetUser(user: UserEntity)
+    fun insertUser(user: UserEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetTrack(track: List<TrackEntity>)
+    fun insertPlaylistInfo(playlistInfo: PlaylistInfoEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlaylistInfo(playlist: List<PlaylistInfoEntity>)
+    fun insertPlaylistInfo(playlistInfo: List<PlaylistInfoEntity>)
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlaylistInfo(playlist: PlaylistInfoEntity)
+    fun insertTrack(track: TrackEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertTrack(track: List<TrackEntity>)
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertArtist(artist: ArtistsEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertArtist(artist: List<ArtistsEntity>)
 
     @Upsert
-    suspend fun upsertPlaylists(playlists: List<PlaylistInfoEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetCollaborators(collaborator: List<CollaboratorsEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetArtist(artist: List<ArtistsEntity>)
+    fun upsertArtist(artist: ArtistsEntity)
 
     @Upsert
-    suspend fun upsertArtists(artists: List<ArtistsEntity>)
+    fun upsertArtist(artist: List<ArtistsEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetAlbum(album: AlbumEntity)
+    fun insertAlbum(album: AlbumEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetAlbum(album: List<AlbumEntity>)
-
-    @Upsert
-    suspend fun upsertAlbums(albums: List<AlbumEntity>)
+    fun insertAlbum(album: List<AlbumEntity>)
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insetCollaborator(album: List<CollaboratorsEntity>)
+    fun insertCollaborator(collaborator: CollaboratorsEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlaylistTrackCrossRef(crossRefs: List<PlaylistTrackCrossRef>)
+    fun insertCollaborator(collaborator: List<CollaboratorsEntity>)
+
+//    CrossRef
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlaylistTrackCrossRef(crossRef: PlaylistTrackCrossRef)
+    fun insertPlaylistTrackCrossRef(crossRef: PlaylistTrackCrossRef)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTrackArtistsCrossRef(crossRefs: List<TrackArtistsCrossRef>)
+    fun insertPlaylistTrackCrossRef(crossRef: List<PlaylistTrackCrossRef>)
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCollaboratorsTrackCrossRef(crossRefs: List<CollaboratorsTrackCrossRef>)
+    fun insertTrackArtistsCrossRef(crossRef: TrackArtistsCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertTrackArtistsCrossRef(crossRef: List<TrackArtistsCrossRef>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCollaboratorsTrackCrossRef(crossRef: CollaboratorsTrackCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCollaboratorsTrackCrossRef(crossRef: List<CollaboratorsTrackCrossRef>)
 }

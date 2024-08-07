@@ -3,43 +3,43 @@ package com.clovermusic.clover.domain.usecase.playlist
 import android.util.Log
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.repository.Repository
-import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.networkDataAction.NetworkDataAction
 import com.clovermusic.clover.util.DataState
-import kotlinx.coroutines.flow.toList
+import com.clovermusic.clover.util.customErrorHandling
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class CurrentUsersPlaylistsUseCase @Inject constructor(
-    private val authRepository: SpotifyAuthRepository,
+    private val networkDataAction: NetworkDataAction,
     private val repository: Repository
 ) {
-    //    Get current users(Logged in) playlists
+    suspend operator fun invoke(forceRefresh: Boolean): Flow<DataState<List<PlaylistInfoEntity>>> =
+        flow {
+            try {
+                networkDataAction.authData.ensureValidAccessToken()
 
-    suspend operator fun invoke(forceRefresh: Boolean): List<PlaylistInfoEntity> {
-        return runCatching {
-            authRepository.ensureValidAccessToken()
-            val playlist = mutableListOf<PlaylistInfoEntity>()
+                val storedPlaylists = repository.playlists.getStoredCurrentUserPlaylists()
+                if (storedPlaylists.isNotEmpty() && !forceRefresh) {
+                    emit(DataState.OldData(storedPlaylists))
+                }
 
-            val flow = repository.playlists.getCurrentUserPlaylist()
-            flow.toList().let { dataStates ->
-                dataStates.forEach { dataState ->
-                    when (dataState) {
-                        is DataState.NewData -> {
-                            playlist.clear()
-                            playlist.addAll(dataState.data)
-                        }
-
-                        is DataState.OldData -> playlist.addAll(dataState.data)
-                        is DataState.Error -> Log.e(
-                            "CurrentUsersPlaylistsUseCase",
-                            "Error fetching playlists: ${dataState.message}"
-                        )
-                    }
+                val freshPlaylists = repository.playlists.getAndStoreCurrentUserPlaylistsFromApi()
+                emit(DataState.NewData(freshPlaylists))
+            } catch (e: Exception) {
+                Log.e(
+                    "CurrentUsersPlaylistsUseCase",
+                    "Error fetching current users playlists",
+                    e
+                )
+                val storedPlaylists = repository.playlists.getStoredCurrentUserPlaylists()
+                if (storedPlaylists.isNotEmpty()) {
+                    emit(DataState.OldData(storedPlaylists))
+                } else {
+                    emit(DataState.Error(customErrorHandling(e)))
                 }
             }
-
-            playlist
-        }.onFailure { e ->
-            Log.e("CurrentUsersPlaylistsUseCase", "Error fetching playlists", e)
-        }.getOrThrow()
-    }
+        }.flowOn(Dispatchers.IO)
 }

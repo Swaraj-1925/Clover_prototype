@@ -32,7 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.clovermusic.clover.R
-import com.clovermusic.clover.data.local.entity.AlbumEntity
+import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
 import com.clovermusic.clover.presentation.composable.components.NewReleaseCard
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun NewReleasesSection(
     onArtistClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    albums: List<AlbumEntity>
+    albums: List<ArtistWithAlbums>
 ) {
     val albumsSize by remember { derivedStateOf { albums.size.coerceAtLeast(1) } }
     val pagerState = rememberPagerState(initialPage = 0) { albumsSize }
@@ -65,7 +65,7 @@ fun NewReleasesSection(
             .distinctUntilChanged()
             .collect { page ->
                 if (albums.isNotEmpty() && page < albums.size) {
-                    artistName = albums[page].name ?: "Unknown Artist"
+                    artistName = albums[page].artist.name
                 }
             }
     }
@@ -128,7 +128,7 @@ fun NewReleasesSection(
                 userScrollEnabled = true,
             ) { currentPage ->
                 NewReleaseCard(
-                    album = albums[currentPage],
+                    album = albums[currentPage].albums.first(),
                 )
             }
         }

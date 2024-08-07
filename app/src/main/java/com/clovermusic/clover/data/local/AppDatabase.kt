@@ -15,6 +15,7 @@ import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.crossRef.CollaboratorsTrackCrossRef
 import com.clovermusic.clover.data.local.entity.crossRef.PlaylistTrackCrossRef
 import com.clovermusic.clover.data.local.entity.crossRef.TrackArtistsCrossRef
+import java.time.LocalDate
 
 
 @Database(
@@ -44,4 +45,14 @@ class Converters {
 
     @TypeConverter
     fun toStringList(value: String): List<String> = value.split(",").filter { it.isNotEmpty() }
+
+    @TypeConverter
+    fun fromTimestamp(value: Long?): LocalDate? {
+        return value?.let { LocalDate.ofEpochDay(it) }
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: LocalDate?): Long? {
+        return date?.toEpochDay()
+    }
 }

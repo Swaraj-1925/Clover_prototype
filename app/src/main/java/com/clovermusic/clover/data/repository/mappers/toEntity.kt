@@ -5,6 +5,7 @@ import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
+import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.spotify.api.dto.common.AddedByResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.PlaylistTrackResponseDto
@@ -12,6 +13,8 @@ import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.TrackItemsResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.playlists.PlaylistResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.playlists.UsersPlaylistItemDto
+import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
+import java.time.LocalDate
 
 fun List<UsersPlaylistItemDto>.toEntity(userId: String = ""): List<PlaylistInfoEntity> {
     return map {
@@ -108,7 +111,7 @@ fun List<AlbumResponseDto>.toEntity(artistId: String): List<AlbumEntity> {
             uri = it.uri,
             name = it.name,
             imageUrl = it.images.firstOrNull()?.url ?: "",
-            releaseDate = it.release_date_precision,
+            releaseDate = it.release_date,
             timestamp = System.currentTimeMillis(),
         )
     }
@@ -128,6 +131,7 @@ fun PlaylistResponseDto.toEntity() = PlaylistInfoEntity(
     timestamp = System.currentTimeMillis()
 )
 
+
 fun TrackItemsResponseDto.toEntity() = TrackEntity(
     trackId = this.id,
     albumId = this.album.id,
@@ -138,3 +142,18 @@ fun TrackItemsResponseDto.toEntity() = TrackEntity(
     previewUrl = this.preview_url,
     timestamp = System.currentTimeMillis()
 )
+
+fun UsersProfileResponseDto.toEntity(): UserEntity {
+    return UserEntity(
+        userId = id,
+        name = display_name,
+        email = email,
+        uri = uri,
+        image = images.firstOrNull()?.url ?: "",
+        accountType = product ?: "",
+        signUpdate = LocalDate.now(),
+        followers = followers.total ?: 0,
+        timeStamp = System.currentTimeMillis()
+
+    )
+}

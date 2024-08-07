@@ -1,120 +1,112 @@
 package com.clovermusic.clover.data.repository
 
 import android.util.Log
-import com.clovermusic.clover.data.local.dao.InsertDataDao
-import com.clovermusic.clover.data.local.dao.ProvideDataDao
+import com.clovermusic.clover.data.local.dao.Insert
+import com.clovermusic.clover.data.local.dao.Provide
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.crossRef.CollaboratorsTrackCrossRef
 import com.clovermusic.clover.data.local.entity.crossRef.PlaylistTrackCrossRef
-import com.clovermusic.clover.data.local.entity.crossRef.PlaylistWithDetails
 import com.clovermusic.clover.data.local.entity.crossRef.TrackArtistsCrossRef
+import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.data.local.entity.relations.TrackWithArtists
 import com.clovermusic.clover.data.repository.mappers.toEntity
 import com.clovermusic.clover.data.spotify.api.networkDataSources.NetworkDataSource
-import com.clovermusic.clover.util.DataState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 
 class PlaylistRepository @Inject constructor(
-    private val provideDao: ProvideDataDao,
-    private val insertDao: InsertDataDao,
-    private val dataSource: NetworkDataSource // Assuming dataSource is provided
+    private val provide: Provide,
+    private val insert: Insert,
+    private val dataSource: NetworkDataSource
 ) {
 
-    suspend fun getCurrentUserPlaylist(): Flow<DataState<List<PlaylistInfoEntity>>> = flow {
+    suspend fun getAndStoreCurrentUserPlaylistsFromApi(): List<PlaylistInfoEntity> {
         try {
-            // Emit stored playlists immediately
-            val storedPlaylists = provideDao.getAllPlaylists()
-            if (storedPlaylists.isNotEmpty()) {
-                Log.d("DatabaseCheck", "Stored Playlists:")
-                emit(DataState.OldData(storedPlaylists))
+            val response = dataSource.playlistData.fetchCurrentUsersPlaylists()
+            val playlistEntities = response.toEntity()
+            insert.insertPlaylistInfo(playlistEntities)
+            return playlistEntities
+        } catch (e: Exception) {
+            Log.e("PlaylistRepository", "getAndStoreCurrentUserPlaylistsFromApi: ", e)
+            throw e
+        }
+    }
+
+    fun getStoredCurrentUserPlaylists(): List<PlaylistInfoEntity> {
+        return try {
+            provide.provideAllPlaylistInfo()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getAndStorePlaylistFromApi(playlistId: String): Playlist {
+        try {
+//            val userId = provide.getUser().userId
+            val response = dataSource.playlistData.fetchPlaylist(playlistId)
+
+            val playlistEntity = response.toEntity()
+            val trackEntities = response.tracks.items.toEntity()
+            val artistEntities = response.tracks.items.flatMap { it.track.artists }.toEntity()
+            val collaboratorsEntities =
+                response.tracks.items.map { it.added_by.toEntity(it.track.id) }
+
+            val playlistTrackCrossRefs = response.tracks.items.map {
+                PlaylistTrackCrossRef(playlistId = playlistEntity.playlistId, trackId = it.track.id)
             }
 
-            // Fetch new data from the remote source
-//            val fetchedPlaylists =
-//                dataSource.playlistData.fetchCurrentUsersPlaylists().toEntity()
-//
-//            // Compare fetched data with stored data
-//            if (storedPlaylists != fetchedPlaylists) {
-//                // Update the database
-//                insertDao.upsertPlaylists(fetchedPlaylists)
-//                emit(DataState.NewData(fetchedPlaylists))
-//            }
-        } catch (e: Exception) {
-            emit(DataState.Error(e.message ?: "An unknown error occurred"))
-        }
-    }.flowOn(Dispatchers.IO) // Ensure emissions happen in IO context
-        .catch { e -> emit(DataState.Error(e.message ?: "An unknown error occurred")) }
-
-    suspend fun getPlaylist(
-        playlistId: String,
-        forceRefresh: Boolean
-    ): Flow<DataState<PlaylistWithDetails>> = flow {
-        try {
-            val storedPlaylist = provideDao.getPlaylistWithDetails(playlistId)
-            if (storedPlaylist == null || forceRefresh) {
-                val fetchedPlaylist = fetchAndStorePlaylist(playlistId)
-                emit(DataState.NewData(fetchedPlaylist))
-            } else {
-                emit(DataState.OldData(storedPlaylist))
-                val fetchedPlaylist = fetchAndStorePlaylist(playlistId)
-                if (storedPlaylist != fetchedPlaylist) {
-                    emit(DataState.NewData(fetchedPlaylist))
+            val trackArtistCrossRefs = response.tracks.items.flatMap { trackResponse ->
+                trackResponse.track.artists.map { artistResponse ->
+                    TrackArtistsCrossRef(
+                        trackId = trackResponse.track.id,
+                        artistId = artistResponse.id
+                    )
                 }
             }
-        } catch (e: Exception) {
-            emit(DataState.Error(e.message ?: "An unknown error occurred"))
-        }
-
-    }.flowOn(Dispatchers.IO) // Ensure emissions happen in IO context
-        .catch { e -> emit(DataState.Error(e.message ?: "An unknown error occurred")) }
-
-    private suspend fun fetchAndStorePlaylist(playlistId: String): PlaylistWithDetails {
-
-        val playlistRes = dataSource.playlistData.fetchPlaylist(playlistId)
-
-        val playlistEntity = playlistRes.toEntity()
-        val trackEntities = playlistRes.tracks.items.map { it.track.toEntity() }
-
-        val artistEntities =
-            playlistRes.tracks.items.flatMap { it.track.artists }.toEntity()
-
-        val albumEntities =
-            playlistRes.tracks.items.map { it.track.album.toEntity(it.track.album.artists[0].id) }
-
-        val collaboratorEntities = playlistRes.tracks.items.map { it.added_by.toEntity() }
-
-        val playlistTrackCrossRefs = playlistRes.tracks.items.map {
-            PlaylistTrackCrossRef(playlistId = playlistEntity.playlistId, trackId = it.track.id)
-        }
-        val trackArtistCrossRefs = playlistRes.tracks.items.flatMap { trackResponse ->
-            trackResponse.track.artists.map { artistResponse ->
-                TrackArtistsCrossRef(
-                    trackId = trackResponse.track.id,
-                    artistId = artistResponse.id
-                )
+            val trackCollaboratorCrossRefs = response.tracks.items.map {
+                CollaboratorsTrackCrossRef(trackId = it.track.id, collaboratorId = it.added_by.id)
             }
+
+            insert.insertPlaylistInfo(playlistEntity)
+            insert.insertTrack(trackEntities)
+            insert.insertArtist(artistEntities)
+            insert.insertCollaborator(collaboratorsEntities)
+            insert.insertPlaylistTrackCrossRef(playlistTrackCrossRefs)
+            insert.insertTrackArtistsCrossRef(trackArtistCrossRefs)
+            insert.insertCollaboratorsTrackCrossRef(trackCollaboratorCrossRefs)
+
+            return provide.providePlaylist(playlistId)
+        } catch (e: Exception) {
+            Log.e("PlaylistRepository", "getAndStorePlaylistFromApi: ", e)
+            throw e
         }
-        val trackCollaboratorCrossRefs = playlistRes.tracks.items.map {
-            CollaboratorsTrackCrossRef(trackId = it.track.id, collaboratorId = it.added_by.id)
+    }
+
+    fun getStoredPlaylist(playlistId: String): Playlist {
+        return try {
+            provide.providePlaylist(playlistId)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getPlaylistFromApi(playlistId: String): Playlist {
+        val response = dataSource.playlistData.fetchPlaylist(playlistId)
+        val playlistEntity = response.toEntity()
+
+        val trackWithArtistsList = response.tracks.items.map { data ->
+            val trackEntity = data.track.toEntity()
+            val artistsEntity = data.track.artists.toEntity()
+
+            TrackWithArtists(
+                track = trackEntity,
+                artists = artistsEntity
+            )
         }
 
-        insertDao.apply {
-            insertPlaylistInfo(playlistEntity)
-            insetTrack(trackEntities)
-            insetArtist(artistEntities)
-            insetAlbum(albumEntities)
-            insetCollaborator(collaboratorEntities)
-            insertPlaylistTrackCrossRef(playlistTrackCrossRefs)
-            insertTrackArtistsCrossRef(trackArtistCrossRefs)
-            insertCollaboratorsTrackCrossRef(trackCollaboratorCrossRefs)
-        }
-
-        return provideDao.getPlaylistWithDetails(playlistId)
-            ?: throw IllegalStateException("Failed to fetch and store playlist")
+        return Playlist(
+            playlist = playlistEntity,
+            tracks = trackWithArtistsList
+        )
     }
 }

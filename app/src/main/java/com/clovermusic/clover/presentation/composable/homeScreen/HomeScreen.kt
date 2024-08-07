@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar2
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
@@ -33,7 +32,7 @@ import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
-import com.clovermusic.clover.util.Resource
+import com.clovermusic.clover.util.DataState
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -44,14 +43,18 @@ fun HomeScreen(
     val homeViewModel: HomeViewModel = hiltViewModel()
     val musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
 
-    val homeUiState by homeViewModel.homeUiState.collectAsStateWithLifecycle()
-
-
+    val homeScreenState by homeViewModel.homeScreenState.collectAsStateWithLifecycle()
     val playbackState by musicPlayerViewModel.musicPlayerState.collectAsStateWithLifecycle()
+
+    val isLoading = listOf(
+        homeScreenState.followedArtistsAlbums,
+        homeScreenState.currentUsersPlaylists,
+        homeScreenState.topArtists
+    ).any { it is DataState.Loading }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = homeUiState is Resource.Loading,
+        refreshing = isLoading,
         onRefresh = { homeViewModel.refreshHomeScreen() }
     )
 
@@ -75,47 +78,32 @@ fun HomeScreen(
             }
         },
     ) { paddingValues ->
-        when (val state = homeUiState) {
-            is Resource.Loading -> {
-                LoadingAnimation()
-            }
-
-            is Resource.Error -> {
-                LaunchedEffect(snackbarHostState) {
-                    snackbarHostState.showSnackbar(
-                        message = state.message.toString(),
-                        duration = SnackbarDuration.Long
-                    )
-                }
-            }
-
-            is Resource.Success -> {
-                Box(
-                    modifier = Modifier
-                        .pullRefresh(pullRefreshState)
-                        .padding(paddingValues)
-                ) {
-                    HomeContent(
-                        data = state.data!!,
-                        onPlaylistClick = onPlaylistClick,
-                        onPlaylistNameClick = onPlaylistNameClick
-                    )
-                    PullRefreshIndicator(
-                        refreshing = homeUiState is Resource.Loading,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
-                }
-            }
+        Box(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .padding(paddingValues)
+        ) {
+            HomeContent(
+                homeScreenState = homeScreenState,
+                onPlaylistClick = onPlaylistClick,
+                onPlaylistNameClick = onPlaylistNameClick,
+                snackbarHostState = snackbarHostState
+            )
+            PullRefreshIndicator(
+                refreshing = isLoading,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }
 
 @Composable
-private fun HomeContent(
-    data: HomeScreenState,
+fun HomeContent(
+    homeScreenState: HomeScreenState,
     onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (id: String) -> Unit
+    onPlaylistNameClick: (id: String) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     CloverTheme {
         Surface(
@@ -129,24 +117,78 @@ private fun HomeContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 item {
-                    NewReleasesSection(
-                        albums = data.followedArtistsAlbums,
-                        onArtistClick = { /*TODO*/ },
-                        onSettingsClick = { /*TODO*/ }
-                    )
+                    when (val state = homeScreenState.followedArtistsAlbums) {
+                        is DataState.Loading -> {}
+                        is DataState.OldData, is DataState.NewData -> {
+                            val data =
+                                if (state is DataState.OldData) state.data else (state as DataState.NewData).data
+                            NewReleasesSection(
+                                albums = data,
+                                onArtistClick = { /*TODO*/ },
+                                onSettingsClick = { /*TODO*/ }
+                            )
+                        }
+
+                        is DataState.Error -> {
+                            LaunchedEffect(snackbarHostState) {
+                                snackbarHostState.showSnackbar(
+                                    message = state.message,
+                                    duration = SnackbarDuration.Long
+                                )
+                            }
+                        }
+                    }
                 }
                 item {
-                    PlaylistSection(
-                        onPlaylistClick = onPlaylistClick,
-                        onPlaylistNameClick = onPlaylistNameClick,
-                        playlists = data.currentUsersPlaylists
-                    )
+                    when (val state = homeScreenState.currentUsersPlaylists) {
+                        is DataState.Loading -> {}
+                        is DataState.OldData -> {
+                            PlaylistSection(
+                                onPlaylistClick = onPlaylistClick,
+                                onPlaylistNameClick = onPlaylistNameClick,
+                                playlists = state.data
+                            )
+                        }
+
+                        is DataState.NewData -> {
+                            PlaylistSection(
+                                onPlaylistClick = onPlaylistClick,
+                                onPlaylistNameClick = onPlaylistNameClick,
+                                playlists = state.data.take(4)
+                            )
+                        }
+
+                        is DataState.Error -> {
+                            LaunchedEffect(snackbarHostState) {
+                                snackbarHostState.showSnackbar(
+                                    message = state.message,
+                                    duration = SnackbarDuration.Long
+                                )
+                            }
+                        }
+                    }
                 }
                 item {
-                    TopArtistsSection(
-                        artists = data.topArtists,
-                        onArtistClick = { /*TODO*/ }
-                    )
+                    when (val state = homeScreenState.topArtists) {
+                        is DataState.Loading -> {}
+                        is DataState.OldData, is DataState.NewData -> {
+                            val data =
+                                if (state is DataState.OldData) state.data else (state as DataState.NewData).data
+                            TopArtistsSection(
+                                artists = data.take(6),
+                                onArtistClick = { /*TODO*/ }
+                            )
+                        }
+
+                        is DataState.Error -> {
+                            LaunchedEffect(snackbarHostState) {
+                                snackbarHostState.showSnackbar(
+                                    message = state.message,
+                                    duration = SnackbarDuration.Long
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

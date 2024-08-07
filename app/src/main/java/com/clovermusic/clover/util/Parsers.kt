@@ -6,8 +6,8 @@ import java.time.format.DateTimeParseException
 
 object Parsers {
     fun parseReleaseDate(date: String): LocalDate {
+//        Log.d("Parsers", "parseReleaseDate: $date")
         if (date.equals("day", ignoreCase = true)) {
-            // Handle the case where the release date is "day"
             return LocalDate.now()
         }
 
@@ -19,11 +19,9 @@ object Parsers {
             try {
                 return LocalDate.parse(date, format)
             } catch (e: DateTimeParseException) {
-                // Continue to next format
             }
         }
 
-        // Handle the case where the date is just a year
         return try {
             val year = date.toInt()
             LocalDate.of(year, 1, 1)

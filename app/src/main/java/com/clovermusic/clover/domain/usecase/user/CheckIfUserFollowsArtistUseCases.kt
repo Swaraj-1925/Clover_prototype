@@ -1,17 +1,17 @@
 package com.clovermusic.clover.domain.usecase.user
 
 import android.util.Log
-import com.clovermusic.clover.data.spotify.api.repository.SpotifyAuthRepository
+import com.clovermusic.clover.data.spotify.api.networkDataAction.NetworkDataAction
 import com.clovermusic.clover.data.spotify.api.repository.UserRepository
 import javax.inject.Inject
 
 class CheckIfUserFollowsArtistUseCases @Inject constructor(
-    private val authRepository: SpotifyAuthRepository,
-    private val repository: UserRepository
+    private val repository: UserRepository,
+    private val networkDataAction: NetworkDataAction
 ) {
     suspend operator fun invoke(ids: List<String>): List<Boolean> {
         return runCatching {
-            authRepository.ensureValidAccessToken()
+            networkDataAction.authData.ensureValidAccessToken()
             val res = repository.checkIfUserFollowsArtistsOrUsers("artist", ids)
             res
         }.onFailure { e ->

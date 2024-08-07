@@ -7,7 +7,7 @@ import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.data.local.entity.crossRef.PlaylistTrackCrossRef
 
-data class PlaylistInfoWithDetails(
+data class Playlist(
     @Embedded val playlist: PlaylistInfoEntity,
 
     @Relation(
