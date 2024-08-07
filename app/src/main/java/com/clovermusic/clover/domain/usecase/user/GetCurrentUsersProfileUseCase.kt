@@ -19,6 +19,7 @@ class GetCurrentUsersProfileUseCase @Inject constructor(
     suspend operator fun invoke(forceRefresh: Boolean): Flow<DataState<UserEntity>> = flow {
         try {
             networkDataAction.authData.ensureValidAccessToken()
+
             val storedUserProfile = repository.user.getStoredUserData()
             val needsRefresh = storedUserProfile == null || forceRefresh
             if (needsRefresh) {

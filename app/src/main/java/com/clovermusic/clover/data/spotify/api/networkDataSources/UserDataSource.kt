@@ -58,6 +58,10 @@ class UserDataSource @Inject constructor(
     suspend fun fetchCurrentUsersProfile(): UsersProfileResponseDto =
         withContext(Dispatchers.IO) {
             val response = userService.getCurrentUsersProfile()
+            Log.i(
+                "UserRepository",
+                "fetchCurrentUsersProfile: fetching current users profile $response"
+            )
             response
         }
 

@@ -17,6 +17,7 @@ class UserRepository @Inject constructor(
     suspend fun getAndStoreUserDataFromAPi(): UserEntity {
         try {
             val response = dataSource.userDataSource.fetchCurrentUsersProfile()
+            Log.d("UserRepository", "getAndStoreUserDataFromAPi: $response")
             val userEntity = response.toEntity()
             insert.insertUser(userEntity)
             return userEntity

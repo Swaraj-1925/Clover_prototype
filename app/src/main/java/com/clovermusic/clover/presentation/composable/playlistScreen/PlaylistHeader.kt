@@ -114,7 +114,7 @@ fun PlaylistInfo(playlist: Playlist) {
         modifier = Modifier.wrapContentSize()
     ) {
         Text(
-            text = "abc ${if (playlist.playlist.followers > 1) " • " else ""}",
+            text = "${playlist.playlist.owner}  ${if (playlist.playlist.followers > 1) " • " else ""}",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.tertiary
         )

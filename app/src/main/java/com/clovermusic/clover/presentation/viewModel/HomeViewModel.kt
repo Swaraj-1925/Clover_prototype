@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchHomeScreenData(forceRefresh: Boolean) {
         viewModelScope.launch {
-            fetchUserData(forceRefresh)
+            val userDataState = userUseCases.getCurrentUsersProfile(forceRefresh).first()
             fetchHomeScreenDataFlow(forceRefresh).collect { newState ->
                 _homeScreenState.value = newState
             }
@@ -68,12 +69,6 @@ class HomeViewModel @Inject constructor(
             }.collect { newState ->
                 emit(newState)
             }
-        }
-    }
-
-    private fun fetchUserData(forceRefresh: Boolean) {
-        viewModelScope.launch {
-            userUseCases.getCurrentUsersProfile(forceRefresh)
         }
     }
 

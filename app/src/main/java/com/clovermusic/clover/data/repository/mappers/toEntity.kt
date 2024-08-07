@@ -16,15 +16,17 @@ import com.clovermusic.clover.data.spotify.api.dto.playlists.UsersPlaylistItemDt
 import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
 import java.time.LocalDate
 
-fun List<UsersPlaylistItemDto>.toEntity(userId: String = ""): List<PlaylistInfoEntity> {
+@JvmName("PlaylistInfoEntity")
+fun List<UsersPlaylistItemDto>.toEntity(): List<PlaylistInfoEntity> {
     return map {
         PlaylistInfoEntity(
             playlistId = it.id,
-            userId = userId,
             uri = it.uri,
             collaborative = it.collaborative,
             description = it.description,
             name = it.name,
+            owner = it.owner.display_name,
+            ownerId = it.owner.id,
             snapshotId = it.snapshot_id,
             totalTrack = it.tracks.total,
             imageUrl = it.images.firstOrNull()?.url ?: "",
@@ -33,20 +35,6 @@ fun List<UsersPlaylistItemDto>.toEntity(userId: String = ""): List<PlaylistInfoE
     }
 }
 
-fun PlaylistResponseDto.toEntity(userId: String = ""): PlaylistInfoEntity {
-    return PlaylistInfoEntity(
-        playlistId = id,
-        userId = userId,
-        uri = uri,
-        collaborative = collaborative,
-        description = description,
-        name = name,
-        snapshotId = snapshot_id,
-        totalTrack = tracks.items.size,
-        imageUrl = images.firstOrNull()?.url ?: "",
-        timestamp = System.currentTimeMillis(),
-    )
-}
 
 fun List<PlaylistTrackResponseDto>.toEntity(): List<TrackEntity> {
     return map {
@@ -119,11 +107,12 @@ fun List<AlbumResponseDto>.toEntity(artistId: String): List<AlbumEntity> {
 
 fun PlaylistResponseDto.toEntity() = PlaylistInfoEntity(
     playlistId = this.id,
-    userId = this.owner.id,
     uri = this.uri,
     collaborative = this.collaborative,
     description = this.description,
     name = this.name,
+    owner = this.owner.display_name,
+    ownerId = this.owner.id,
     snapshotId = this.snapshot_id,
     totalTrack = this.tracks.total,
     imageUrl = this.images.firstOrNull()?.url,

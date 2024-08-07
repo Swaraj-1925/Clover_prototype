@@ -42,7 +42,6 @@ class PlaylistRepository @Inject constructor(
 
     suspend fun getAndStorePlaylistFromApi(playlistId: String): Playlist {
         try {
-//            val userId = provide.getUser().userId
             val response = dataSource.playlistData.fetchPlaylist(playlistId)
 
             val playlistEntity = response.toEntity()
