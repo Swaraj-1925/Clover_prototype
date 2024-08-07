@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
-import com.clovermusic.clover.presentation.composable.components.PlayingSongBar2
+import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.HomeViewModel
@@ -63,7 +63,7 @@ fun HomeScreen(
         bottomBar = {
             Column {
                 if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
-                    PlayingSongBar2(
+                    PlayingSongBar(
                         playbackState = playbackState,
                         onPlayPauseClick = { musicPlayerViewModel.togglePausePlay() },
                         onNextClick = { musicPlayerViewModel.skipToNext() }

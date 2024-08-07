@@ -9,6 +9,7 @@ import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +43,6 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchHomeScreenData(forceRefresh: Boolean) {
         viewModelScope.launch {
-            val userDataState = userUseCases.getCurrentUsersProfile(forceRefresh).first()
             fetchHomeScreenDataFlow(forceRefresh).collect { newState ->
                 _homeScreenState.value = newState
             }
@@ -55,7 +55,8 @@ class HomeViewModel @Inject constructor(
             val currentUsersPlaylistsFlow = playlistUseCases.currentUserPlaylist(forceRefresh)
             val followedArtistsAlbumsFlow = appUseCases.latestReleasesUseCase(forceRefresh, 100)
             val topArtistsFlow = userUseCases.topArtists("medium_term", forceRefresh)
-
+            val user = async { userUseCases.getCurrentUsersProfile(forceRefresh).first() }
+//            combine multiple flows and store it HomeScreenState
             combine(
                 currentUsersPlaylistsFlow,
                 followedArtistsAlbumsFlow,

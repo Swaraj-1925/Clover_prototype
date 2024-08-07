@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import java.text.SimpleDateFormat
-import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -29,8 +27,6 @@ class NewReleasesOfFollowedArtistsUseCase @Inject constructor(
     private val userUseCases: UserUseCases,
     private val artistsUseCase: ArtistUseCases
 ) {
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-
     suspend operator fun invoke(
         forceRefresh: Boolean,
         limit: Int? = null // This limit is for albums per artist
