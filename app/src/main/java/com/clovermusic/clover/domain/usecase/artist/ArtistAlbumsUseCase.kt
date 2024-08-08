@@ -33,29 +33,23 @@ class ArtistAlbumsUseCase @Inject constructor(
 
             coroutineScope {
                 // Fetch stored albums in parallel
-                val storedAlbums = artistIds.map { artistId ->
-                    async {
-                        repository.artists.getStoredArtistAlbums(artistId)
-                    }
-                }.awaitAll().filter { it.albums.isNotEmpty() }
+                val storedAlbumsDeferred = artistIds.map { artistId ->
+                    async { repository.artists.getStoredArtistAlbums(artistId) }
+                }
+                val storedAlbums = storedAlbumsDeferred.awaitAll().filter { it.albums.isNotEmpty() }
 
                 val needsRefresh = storedAlbums.size != artistIds.size || forceRefresh
 
                 if (needsRefresh) {
-                    Log.d("ArtistAlbumsUseCase", "Fetching fresh albums")
-                    // Fetch fresh albums in parallel
                     val freshAlbums = artistIds.map { artistId ->
                         async {
                             repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
                         }
                     }.awaitAll()
-
                     emit(DataState.NewData(freshAlbums))
                 } else {
-                    Log.d("ArtistAlbumsUseCase", "Using cached albums")
-                    emit(DataState.OldData(storedAlbums))
 
-                    // Fetch fresh albums in parallel to update the cache
+                    emit(DataState.OldData(storedAlbums))
                     val freshAlbums = artistIds.map { artistId ->
                         async {
                             repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
@@ -71,11 +65,11 @@ class ArtistAlbumsUseCase @Inject constructor(
         } catch (e: Exception) {
             Log.e("ArtistAlbumsUseCase", "Error fetching artist albums", e)
             coroutineScope {
+                emit(DataState.Error(customErrorHandling(e)))
                 val storedAlbums = artistIds.map { artistId ->
-                    async {
-                        repository.artists.getStoredArtistAlbums(artistId)
-                    }
+                    async { repository.artists.getStoredArtistAlbums(artistId) }
                 }.awaitAll()
+
                 if (storedAlbums.isNotEmpty()) {
                     emit(DataState.OldData(storedAlbums))
                 } else {
@@ -83,5 +77,5 @@ class ArtistAlbumsUseCase @Inject constructor(
                 }
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.Default)
 }

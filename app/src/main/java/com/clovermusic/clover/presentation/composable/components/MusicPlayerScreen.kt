@@ -40,8 +40,10 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -63,6 +65,8 @@ import com.clovermusic.clover.R
 import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
+import com.clovermusic.clover.util.Parsers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,7 +132,6 @@ fun BottomSheetForLyrics(
             }
 
             is PlaybackState.Error -> {
-                // Display an error state
                 Log.e("MusicPlayerScreen", (playbackState as PlaybackState.Error).message)
             }
         }
@@ -143,13 +146,6 @@ fun BottomSheetForLyrics(
     }
 }
 
-@Composable
-fun MusicPlayerScreen(
-    viewModel: MusicPlayerViewModel = hiltViewModel(),
-    navController: NavController
-) {
-
-}
 
 @Composable
 fun MusicPlayerDataScreen(
@@ -191,7 +187,7 @@ fun MusicPlayerDataScreen(
                     )
             )
 
-            MusicPlaylerContent(
+            MusicPlayerContent(
                 viewModel = viewModel,
                 songDetails = songDetails,
                 playPauseIcon = playPauseIcon
@@ -201,7 +197,7 @@ fun MusicPlayerDataScreen(
 }
 
 @Composable
-fun MusicPlaylerContent(
+fun MusicPlayerContent(
     viewModel: MusicPlayerViewModel,
     songDetails: PlayingTrackDetails,
     playPauseIcon: ImageVector
@@ -297,20 +293,58 @@ fun MusicPlaylerContent(
             }
         }
         Spacer(modifier = Modifier.padding(16.dp))
-        MusicPlayerControles(playPauseIcon = playPauseIcon)
+        MusicPlayerControls(playPauseIcon = playPauseIcon)
     }
 }
 
 @Composable
-fun MusicPlayerControles(
+fun MusicPlayerControls(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
     playPauseIcon: ImageVector
 ) {
     val nextButton = Icons.Filled.SkipNext
-    val suffleButton = Icons.Filled.Shuffle
+    val shuffleButton = Icons.Filled.Shuffle
     val repeatButton = Icons.Filled.Repeat
     val previousButton = Icons.Filled.SkipPrevious
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+
+    val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
+    var currentPlaybackPosition by remember { mutableLongStateOf(0L) }
+    var currentTrackDuration by remember { mutableLongStateOf(1L) }
+
+
+    var isSeekingInProgress by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(playbackState) {
+        when (playbackState) {
+            is PlaybackState.Playing -> {
+                val trackDetails = (playbackState as PlaybackState.Playing).songDetails
+                currentTrackDuration = trackDetails.duration
+                currentPlaybackPosition = viewModel.getCurrentPlaybackPosition()
+            }
+
+            is PlaybackState.Paused -> {
+                val trackDetails = (playbackState as PlaybackState.Paused).songDetails
+                currentTrackDuration = trackDetails.duration
+                currentPlaybackPosition = viewModel.getCurrentPlaybackPosition()
+            }
+
+            else -> {
+                currentPlaybackPosition = 0L
+                currentTrackDuration = 1L
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            if (!isSeekingInProgress) {
+                currentPlaybackPosition = viewModel.getCurrentPlaybackPosition()
+            }
+            delay(100) // Update the position every 100 milliseconds
+        }
+    }
+
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -319,18 +353,39 @@ fun MusicPlayerControles(
             .fillMaxWidth(0.85f)
     ) {
         Slider(
-            value = sliderPosition,
-            onValueChange = {
-                sliderPosition = it
-                viewModel.seekTrack(it.toLong())
+            value = currentPlaybackPosition.toFloat() / currentTrackDuration,
+            onValueChange = { value ->
+                isSeekingInProgress = true
+                val newPosition = (value * currentTrackDuration).toLong()
+                currentPlaybackPosition = newPosition
+            },
+            onValueChangeFinished = {
+                isSeekingInProgress = false
+                viewModel.seekTrack(currentPlaybackPosition)
             },
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondary,
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            valueRange = 0f..50f
+            valueRange = 0f..1f
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = Parsers.parseDurationMinutesSeconds(currentPlaybackPosition),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = Parsers.parseDurationMinutesSeconds(currentTrackDuration),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -341,7 +396,7 @@ fun MusicPlayerControles(
                     .weight(1f)
             ) {
                 Icon(
-                    imageVector = suffleButton,
+                    imageVector = shuffleButton,
                     contentDescription = "Shuffle Button",
                     modifier = Modifier
                         .size(30.dp)

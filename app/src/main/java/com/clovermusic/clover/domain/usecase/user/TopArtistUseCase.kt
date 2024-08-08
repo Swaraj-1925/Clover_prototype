@@ -24,6 +24,7 @@ class TopArtistUseCase @Inject constructor(
             networkDataAction.authData.ensureValidAccessToken()
             val storedFollowedArtists = repository.user.getStoredTopArtists()
             val needsRefresh = storedFollowedArtists.isEmpty() || forceRefresh
+
             if (needsRefresh) {
                 val freshTopArtists = repository.user.getAndStoreTopArtistsFromApi(timeRange)
                 emit(DataState.NewData(freshTopArtists))
@@ -46,5 +47,5 @@ class TopArtistUseCase @Inject constructor(
                 emit(DataState.Error(customErrorHandling(e)))
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.Default)
 }

@@ -22,12 +22,18 @@ class CurrentUsersPlaylistsUseCase @Inject constructor(
                 networkDataAction.authData.ensureValidAccessToken()
 
                 val storedPlaylists = repository.playlists.getStoredCurrentUserPlaylists()
+
+
                 if (storedPlaylists.isNotEmpty() && !forceRefresh) {
                     emit(DataState.OldData(storedPlaylists))
+                } else {
+                    val freshPlaylists =
+                        repository.playlists.getAndStoreCurrentUserPlaylistsFromApi()
+                    val dataUpdated = storedPlaylists != freshPlaylists
+                    if (dataUpdated) {
+                        emit(DataState.NewData(freshPlaylists))
+                    }
                 }
-
-                val freshPlaylists = repository.playlists.getAndStoreCurrentUserPlaylistsFromApi()
-                emit(DataState.NewData(freshPlaylists))
             } catch (e: Exception) {
                 Log.e(
                     "CurrentUsersPlaylistsUseCase",

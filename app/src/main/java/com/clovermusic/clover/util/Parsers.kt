@@ -41,6 +41,16 @@ object Parsers {
         }
     }
 
+    fun parseDurationMinutesSeconds(millis: Long): String {
+        val minutes = millis / (1000 * 60)
+        val seconds = (millis % (1000 * 60)) / 1000
+        return if (seconds < 1) {
+            "${minutes}min"
+        } else {
+            "${minutes}min ${seconds}sec"
+        }
+    }
+
     fun parseDurationHoursMinutes(millis: Int): String {
         val hours = millis / (1000 * 60 * 60)
         val minutes = (millis % (1000 * 60 * 60)) / (1000 * 60)

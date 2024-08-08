@@ -30,6 +30,10 @@ class Provide @Inject constructor(
         return provideData.provideArtistAlbum(artistId)
     }
 
+    override fun playlistHasTracks(playlistId: String): Int {
+        return provideData.playlistHasTracks(playlistId)
+    }
+
     override fun provideFollowedArtists(): List<ArtistsEntity> {
         return provideData.provideFollowedArtists()
     }
