@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 fun PlaylistScreen(
     playlistId: String,
     viewModel: PlaylistViewModel = hiltViewModel(),
+    navController: NavController
 //    onBackClick: () -> Unit
 ) {
     val playlistUiState by viewModel.playlistUiState.collectAsState()
@@ -83,9 +85,7 @@ fun PlaylistScreen(
             Column {
                 if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
                     PlayingSongBar(
-                        playbackState = playbackState,
-                        onPlayPauseClick = { musicPlayerViewModel.togglePausePlay() },
-                        onNextClick = { musicPlayerViewModel.skipToNext() }
+                        navController = navController
                     )
                 }
                 NavigationBar(
