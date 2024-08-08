@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.uiState.HomeScreenState
@@ -37,8 +38,7 @@ import com.clovermusic.clover.util.DataState
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (id: String) -> Unit,
+    navController: NavController
 ) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
@@ -64,9 +64,7 @@ fun HomeScreen(
             Column {
                 if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
                     PlayingSongBar(
-                        playbackState = playbackState,
-                        onPlayPauseClick = { musicPlayerViewModel.togglePausePlay() },
-                        onNextClick = { musicPlayerViewModel.skipToNext() }
+                        navController = navController
                     )
                 }
                 NavigationBar(
@@ -85,9 +83,8 @@ fun HomeScreen(
         ) {
             HomeContent(
                 homeScreenState = homeScreenState,
-                onPlaylistClick = onPlaylistClick,
-                onPlaylistNameClick = onPlaylistNameClick,
-                snackbarHostState = snackbarHostState
+                snackbarHostState = snackbarHostState,
+                navController = navController
             )
             PullRefreshIndicator(
                 refreshing = isLoading,
@@ -101,9 +98,8 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     homeScreenState: HomeScreenState,
-    onPlaylistClick: (String) -> Unit,
-    onPlaylistNameClick: (id: String) -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    navController: NavController
 ) {
     CloverTheme {
         Surface(
@@ -144,17 +140,15 @@ fun HomeContent(
                         is DataState.Loading -> {}
                         is DataState.OldData -> {
                             PlaylistSection(
-                                onPlaylistClick = onPlaylistClick,
-                                onPlaylistNameClick = onPlaylistNameClick,
-                                playlists = state.data
+                                playlists = state.data,
+                                navController = navController
                             )
                         }
 
                         is DataState.NewData -> {
                             PlaylistSection(
-                                onPlaylistClick = onPlaylistClick,
-                                onPlaylistNameClick = onPlaylistNameClick,
-                                playlists = state.data.take(4)
+                                playlists = state.data.take(4),
+                                navController = navController
                             )
                         }
 

@@ -26,6 +26,12 @@
           </targets>
         </DialogSelection>
       </SelectionState>
+      <SelectionState runConfigName="MusicPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="BottomSheetWithTopBarPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

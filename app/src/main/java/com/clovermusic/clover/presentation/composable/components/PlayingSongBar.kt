@@ -1,7 +1,11 @@
 package com.clovermusic.clover.presentation.composable.components
 
+import android.util.Log
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,121 +26,185 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
+import com.clovermusic.clover.presentation.navigation.MusicPlayerScreenRoute
 import com.clovermusic.clover.presentation.uiState.PlaybackState
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 
 
 @Composable
 fun PlayingSongBar(
-    playbackState: PlaybackState,
-    onPlayPauseClick: () -> Unit,
-    onNextClick: () -> Unit
+    viewModel: MusicPlayerViewModel = hiltViewModel(),
+    navController: NavController
 ) {
+    val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
+    val songDetails: PlayingTrackDetails? = when (playbackState) {
+        is PlaybackState.Loading -> {
+            // Display a loading indicator or state
+            LoadingAnimation()
+            null
+        }
 
-    val songDetails = when (playbackState) {
-        is PlaybackState.Playing -> playbackState.songDetails
-        is PlaybackState.Paused -> playbackState.songDetails
-        else -> throw IllegalStateException("Unexpected state")
+        is PlaybackState.Playing -> {
+            (playbackState as PlaybackState.Playing).songDetails
+        }
+
+        is PlaybackState.Paused -> {
+            (playbackState as PlaybackState.Paused).songDetails
+        }
+
+        is PlaybackState.Error -> {
+            // Display an error state
+            Log.e("MiniPlayerBar", (playbackState as PlaybackState.Error).message)
+            null
+        }
     }
 
-    val playPauseIcon =
-        if (playbackState is PlaybackState.Playing) Icons.Filled.Pause else Icons.Filled.PlayArrow
-    val nextButton = Icons.Filled.SkipNext
-    Card(
-        onClick = { /*TODO*/ },
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .fillMaxHeight(0.07f)
-    ) {
-        Box(
+    if (songDetails != null) {
+        val playPauseIcon =
+            if (playbackState is PlaybackState.Playing) Icons.Filled.Pause else Icons.Filled.PlayArrow
+
+        val nextButton = Icons.Filled.SkipNext
+        var initialSwipePosition by remember { mutableStateOf(Offset.Zero) }
+        var currentSwipePosition by remember { mutableStateOf(Offset.Zero) }
+        val swipeThreshold = 200f
+
+
+        Card(
+            onClick = { navController.navigate(MusicPlayerScreenRoute) },
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .padding(8.dp)
+                .fillMaxHeight(0.07f)
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onDragStart = { offset ->
+                            initialSwipePosition = offset
+                        },
+                        onDragEnd = {
+                            if (currentSwipePosition.x - initialSwipePosition.x > swipeThreshold) {
+                                viewModel.skipToPrevious()
+                            } else if (initialSwipePosition.x - currentSwipePosition.x > swipeThreshold) {
+                                viewModel.skipToNext()
+                            }
+                            initialSwipePosition = Offset.Zero
+                            currentSwipePosition = Offset.Zero
+                        },
+                        onHorizontalDrag = { change, dragAmount ->
+                            change.consume()
+                            currentSwipePosition += Offset(dragAmount, 0f)
+                        }
+                    )
+                }
         ) {
-            AsyncImage(
-                model = songDetails.image,
-                contentDescription = "Album art",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-            )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color(0xFF2C2C2C)
-                            ),
-                            startY = 0f,
-                            endY = Float.POSITIVE_INFINITY
-                        )
-                    )
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
             ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
+                AsyncImage(
+                    model = songDetails.image,
+                    contentDescription = "Album art",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .padding(start = 8.dp)
-                        .fillMaxHeight()
-                        .weight(0.9f)
-                ) {
-                    Text(
-                        text = songDetails.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFEAEAEA),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .clickable { }
-                    )
-                    Text(
-                        text = songDetails.artist,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFFCFCFC),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .clickable { }
-                    )
-                }
+                        .fillMaxSize()
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color(0xFF2C2C2C)
+                                ),
+                                startY = 0f,
+                                endY = Float.POSITIVE_INFINITY
+                            )
+                        )
+                )
                 Row(
                     modifier = Modifier
-                        .weight(0.3f)
+                        .fillMaxSize()
+                        .padding(8.dp)
                 ) {
-                    IconButton(
-                        onClick = { onPlayPauseClick() },
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .weight(0.5f)
+                            .fillMaxHeight()
+
                     ) {
-                        Icon(
-                            imageVector = playPauseIcon,
-                            contentDescription = "Play Button",
-                            tint = Color(0xFFEAEAEA),
+                        Text(
+                            text = songDetails.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFFEAEAEA),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
-                                .size(40.dp)
+                                .clickable { }
+                                .basicMarquee(
+                                    initialDelayMillis = 3000,
+                                    repeatDelayMillis = 2000,
+                                    spacing = MarqueeSpacing(14.dp),
+                                    velocity = 16.dp
+                                )
+                        )
+                        Text(
+                            text = songDetails.artist,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFFFCFCFC),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .clickable { }
                         )
                     }
-                    IconButton(
-                        onClick = { onNextClick() },
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .weight(0.3f)
                     ) {
-                        Icon(
-                            imageVector = nextButton,
-                            contentDescription = "Next Button",
-                            tint = Color(0xFFEAEAEA),
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
+                        IconButton(
+                            onClick = { viewModel.togglePausePlay() },
+                        ) {
+                            Icon(
+                                imageVector = playPauseIcon,
+                                contentDescription = "Play Button",
+                                tint = Color(0xFFEAEAEA),
+                                modifier = Modifier
+                                    .size(40.dp)
+
+                            )
+                        }
+                        IconButton(
+                            onClick = { viewModel.skipToNext() },
+                        ) {
+                            Icon(
+                                imageVector = nextButton,
+                                contentDescription = "Next Button",
+                                tint = Color(0xFFEAEAEA),
+                                modifier = Modifier
+                                    .size(40.dp)
+                            )
+                        }
                     }
                 }
             }
