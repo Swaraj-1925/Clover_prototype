@@ -134,6 +134,8 @@ dependencies {
 // pull down Refresh
     implementation libs.accompanist.swiperefresh
 
+//    Swipe
+    implementation libs.swipe
 
 //    ExoPlayer
 //    implementation libs.androidx.media3.exoplayer

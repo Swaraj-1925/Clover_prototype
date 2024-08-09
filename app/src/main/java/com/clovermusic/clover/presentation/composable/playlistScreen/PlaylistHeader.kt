@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -61,9 +62,11 @@ fun PlaylistHeader(
                     .fillMaxWidth()
             ) {
                 Card(
+                    elevation = CardDefaults.cardElevation(12.dp),
                     modifier = Modifier
                         .fillMaxSize(0.6f)
                         .weight(0.4f)
+
                 ) {
                     AsyncImage(
                         model = playlist.playlist.imageUrl,

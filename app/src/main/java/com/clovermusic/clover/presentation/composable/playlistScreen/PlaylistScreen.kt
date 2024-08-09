@@ -1,6 +1,7 @@
 package com.clovermusic.clover.presentation.composable.playlistScreen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.TopAppBar
@@ -18,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,8 +39,7 @@ import kotlinx.coroutines.launch
 fun PlaylistScreen(
     playlistId: String,
     viewModel: PlaylistViewModel = hiltViewModel(),
-    navController: NavController
-//    onBackClick: () -> Unit
+    navController: NavController,
 ) {
     val playlistUiState by viewModel.playlistUiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -58,27 +59,34 @@ fun PlaylistScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .padding(top = 24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                             contentDescription = "Back Icon",
-                            tint = MaterialTheme.colorScheme.tertiary
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(start = 8.dp)
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier.padding(top = 24.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Search Icon",
-                            tint = MaterialTheme.colorScheme.tertiary
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                 },
                 backgroundColor = MaterialTheme.colorScheme.background,
-                elevation = 8.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
+                modifier = Modifier
+                    .height(60.dp)
             )
         },
         bottomBar = {
