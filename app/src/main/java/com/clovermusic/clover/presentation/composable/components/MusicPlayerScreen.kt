@@ -36,17 +36,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -66,7 +63,6 @@ import com.clovermusic.clover.domain.model.common.PlayingTrackDetails
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -293,58 +289,32 @@ fun MusicPlayerContent(
             }
         }
         Spacer(modifier = Modifier.padding(16.dp))
-        MusicPlayerControls(playPauseIcon = playPauseIcon)
+        MusicPlayerControls(
+            playPauseIcon = playPauseIcon,
+            currentTrackDuration = songDetails.duration
+        )
     }
 }
 
 @Composable
 fun MusicPlayerControls(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
-    playPauseIcon: ImageVector
+    playPauseIcon: ImageVector,
+    currentTrackDuration: Long,
 ) {
     val nextButton = Icons.Filled.SkipNext
     val shuffleButton = Icons.Filled.Shuffle
     val repeatButton = Icons.Filled.Repeat
     val previousButton = Icons.Filled.SkipPrevious
 
-    val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
-    var currentPlaybackPosition by remember { mutableLongStateOf(0L) }
-    var currentTrackDuration by remember { mutableLongStateOf(1L) }
+    val playbackPosition by viewModel.playbackPosition.collectAsState()
 
+    val sliderPosition by rememberUpdatedState(playbackPosition.toFloat())
+    val maxSliderValue = currentTrackDuration.toFloat()
 
-    var isSeekingInProgress by remember { mutableStateOf(false) }
-
-
-    LaunchedEffect(playbackState) {
-        when (playbackState) {
-            is PlaybackState.Playing -> {
-                val trackDetails = (playbackState as PlaybackState.Playing).songDetails
-                currentTrackDuration = trackDetails.duration
-                currentPlaybackPosition = viewModel.getCurrentPlaybackPosition()
-            }
-
-            is PlaybackState.Paused -> {
-                val trackDetails = (playbackState as PlaybackState.Paused).songDetails
-                currentTrackDuration = trackDetails.duration
-                currentPlaybackPosition = viewModel.getCurrentPlaybackPosition()
-            }
-
-            else -> {
-                currentPlaybackPosition = 0L
-                currentTrackDuration = 1L
-            }
-        }
+    LaunchedEffect(viewModel.musicPlayerState) {
+        viewModel.getCurrentPlaybackPosition()
     }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            if (!isSeekingInProgress) {
-                currentPlaybackPosition = viewModel.getCurrentPlaybackPosition()
-            }
-            delay(100) // Update the position every 100 milliseconds
-        }
-    }
-
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -353,22 +323,11 @@ fun MusicPlayerControls(
             .fillMaxWidth(0.85f)
     ) {
         Slider(
-            value = currentPlaybackPosition.toFloat() / currentTrackDuration,
-            onValueChange = { value ->
-                isSeekingInProgress = true
-                val newPosition = (value * currentTrackDuration).toLong()
-                currentPlaybackPosition = newPosition
+            value = sliderPosition,
+            onValueChange = { newValue ->
+                viewModel.seekTo(newValue.toLong())
             },
-            onValueChangeFinished = {
-                isSeekingInProgress = false
-                viewModel.seekTrack(currentPlaybackPosition)
-            },
-            colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colorScheme.secondary,
-                activeTrackColor = MaterialTheme.colorScheme.secondary,
-                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            valueRange = 0f..1f
+            valueRange = 0f..maxSliderValue
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -376,12 +335,12 @@ fun MusicPlayerControls(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = Parsers.parseDurationMinutesSeconds(currentPlaybackPosition),
+                text = Parsers.formatDuration(playbackPosition),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
             Text(
-                text = Parsers.parseDurationMinutesSeconds(currentTrackDuration),
+                text = Parsers.formatDuration(currentTrackDuration),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary
             )

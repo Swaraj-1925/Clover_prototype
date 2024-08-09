@@ -1,12 +1,15 @@
 package com.clovermusic.clover.domain.usecase.playback
 
-import android.util.Log
 import com.clovermusic.clover.data.spotify.appRemote.SpotifyAppRemoteRepository
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.PlayerState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RemotePlaybackHandlerUseCase @Inject constructor(
@@ -16,6 +19,11 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
     private var remote: SpotifyAppRemote? = null
     private val _playerState = MutableStateFlow<PlayerState?>(null)
     val playerState: StateFlow<PlayerState?> = _playerState.asStateFlow()
+
+    private val _playbackPosition = MutableStateFlow(0L)
+    val playbackPosition: StateFlow<Long> = _playbackPosition.asStateFlow()
+
+    private var isPlaying: Boolean = false
 
     suspend fun initialize() {
         if (remote == null) {
@@ -27,15 +35,27 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
     private fun startPlayerStateUpdates() {
         remote?.playerApi?.subscribeToPlayerState()?.setEventCallback { state ->
             _playerState.value = state
+            isPlaying = !state.isPaused
         }
     }
+
+    fun updatePlaybackPosition() {
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                remote?.playerApi?.subscribeToPlayerState()?.setEventCallback { state ->
+                    _playbackPosition.value = state.playbackPosition
+                }
+                delay(1000)
+            }
+        }
+    }
+
 
     suspend fun performRemoteAction(action: suspend (SpotifyAppRemote) -> Unit) {
         try {
             val remote = appRemoteRepository.getConnectedAppRemote()
             action(remote)
         } catch (e: Exception) {
-            Log.e("RemotePlaybackHandlerUseCase", "Error performing remote action", e)
             throw e
         }
     }
@@ -50,7 +70,5 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
     fun seekTo(position: Long) = remote?.playerApi?.seekTo(position)
 
     fun getCurrentPlaybackPosition(): Long = playerState.value?.playbackPosition ?: 0L
-    fun getCurrentTrackDuration(): Long = playerState.value?.track?.duration ?: 0L
-    fun isMusicPlaying(): Boolean = playerState.value?.isPaused == false
 
 }
