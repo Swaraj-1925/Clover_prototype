@@ -32,7 +32,9 @@ fun PlaylistContent(
         }
         itemsIndexed(tracks, key = { _, track -> track.track.trackId }) { index, track ->
 
-            SongListCard(track = track.track, artists = track.artists, index = index + 1)
+            SongListCard(
+                track = track.track, artists = track.artists, index = index + 1
+            )
         }
     }
 }

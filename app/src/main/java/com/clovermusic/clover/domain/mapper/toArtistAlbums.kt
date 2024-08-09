@@ -9,7 +9,7 @@ fun List<AlbumResponseDto>.toArtistAlbums(): List<Albums> {
     return map { apiItem ->
         Albums(
             artists = apiItem.artists.toAlbumArtist(),
-            image = apiItem.images.toImages(),
+            image = apiItem.images[0]!!.toImages(),
             totalTracks = apiItem.total_tracks,
             albumId = apiItem.id,
             albumName = apiItem.name,

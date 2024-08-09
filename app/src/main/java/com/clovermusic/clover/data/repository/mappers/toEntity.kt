@@ -37,15 +37,24 @@ fun List<UsersPlaylistItemDto>.toEntity(): List<PlaylistInfoEntity> {
 
 
 fun List<PlaylistTrackResponseDto>.toEntity(): List<TrackEntity> {
-    return map {
+    return map { tracks ->
         TrackEntity(
-            trackId = it.track.id,
-            albumId = it.track.album.id,
-            uri = it.track.uri,
-            durationMs = it.track.duration_ms,
-            name = it.track.name,
-            imageUrl = it.track.album.images.firstOrNull()?.url ?: "",
-            previewUrl = it.track.preview_url,
+            trackId = tracks.track.id,
+            albumId = tracks.track.album.id,
+            uri = tracks.track.uri,
+            durationMs = tracks.track.duration_ms,
+            name = tracks.track.name,
+            imageUrl = tracks.track.album.images
+                .filterNotNull() // Filter out null images
+                .sortedBy { it.height * it.width } // Sort images by size (smallest first)
+                .let { sortedImages ->
+                    if (sortedImages.size > 1) {
+                        sortedImages[1].url // Get the 2nd smallest image
+                    } else {
+                        sortedImages.firstOrNull()?.url ?: "" // If only one image, use it
+                    }
+                },
+            previewUrl = tracks.track.preview_url,
             timestamp = System.currentTimeMillis(),
         )
     }
@@ -127,7 +136,16 @@ fun TrackItemsResponseDto.toEntity() = TrackEntity(
     uri = this.uri,
     durationMs = this.duration_ms,
     name = this.name,
-    imageUrl = this.album.images.firstOrNull()?.url ?: "",
+    imageUrl = this.album.images
+        .filterNotNull() // Filter out null images
+        .sortedBy { it.height * it.width } // Sort images by size (smallest first)
+        .let { sortedImages ->
+            if (sortedImages.size > 1) {
+                sortedImages[1].url // Get the 2nd smallest image
+            } else {
+                sortedImages.firstOrNull()?.url ?: "" // If only one image, use it
+            }
+        },
     previewUrl = this.preview_url,
     timestamp = System.currentTimeMillis()
 )
