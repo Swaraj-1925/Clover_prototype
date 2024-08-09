@@ -8,10 +8,12 @@ import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.util.Parsers.convertSpotifyImageUriToUrl
 import com.spotify.protocol.types.PlayerState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,15 +25,17 @@ class MusicPlayerViewModel @Inject constructor(
     private val _musicPlayerState = MutableStateFlow<PlaybackState>(PlaybackState.Loading)
     val musicPlayerState: StateFlow<PlaybackState> = _musicPlayerState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            playbackHandler.initialize()
-            observePlayerState()
-        }
-    }
-
     private val _playbackPosition = MutableStateFlow(0L)
     val playbackPosition: StateFlow<Long> = _playbackPosition.asStateFlow()
+
+    private var playbackUpdateJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            observePlayerState()
+            playbackHandler.initialize()
+        }
+    }
 
     fun skipToNext() = playbackHandler.skipToNext()
     fun skipToPrevious() = playbackHandler.skipToPrevious()
@@ -46,10 +50,20 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun repeatTrack() = playbackHandler.toggleRepeat()
     fun playTrack(uri: String) = playbackHandler.playMusic(uri)
-    fun seekTrack(position: Long) = playbackHandler.seekTo(position)
+    fun pauseTrack() = playbackHandler.pauseMusic()
+    fun resumeTrack() = playbackHandler.resumeMusic()
+    fun seekTo(position: Long) {
+        playbackHandler.seekTo(position)
+        _playbackPosition.value = position
+    }
 
-    fun getCurrentPlaybackPosition() = playbackHandler.getCurrentPlaybackPosition()
-    fun getCurrentTrackDuration() = playbackHandler.getCurrentTrackDuration()
+    fun getCurrentPlaybackPosition() {
+        when (musicPlayerState.value) {
+            is PlaybackState.Playing -> playbackHandler.updatePlaybackPosition()
+            else -> {}
+        }
+        _playbackPosition.value = playbackHandler.playbackPosition.value
+    }
 
     private fun observePlayerState() {
         viewModelScope.launch {
@@ -58,19 +72,27 @@ class MusicPlayerViewModel @Inject constructor(
                     updatePlaybackState(it)
                     if (!it.isPaused) {
                         startPositionTracking()
+                    } else {
+                        stopPositionTracking()
                     }
                 }
             }
         }
     }
 
+
     private fun startPositionTracking() {
-        viewModelScope.launch {
-            while (musicPlayerState.value is PlaybackState.Playing) {
+        playbackUpdateJob?.cancel()
+        playbackUpdateJob = viewModelScope.launch {
+            while (isActive) {
                 _playbackPosition.value = playbackHandler.getCurrentPlaybackPosition()
-                delay(100)
+                delay(1000)
             }
         }
+    }
+
+    private fun stopPositionTracking() {
+        playbackUpdateJob?.cancel()
     }
 
     private fun updatePlaybackState(playerState: PlayerState) {
@@ -83,7 +105,10 @@ class MusicPlayerViewModel @Inject constructor(
                 image = track.imageUri.raw?.convertSpotifyImageUriToUrl() ?: "",
                 artists = track.artists.map { it.name },
                 artistsUri = track.artists.map { it.uri },
-                duration = track.duration
+                duration = track.duration,
+                currentPosition = playerState.playbackPosition,
+                isShuffling = playerState.playbackOptions.isShuffling,
+                repeatMode = playerState.playbackOptions.repeatMode
             )
         }
 
