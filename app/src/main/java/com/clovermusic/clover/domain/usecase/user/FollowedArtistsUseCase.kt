@@ -23,15 +23,15 @@ class FollowedArtistsUseCase @Inject constructor(
         flow {
             try {
                 networkDataAction.authData.ensureValidAccessToken()
+
                 val storedFollowedArtists = repository.user.getStoredFollowedArtists()
                 val needsRefresh = storedFollowedArtists.isEmpty() || forceRefresh
+
                 if (needsRefresh) {
-                    Log.d("FollowedArtistsUseCase", "Refreshing followed artists")
                     val freshFollowedArtists =
                         repository.user.getAndStoreFollowedArtistsFromApi()
                     emit(DataState.NewData(freshFollowedArtists))
                 } else {
-                    Log.d("FollowedArtistsUseCase", "Using cached followed artists")
                     emit(DataState.OldData(storedFollowedArtists))
                     val freshFollowedArtists =
                         repository.user.getAndStoreFollowedArtistsFromApi()

@@ -26,6 +26,16 @@ interface ProvideDataDao {
     @Query("SELECT * FROM artists WHERE artistId = :artistId")
     fun provideArtistAlbum(artistId: String): ArtistWithAlbums
 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM playlist
+        INNER JOIN PlaylistTrackCrossRef ON playlist.playlistId = PlaylistTrackCrossRef.playlistId
+        WHERE playlist.playlistId = :playlistId
+    """
+    )
+    fun playlistHasTracks(playlistId: String): Int
+
     @Query("SELECT * FROM artists WHERE isFollowed = 1")
     fun provideFollowedArtists(): List<ArtistsEntity>
 

@@ -67,7 +67,7 @@ object Util {
     fun AlbumResponseDto.toAlbum(): Albums {
         return Albums(
             artists = artists.toAlbumArtist(),
-            image = images.toImages(),
+            image = images[0]!!.toImages(),
             totalTracks = total_tracks,
             albumId = id,
             albumName = name,

@@ -13,6 +13,8 @@ import com.clovermusic.clover.util.SpotifyTokenManager
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AuthDataSource @Inject constructor(
@@ -57,7 +59,7 @@ class AuthDataSource @Inject constructor(
     }
 
     //    Refreshes the access token using the refresh token.
-    suspend fun refreshAccessToken() {
+    suspend fun refreshAccessToken() = withContext(Dispatchers.IO) {
         try {
             val refreshToken = tokenManager.getRefreshToken()
 

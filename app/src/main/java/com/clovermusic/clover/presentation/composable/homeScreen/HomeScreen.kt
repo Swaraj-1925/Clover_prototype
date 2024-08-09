@@ -140,7 +140,7 @@ fun HomeContent(
                         is DataState.Loading -> {}
                         is DataState.OldData -> {
                             PlaylistSection(
-                                playlists = state.data,
+                                playlists = state.data.take(4),
                                 navController = navController
                             )
                         }

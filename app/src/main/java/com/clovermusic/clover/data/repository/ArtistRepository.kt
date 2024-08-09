@@ -6,6 +6,8 @@ import com.clovermusic.clover.data.local.dao.Provide
 import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
 import com.clovermusic.clover.data.repository.mappers.toEntity
 import com.clovermusic.clover.data.spotify.api.networkDataSources.NetworkDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ArtistRepository @Inject constructor(
@@ -16,26 +18,27 @@ class ArtistRepository @Inject constructor(
     suspend fun getAndStoreArtistAlbumsFromApi(
         artistId: String,
         limit: Int?
-    ): ArtistWithAlbums {
+    ): ArtistWithAlbums = withContext(Dispatchers.IO) {
         try {
             val response =
                 dataSource.artistData.fetchArtistAlbums(artistId = artistId, limits = limit)
             val albumEntities = response.toEntity(artistId)
             insert.insertAlbum(albumEntities)
 
-            return provide.provideArtistAlbum(artistId)
+            provide.provideArtistAlbum(artistId)
         } catch (e: Exception) {
             Log.e("ArtistRepository", "getAndStoreArtistAlbumsFromApi: ", e)
             throw e
         }
     }
 
-    fun getStoredArtistAlbums(artistId: String): ArtistWithAlbums {
-        return try {
-            provide.provideArtistAlbum(artistId)
-        } catch (e: Exception) {
-            throw e
+    suspend fun getStoredArtistAlbums(artistId: String): ArtistWithAlbums =
+        withContext(Dispatchers.IO) {
+            try {
+                provide.provideArtistAlbum(artistId)
+            } catch (e: Exception) {
+                throw e
+            }
         }
-    }
 
 }

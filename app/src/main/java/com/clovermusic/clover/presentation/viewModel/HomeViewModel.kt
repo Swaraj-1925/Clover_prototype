@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
         coroutineScope {
 
             val currentUsersPlaylistsFlow = playlistUseCases.currentUserPlaylist(forceRefresh)
-            val followedArtistsAlbumsFlow = appUseCases.latestReleasesUseCase(forceRefresh, 100)
+            val followedArtistsAlbumsFlow = appUseCases.latestReleasesUseCase(forceRefresh, 1)
             val topArtistsFlow = userUseCases.topArtists("medium_term", forceRefresh)
             val user = async { userUseCases.getCurrentUsersProfile(forceRefresh).first() }
 //            combine multiple flows and store it HomeScreenState

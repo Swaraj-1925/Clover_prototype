@@ -6,7 +6,7 @@ data class AlbumResponseDto(
     val available_markets: List<String>,
     val href: String,
     val id: String,
-    val images: List<ImageResponseDto>,
+    val images: List<ImageResponseDto?>,
     val name: String,
     val release_date: String,
     val release_date_precision: String,
