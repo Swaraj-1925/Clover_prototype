@@ -51,6 +51,7 @@ fun PlayingSongBar(
     navController: NavController
 ) {
     val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
+
     val songDetails: PlayingTrackDetails? = when (playbackState) {
         is PlaybackState.Loading -> {
             // Display a loading indicator or state
