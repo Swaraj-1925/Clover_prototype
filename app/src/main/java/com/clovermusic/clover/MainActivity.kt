@@ -6,11 +6,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.clovermusic.clover.data.spotify.api.networkDataAction.NetworkDataAction
 import com.clovermusic.clover.presentation.navigation.Navigation
-import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -21,7 +19,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkDataAction: NetworkDataAction
-    val viewModel: MusicPlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
