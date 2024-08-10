@@ -9,4 +9,7 @@ data class PlayingTrackDetails(
     val artists: List<String>,
     val artistsUri: List<String>,
     val duration: Long,
+    val currentPosition: Long,
+    val isShuffling: Boolean,
+    val repeatMode: Int
 )

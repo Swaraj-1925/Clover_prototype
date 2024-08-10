@@ -8,7 +8,6 @@ import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.util.Parsers.convertSpotifyImageUriToUrl
 import com.spotify.protocol.types.PlayerState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,19 +22,28 @@ class MusicPlayerViewModel @Inject constructor(
     private val _musicPlayerState = MutableStateFlow<PlaybackState>(PlaybackState.Loading)
     val musicPlayerState: StateFlow<PlaybackState> = _musicPlayerState.asStateFlow()
 
+
+    val playbackPosition: StateFlow<Long> = playbackHandler.playbackPosition
+
+
+    private val _isUserInteractingWithSlider = MutableStateFlow(false)
+    val isUserInteractingWithSlider: StateFlow<Boolean> = _isUserInteractingWithSlider.asStateFlow()
+
+
     init {
         viewModelScope.launch {
-            playbackHandler.initialize()
             observePlayerState()
+            playbackHandler.initialize()
         }
     }
-
-    private val _playbackPosition = MutableStateFlow(0L)
-    val playbackPosition: StateFlow<Long> = _playbackPosition.asStateFlow()
 
     fun skipToNext() = playbackHandler.skipToNext()
     fun skipToPrevious() = playbackHandler.skipToPrevious()
     fun shuffleMusic() = playbackHandler.toggleShuffle()
+    fun repeatTrack() = playbackHandler.toggleRepeat()
+    fun playTrack(uri: String) = playbackHandler.playMusic(uri)
+    fun pauseTrack() = playbackHandler.pauseMusic()
+    fun resumeTrack() = playbackHandler.resumeMusic()
     fun togglePausePlay() {
         when (musicPlayerState.value) {
             is PlaybackState.Playing -> playbackHandler.pauseMusic()
@@ -44,31 +52,27 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    fun repeatTrack() = playbackHandler.toggleRepeat()
-    fun playTrack(uri: String) = playbackHandler.playMusic(uri)
-    fun seekTrack(position: Long) = playbackHandler.seekTo(position)
+    fun seekTo(position: Long) {
+        viewModelScope.launch {
+            playbackHandler.seekTo(position)
+        }
+    }
 
-    fun getCurrentPlaybackPosition() = playbackHandler.getCurrentPlaybackPosition()
-    fun getCurrentTrackDuration() = playbackHandler.getCurrentTrackDuration()
+
+    fun onSliderInteractionStart() {
+        _isUserInteractingWithSlider.value = true
+    }
+
+    fun onSliderInteractionEnd() {
+        _isUserInteractingWithSlider.value = false
+    }
 
     private fun observePlayerState() {
         viewModelScope.launch {
             playbackHandler.playerState.collect { state ->
                 state?.let {
                     updatePlaybackState(it)
-                    if (!it.isPaused) {
-                        startPositionTracking()
-                    }
                 }
-            }
-        }
-    }
-
-    private fun startPositionTracking() {
-        viewModelScope.launch {
-            while (musicPlayerState.value is PlaybackState.Playing) {
-                _playbackPosition.value = playbackHandler.getCurrentPlaybackPosition()
-                delay(100)
             }
         }
     }
@@ -83,7 +87,10 @@ class MusicPlayerViewModel @Inject constructor(
                 image = track.imageUri.raw?.convertSpotifyImageUriToUrl() ?: "",
                 artists = track.artists.map { it.name },
                 artistsUri = track.artists.map { it.uri },
-                duration = track.duration
+                duration = track.duration,
+                currentPosition = playerState.playbackPosition,
+                isShuffling = playerState.playbackOptions.isShuffling,
+                repeatMode = playerState.playbackOptions.repeatMode
             )
         }
 
