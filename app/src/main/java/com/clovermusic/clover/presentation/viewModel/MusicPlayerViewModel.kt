@@ -8,6 +8,8 @@ import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.util.Parsers.convertSpotifyImageUriToUrl
 import com.spotify.protocol.types.PlayerState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,9 +57,10 @@ class MusicPlayerViewModel @Inject constructor(
     fun seekTo(position: Long) {
         playbackHandler.seekTo(position)
         _playbackPosition.value = position
+
     }
 
-    fun getCurrentPlaybackPosition() {
+    private fun getCurrentPlaybackPosition() {
         when (musicPlayerState.value) {
             is PlaybackState.Playing -> playbackHandler.updatePlaybackPosition()
             else -> {}
@@ -83,12 +86,13 @@ class MusicPlayerViewModel @Inject constructor(
 
     private fun startPositionTracking() {
         playbackUpdateJob?.cancel()
-        playbackUpdateJob = viewModelScope.launch {
+        playbackUpdateJob = CoroutineScope(Dispatchers.IO).launch {
             while (isActive) {
-                _playbackPosition.value = playbackHandler.getCurrentPlaybackPosition()
+                getCurrentPlaybackPosition()
                 delay(1000)
             }
         }
+
     }
 
     private fun stopPositionTracking() {

@@ -39,7 +39,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -116,13 +115,11 @@ fun BottomSheetForLyrics(
             }
 
             is PlaybackState.Playing -> {
-                // Display the playing state
                 songDetails = (playbackState as PlaybackState.Playing).songDetails
                 playPauseIcon = Icons.Filled.Pause
             }
 
             is PlaybackState.Paused -> {
-                // Display the paused state
                 songDetails = (playbackState as PlaybackState.Paused).songDetails
                 playPauseIcon = Icons.Filled.PlayArrow
             }
@@ -311,10 +308,8 @@ fun MusicPlayerControls(
 
     val sliderPosition by rememberUpdatedState(playbackPosition.toFloat())
     val maxSliderValue = currentTrackDuration.toFloat()
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(viewModel.musicPlayerState) {
-        viewModel.getCurrentPlaybackPosition()
-    }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -325,7 +320,13 @@ fun MusicPlayerControls(
         Slider(
             value = sliderPosition,
             onValueChange = { newValue ->
-                viewModel.seekTo(newValue.toLong())
+                scope.launch {
+                    viewModel.pauseTrack()
+                    viewModel.seekTo(newValue.toLong())
+                }
+            },
+            onValueChangeFinished = {
+                viewModel.resumeTrack()
             },
             valueRange = 0f..maxSliderValue
         )

@@ -41,12 +41,10 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
 
     fun updatePlaybackPosition() {
         CoroutineScope(Dispatchers.IO).launch {
-            while (true) {
-                remote?.playerApi?.subscribeToPlayerState()?.setEventCallback { state ->
-                    _playbackPosition.value = state.playbackPosition
-                }
-                delay(1000)
+            remote?.playerApi?.subscribeToPlayerState()?.setEventCallback { state ->
+                _playbackPosition.value = state.playbackPosition
             }
+            delay(1000)
         }
     }
 
@@ -68,7 +66,6 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
     fun toggleShuffle() = remote?.playerApi?.toggleShuffle()
     fun toggleRepeat() = remote?.playerApi?.toggleRepeat()
     fun seekTo(position: Long) = remote?.playerApi?.seekTo(position)
-
     fun getCurrentPlaybackPosition(): Long = playerState.value?.playbackPosition ?: 0L
 
 }
