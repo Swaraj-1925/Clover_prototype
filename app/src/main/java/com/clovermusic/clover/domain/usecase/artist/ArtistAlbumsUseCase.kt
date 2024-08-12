@@ -31,37 +31,39 @@ class ArtistAlbumsUseCase @Inject constructor(
         try {
             networkDataAction.authData.ensureValidAccessToken()
 
-            coroutineScope {
-                // Fetch stored albums in parallel
-                val storedAlbumsDeferred = artistIds.map { artistId ->
-                    async { repository.artists.getStoredArtistAlbums(artistId) }
-                }
-                val storedAlbums = storedAlbumsDeferred.awaitAll().filter { it.albums.isNotEmpty() }
+            val refreshArtistId = mutableSetOf<String>()
+            val artistAlbums = mutableListOf<ArtistWithAlbums>()
 
-                val needsRefresh = storedAlbums.size != artistIds.size || forceRefresh
-
-                if (needsRefresh) {
-                    val freshAlbums = artistIds.map { artistId ->
-                        async {
-                            repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
-                        }
-                    }.awaitAll()
-                    emit(DataState.NewData(freshAlbums))
+            val storedAlbums = artistIds.map { artistId ->
+                val albums = repository.artists.getStoredArtistAlbums(artistId)
+                if (albums.albums.isEmpty()) {
+                    refreshArtistId.add(artistId)
                 } else {
-
-                    emit(DataState.OldData(storedAlbums))
-                    val freshAlbums = artistIds.map { artistId ->
-                        async {
-                            repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
-                        }
-                    }.awaitAll()
-
-                    val isDataChanged = freshAlbums != storedAlbums
-                    if (isDataChanged) {
-                        emit(DataState.NewData(freshAlbums))
-                    }
+                    artistAlbums.add(albums)
                 }
             }
+            refreshArtistId.forEach { artistId ->
+                val albums = repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
+                artistAlbums.add(albums)
+            }
+
+            if (artistAlbums.isNotEmpty()) {
+                Log.d("ArtistAlbumsUseCase", "Fetching fresh artist albums")
+                emit(DataState.OldData(artistAlbums))
+            }
+
+            val freshAlbums = artistIds.map { artistId ->
+                repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
+            }
+            val dataChanged = freshAlbums != artistAlbums
+
+            val needsRefresh = forceRefresh || dataChanged || storedAlbums.isEmpty()
+
+
+            if (needsRefresh) {
+                emit(DataState.NewData(freshAlbums))
+            }
+
         } catch (e: Exception) {
             Log.e("ArtistAlbumsUseCase", "Error fetching artist albums", e)
             coroutineScope {

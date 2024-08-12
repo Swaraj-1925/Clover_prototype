@@ -42,7 +42,10 @@ class UserRepository @Inject constructor(
             try {
                 val response = dataSource.userDataSource.fetchFollowedArtists()
                 val artistsEntity = response.toEntity().map { it.copy(isFollowed = true) }
-                insert.upsertArtist(artistsEntity)
+                artistsEntity.forEach {
+                    Log.i("UserRepository", "Saved followed Artist ${it.name}")
+                    insert.insertFollowedArtist(it.artistId)
+                }
                 artistsEntity
             } catch (e: Exception) {
                 Log.e("UserRepository", "getAndStoreFollowedArtistsFromApi: ", e)
@@ -62,7 +65,10 @@ class UserRepository @Inject constructor(
         try {
             val response = dataSource.userDataSource.fetchTopArtists(timeRange)
             val artistsEntity = response.toEntity().map { it.copy(isTopArtist = true) }
-            insert.upsertArtist(artistsEntity)
+            artistsEntity.forEach {
+                Log.i("UserRepository", "Saved Top Artist ${it.name}")
+                insert.insertTopArtist(it.artistId)
+            }
             return artistsEntity
         } catch (e: Exception) {
             Log.e("UserRepository", "getAndStoreTopArtistsFromApi: ", e)

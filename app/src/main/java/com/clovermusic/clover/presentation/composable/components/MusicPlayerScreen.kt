@@ -39,10 +39,13 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -71,9 +74,9 @@ fun BottomSheetForLyrics(
     navController: NavController
 ) {
     val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
-    var songDetails: PlayingTrackDetails? = null
-    var playPauseIcon = Icons.Filled.PlayArrow
 
+    var songDetails by remember { mutableStateOf<PlayingTrackDetails?>(null) }
+    var playPauseIcon by remember { mutableStateOf(Icons.Filled.PlayArrow) }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
@@ -261,9 +264,9 @@ fun MusicPlayerContent(
                 )
                 Text(
                     text = songDetails.artists.joinToString(", "),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier
                         .basicMarquee(
                             initialDelayMillis = 3000,
@@ -305,10 +308,17 @@ fun MusicPlayerControls(
     val previousButton = Icons.Filled.SkipPrevious
 
     val playbackPosition by viewModel.playbackPosition.collectAsState()
+    val isUserInteracting by viewModel.isUserInteractingWithSlider.collectAsState()
 
-    val sliderPosition by rememberUpdatedState(playbackPosition.toFloat())
+    var sliderPosition by remember { mutableStateOf(0f) }
     val maxSliderValue = currentTrackDuration.toFloat()
-    val scope = rememberCoroutineScope()
+
+//    update postion only whene user is not interacting
+    LaunchedEffect(playbackPosition, isUserInteracting) {
+        if (!isUserInteracting) {
+            sliderPosition = playbackPosition.toFloat()
+        }
+    }
 
 
     Column(
@@ -320,13 +330,12 @@ fun MusicPlayerControls(
         Slider(
             value = sliderPosition,
             onValueChange = { newValue ->
-                scope.launch {
-                    viewModel.pauseTrack()
-                    viewModel.seekTo(newValue.toLong())
-                }
+                viewModel.onSliderInteractionStart()
+                sliderPosition = newValue
             },
             onValueChangeFinished = {
-                viewModel.resumeTrack()
+                viewModel.onSliderInteractionEnd()
+                viewModel.seekTo(sliderPosition.toLong())
             },
             valueRange = 0f..maxSliderValue
         )
@@ -363,7 +372,7 @@ fun MusicPlayerControls(
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.skipToPrevious() },
                 modifier = Modifier
                     .size(60.dp)
                     .weight(1f)

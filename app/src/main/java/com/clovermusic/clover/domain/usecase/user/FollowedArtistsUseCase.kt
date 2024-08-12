@@ -25,22 +25,20 @@ class FollowedArtistsUseCase @Inject constructor(
                 networkDataAction.authData.ensureValidAccessToken()
 
                 val storedFollowedArtists = repository.user.getStoredFollowedArtists()
-                val needsRefresh = storedFollowedArtists.isEmpty() || forceRefresh
+
+                if (storedFollowedArtists.isNotEmpty()) {
+                    emit(DataState.OldData(storedFollowedArtists))
+                }
+                val freshFollowedArtists =
+                    repository.user.getAndStoreFollowedArtistsFromApi()
+                val dataChanged = freshFollowedArtists != storedFollowedArtists
+                val needsRefresh = storedFollowedArtists.isEmpty() || forceRefresh || dataChanged
 
                 if (needsRefresh) {
-                    val freshFollowedArtists =
-                        repository.user.getAndStoreFollowedArtistsFromApi()
+                    Log.d("FollowedArtistsUseCase", "Fetching fresh followed artists")
                     emit(DataState.NewData(freshFollowedArtists))
-                } else {
-                    emit(DataState.OldData(storedFollowedArtists))
-                    val freshFollowedArtists =
-                        repository.user.getAndStoreFollowedArtistsFromApi()
-                    val isDataChanged = freshFollowedArtists != storedFollowedArtists
-
-                    if (isDataChanged) {
-                        emit(DataState.NewData(freshFollowedArtists))
-                    }
                 }
+
             } catch (e: Exception) {
                 Log.e("FollowedArtistsUseCase", "Error fetching followed artists", e)
                 val error = customErrorHandling(e)

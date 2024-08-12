@@ -47,9 +47,14 @@ class Insert @Inject constructor(
         insertData.upsertArtist(artist)
     }
 
-    override fun upsertArtist(artist: List<ArtistsEntity>) {
-        insertData.upsertArtist(artist)
+    override fun insertFollowedArtist(artistId: String) {
+        insertData.insertFollowedArtist(artistId)
     }
+
+    override fun insertTopArtist(artistId: String) {
+        insertData.insertTopArtist(artistId)
+    }
+
 
     override fun insertAlbum(album: AlbumEntity) {
         insertData.insertAlbum(album)
