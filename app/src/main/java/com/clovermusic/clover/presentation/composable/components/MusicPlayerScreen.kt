@@ -6,7 +6,6 @@ import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
@@ -47,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -72,12 +68,6 @@ fun BottomSheetForLyrics(
     val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
 
     var songDetails by remember { mutableStateOf<PlayingTrackDetails?>(null) }
-    val playIcon = if (isSystemInDarkTheme()) R.drawable.play_white else R.drawable.play_black
-    var playPauseIcon by remember {
-        mutableStateOf(
-            playIcon
-        )
-    }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
@@ -89,8 +79,7 @@ fun BottomSheetForLyrics(
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
-                        modifier = Modifier
-                            .padding(top = 24.dp)
+                        modifier = Modifier.padding(top = 24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
@@ -101,8 +90,7 @@ fun BottomSheetForLyrics(
                     }
                 },
                 backgroundColor = MaterialTheme.colorScheme.background,
-                modifier = Modifier
-                    .height(60.dp)
+                modifier = Modifier.height(60.dp)
             )
         },
         sheetContent = {
@@ -125,7 +113,6 @@ fun BottomSheetForLyrics(
                         }
                     }
             ) {
-
                 Text(
                     text = "Lyrics",
                     style = MaterialTheme.typography.titleMedium,
@@ -136,21 +123,15 @@ fun BottomSheetForLyrics(
     ) {
         when (playbackState) {
             is PlaybackState.Loading -> {
-                // Display a loading indicator or state
                 LoadingAnimation()
             }
 
             is PlaybackState.Playing -> {
                 songDetails = (playbackState as PlaybackState.Playing).songDetails
-                val pauseIcon =
-                    if (isSystemInDarkTheme()) R.drawable.pause_white else R.drawable.pause_black
-                playPauseIcon = pauseIcon
             }
 
             is PlaybackState.Paused -> {
                 songDetails = (playbackState as PlaybackState.Paused).songDetails
-
-                playPauseIcon = playIcon
             }
 
             is PlaybackState.Error -> {
@@ -162,28 +143,19 @@ fun BottomSheetForLyrics(
                 songDetails = it,
                 viewModel = viewModel,
                 navController = navController,
-                playPauseIcon = playPauseIcon
             )
         }
     }
 }
 
-
 @Composable
 fun MusicPlayerDataScreen(
     songDetails: PlayingTrackDetails,
     viewModel: MusicPlayerViewModel,
-    playPauseIcon: ImageVector,
     navController: NavController
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
                 model = songDetails.image,
                 contentDescription = songDetails.name,
@@ -209,11 +181,7 @@ fun MusicPlayerDataScreen(
                     )
             )
 
-            MusicPlayerContent(
-                viewModel = viewModel,
-                songDetails = songDetails,
-                playPauseIcon = playPauseIcon
-            )
+            MusicPlayerContent(viewModel = viewModel, songDetails = songDetails)
         }
     }
 }
@@ -221,12 +189,14 @@ fun MusicPlayerDataScreen(
 @Composable
 fun MusicPlayerContent(
     viewModel: MusicPlayerViewModel,
-    songDetails: PlayingTrackDetails,
-    playPauseIcon: ImageVector
+    songDetails: PlayingTrackDetails
 ) {
-    val addIcon = if (isSystemInDarkTheme()) R.drawable.add_white else R.drawable.add_black
-    val shareIcon = if (isSystemInDarkTheme()) R.drawable.share_white else R.drawable.share_black
-
+    val icons = getThemedIcons()
+    val playPauseIcon = if (viewModel.isMusicPlaying()) {
+        icons.pauseIcon
+    } else {
+        icons.playIcon
+    }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -243,8 +213,7 @@ fun MusicPlayerContent(
                 model = songDetails.image,
                 contentDescription = songDetails.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Row(
@@ -254,22 +223,20 @@ fun MusicPlayerContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             IconButton(
                 onClick = {},
                 modifier = Modifier
-                    .wrapContentSize()
             ) {
                 Icon(
-                    painter = painterResource(id = addIcon),
+                    painter = painterResource(id = icons.addIcon),
                     contentDescription = "Add to library",
-                    tint = Color(0xFFEAEAEA)
+                    modifier = Modifier
+                        .fillMaxSize(0.8f)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             Column(
-                modifier = Modifier
-                    .weight(9f)
+                modifier = Modifier.weight(9f)
             ) {
                 Text(
                     text = songDetails.name,
@@ -300,13 +267,13 @@ fun MusicPlayerContent(
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = {},
-                modifier = Modifier
-                    .wrapContentSize()
+                modifier = Modifier.wrapContentSize()
             ) {
                 Icon(
-                    painter = painterResource(id = shareIcon),
-                    contentDescription = "play button",
-                    tint = Color(0xFFEAEAEA)
+                    painter = painterResource(id = icons.shareIcon),
+                    contentDescription = "Share",
+                    modifier = Modifier
+                        .fillMaxSize(0.8f)
                 )
             }
         }
@@ -321,20 +288,10 @@ fun MusicPlayerContent(
 @Composable
 fun MusicPlayerControls(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
-    playPauseIcon: ImageVector,
+    playPauseIcon: Int,
     currentTrackDuration: Long,
 ) {
-    val nextButton = if (isSystemInDarkTheme()) R.drawable.next_white else R.drawable.next_black
-    val shuffleButtonInactive =
-        if (isSystemInDarkTheme()) R.drawable.shuffle_white_inactive else R.drawable.shuffle_black_inactive
-    val repeatButtonInactive =
-        if (isSystemInDarkTheme()) R.drawable.repeat_white_inactive else R.drawable.repeat_black_inactive
-    val repeatButtonActive =
-        if (isSystemInDarkTheme()) R.drawable.repeat_white_active else R.drawable.repeat_black_active
-    val repeatButtonActive1 =
-        if (isSystemInDarkTheme()) R.drawable.repeat_white_active_2 else R.drawable.repeat_black_active_2
-
-    val previousButton = Icons.Filled.SkipPrevious
+    val icons = getThemedIcons()
 
     val playbackPosition by viewModel.playbackPosition.collectAsState()
     val isUserInteracting by viewModel.isUserInteractingWithSlider.collectAsState()
@@ -342,19 +299,16 @@ fun MusicPlayerControls(
     var sliderPosition by remember { mutableStateOf(0f) }
     val maxSliderValue = currentTrackDuration.toFloat()
 
-//    update postion only whene user is not interacting
     LaunchedEffect(playbackPosition, isUserInteracting) {
         if (!isUserInteracting) {
             sliderPosition = playbackPosition.toFloat()
         }
     }
 
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
+        modifier = Modifier.fillMaxWidth(0.85f)
     ) {
         Slider(
             value = sliderPosition,
@@ -385,73 +339,72 @@ fun MusicPlayerControls(
             )
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
         ) {
             IconButton(
                 onClick = { viewModel.shuffleMusic() },
                 modifier = Modifier
-                    .size(40.dp)
                     .weight(1f)
             ) {
                 Icon(
-                    painter = painterResource(id = shuffleButtonInactive),
+                    painter = painterResource(id = icons.shuffleButtonInactive),
                     contentDescription = "Shuffle Button",
                     modifier = Modifier
-                        .size(30.dp)
+                        .fillMaxSize()
                 )
             }
             IconButton(
                 onClick = { viewModel.skipToPrevious() },
                 modifier = Modifier
-                    .size(60.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Icon(
-                    imageVector = previousButton,
+                    painter = painterResource(id = icons.previousButton),
                     contentDescription = "Previous Button",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier
+                        .fillMaxSize(0.7f)
                 )
             }
             IconButton(
                 onClick = { viewModel.togglePausePlay() },
                 modifier = Modifier
-                    .size(60.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Icon(
-                    imageVector = playPauseIcon,
-                    contentDescription = "Play Button",
+                    painter = painterResource(id = playPauseIcon),
+                    contentDescription = "Play/Pause Button",
                     modifier = Modifier
-                        .size(40.dp)
+                        .fillMaxSize()
                 )
             }
             IconButton(
                 onClick = { viewModel.skipToNext() },
                 modifier = Modifier
-                    .size(60.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Icon(
-                    imageVector = nextButton,
+                    painter = painterResource(id = icons.nextButton),
                     contentDescription = "Next Button",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier
+                        .fillMaxSize(0.7f)
                 )
             }
             IconButton(
                 onClick = { viewModel.repeatTrack() },
                 modifier = Modifier
-                    .size(40.dp)
                     .weight(1f)
             ) {
                 Icon(
-                    imageVector = repeatButton,
+                    painter = painterResource(id = icons.repeatButtonInactive),
                     contentDescription = "Repeat Button",
                     modifier = Modifier
-                        .size(30.dp)
+                        .fillMaxSize()
                 )
             }
         }
     }
 }
-
 

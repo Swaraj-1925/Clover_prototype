@@ -11,20 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.clovermusic.clover.R
 import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.presentation.composable.components.getThemedIcons
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
 
@@ -92,8 +89,7 @@ fun PlaylistHeader(
 
 @Composable
 fun PlaylistInfo(playlist: Playlist) {
-    val more = painterResource(id = R.drawable.more2)
-
+    val icons = getThemedIcons()
     Text(
         text = "${playlist.playlist.totalTrack} songs • ${
             Parsers.parseDurationHoursMinutes(
@@ -132,21 +128,25 @@ fun PlaylistInfo(playlist: Playlist) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         IconButton(
             onClick = { /*TODO*/ },
         ) {
             Icon(
-                imageVector = Icons.Outlined.AddCircle,
-                contentDescription = "followed",
-                modifier = Modifier.size(24.dp)
+                painter = painterResource(id = icons.addIcon),
+                contentDescription = "add to library",
+                modifier = Modifier
+                    .fillMaxSize()
             )
         }
         IconButton(onClick = { /*TODO*/ }) {
             Icon(
-                painter = more,
+                painter = painterResource(id = icons.moreIcon),
                 contentDescription = "More",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier
+                    .fillMaxSize()
             )
         }
     }
@@ -157,8 +157,7 @@ fun Buttons(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
     playlist: Playlist
 ) {
-    val shuffle = painterResource(id = R.drawable.shuffle1)
-    val play = painterResource(id = R.drawable.play2)
+    val icons = getThemedIcons()
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
@@ -166,11 +165,12 @@ fun Buttons(
             .padding(vertical = 8.dp, horizontal = 14.dp)
             .background(color = Color.Transparent)
     ) {
-        FilledTonalButton(
+        OutlinedButton(
             onClick = { viewModel.shuffleMusic() },
             shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-            elevation = ButtonDefaults.elevatedButtonElevation(3.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            ),
             modifier = Modifier
                 .weight(1f)
         ) {
@@ -182,15 +182,20 @@ fun Buttons(
                     .fillMaxWidth()
             ) {
                 Icon(
-                    painter = shuffle,
+                    painter = painterResource(id = icons.shuffleButtonInactive),
                     contentDescription = "Shuffle button",
-                    modifier = Modifier.size(24.dp)
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
                 )
                 Text(
                     text = "Shuffle",
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .weight(2f)
+                        .padding(horizontal = 8.dp)
                 )
             }
         }
@@ -210,15 +215,20 @@ fun Buttons(
                     .fillMaxHeight(0.95f)
             ) {
                 Icon(
-                    painter = play,
+                    painter = painterResource(id = icons.playIcon),
                     contentDescription = "Play button",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+
                 )
                 Text(
                     text = "Play",
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .weight(2f)
                 )
             }
         }
