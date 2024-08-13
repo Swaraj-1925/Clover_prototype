@@ -6,6 +6,7 @@ import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,15 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
@@ -76,12 +72,39 @@ fun BottomSheetForLyrics(
     val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
 
     var songDetails by remember { mutableStateOf<PlayingTrackDetails?>(null) }
-    var playPauseIcon by remember { mutableStateOf(Icons.Filled.PlayArrow) }
+    val playIcon = if (isSystemInDarkTheme()) R.drawable.play_white else R.drawable.play_black
+    var playPauseIcon by remember {
+        mutableStateOf(
+            playIcon
+        )
+    }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .padding(top = 24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                            contentDescription = "Back Icon",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                },
+                backgroundColor = MaterialTheme.colorScheme.background,
+                modifier = Modifier
+                    .height(60.dp)
+            )
+        },
         sheetContent = {
             Image(
                 painter = painterResource(id = R.drawable.ablum1),
@@ -119,12 +142,15 @@ fun BottomSheetForLyrics(
 
             is PlaybackState.Playing -> {
                 songDetails = (playbackState as PlaybackState.Playing).songDetails
-                playPauseIcon = Icons.Filled.Pause
+                val pauseIcon =
+                    if (isSystemInDarkTheme()) R.drawable.pause_white else R.drawable.pause_black
+                playPauseIcon = pauseIcon
             }
 
             is PlaybackState.Paused -> {
                 songDetails = (playbackState as PlaybackState.Paused).songDetails
-                playPauseIcon = Icons.Filled.PlayArrow
+
+                playPauseIcon = playIcon
             }
 
             is PlaybackState.Error -> {
@@ -198,12 +224,8 @@ fun MusicPlayerContent(
     songDetails: PlayingTrackDetails,
     playPauseIcon: ImageVector
 ) {
-
-
-    val likeIcon = Icons.Outlined.Add
-    val shareIcon = Icons.Outlined.Share
-
-
+    val addIcon = if (isSystemInDarkTheme()) R.drawable.add_white else R.drawable.add_black
+    val shareIcon = if (isSystemInDarkTheme()) R.drawable.share_white else R.drawable.share_black
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -239,7 +261,7 @@ fun MusicPlayerContent(
                     .wrapContentSize()
             ) {
                 Icon(
-                    imageVector = likeIcon,
+                    painter = painterResource(id = addIcon),
                     contentDescription = "Add to library",
                     tint = Color(0xFFEAEAEA)
                 )
@@ -282,7 +304,7 @@ fun MusicPlayerContent(
                     .wrapContentSize()
             ) {
                 Icon(
-                    imageVector = shareIcon,
+                    painter = painterResource(id = shareIcon),
                     contentDescription = "play button",
                     tint = Color(0xFFEAEAEA)
                 )
@@ -302,9 +324,16 @@ fun MusicPlayerControls(
     playPauseIcon: ImageVector,
     currentTrackDuration: Long,
 ) {
-    val nextButton = Icons.Filled.SkipNext
-    val shuffleButton = Icons.Filled.Shuffle
-    val repeatButton = Icons.Filled.Repeat
+    val nextButton = if (isSystemInDarkTheme()) R.drawable.next_white else R.drawable.next_black
+    val shuffleButtonInactive =
+        if (isSystemInDarkTheme()) R.drawable.shuffle_white_inactive else R.drawable.shuffle_black_inactive
+    val repeatButtonInactive =
+        if (isSystemInDarkTheme()) R.drawable.repeat_white_inactive else R.drawable.repeat_black_inactive
+    val repeatButtonActive =
+        if (isSystemInDarkTheme()) R.drawable.repeat_white_active else R.drawable.repeat_black_active
+    val repeatButtonActive1 =
+        if (isSystemInDarkTheme()) R.drawable.repeat_white_active_2 else R.drawable.repeat_black_active_2
+
     val previousButton = Icons.Filled.SkipPrevious
 
     val playbackPosition by viewModel.playbackPosition.collectAsState()
@@ -365,7 +394,7 @@ fun MusicPlayerControls(
                     .weight(1f)
             ) {
                 Icon(
-                    imageVector = shuffleButton,
+                    painter = painterResource(id = shuffleButtonInactive),
                     contentDescription = "Shuffle Button",
                     modifier = Modifier
                         .size(30.dp)

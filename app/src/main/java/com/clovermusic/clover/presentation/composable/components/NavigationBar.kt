@@ -19,14 +19,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.clovermusic.clover.R
+import com.clovermusic.clover.presentation.navigation.HomeScreenRoute
 
 @Composable
 fun NavigationBar(
-    onHomeClick: () -> Unit,
-    onSearchClick: () -> Unit,
-    onLibraryClick: () -> Unit,
-    onProfileClick: () -> Unit,
+    navController: NavController
 ) {
     val home = painterResource(id = R.drawable.home)
     val search = painterResource(id = R.drawable.search)
@@ -60,21 +59,26 @@ fun NavigationBar(
 
 
             ) {
-                NavigationItem(icon = home, contentDescription = "Home", onClick = onHomeClick)
+                NavigationItem(
+                    icon = home,
+                    contentDescription =
+                    "Home",
+                    onClick = { navController.navigate(HomeScreenRoute) }
+                )
                 NavigationItem(
                     icon = search,
                     contentDescription = "Search",
-                    onClick = onSearchClick
+                    onClick = {}
                 )
                 NavigationItem(
                     icon = library,
                     contentDescription = "Library",
-                    onClick = onLibraryClick
+                    onClick = {}
                 )
                 NavigationItem(
                     icon = profile,
                     contentDescription = "Profile",
-                    onClick = onProfileClick
+                    onClick = {}
                 )
             }
         }

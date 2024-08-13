@@ -97,10 +97,7 @@ fun PlaylistScreen(
                     )
                 }
                 NavigationBar(
-                    onHomeClick = { /*TODO*/ },
-                    onSearchClick = { /*TODO*/ },
-                    onLibraryClick = { /*TODO*/ },
-                    onProfileClick = { /*TODO*/ }
+                    navController = navController
                 )
             }
         }
