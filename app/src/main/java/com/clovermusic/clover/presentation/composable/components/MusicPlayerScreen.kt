@@ -16,17 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
@@ -51,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -76,12 +68,31 @@ fun BottomSheetForLyrics(
     val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
 
     var songDetails by remember { mutableStateOf<PlayingTrackDetails?>(null) }
-    var playPauseIcon by remember { mutableStateOf(Icons.Filled.PlayArrow) }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.padding(top = 24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                            contentDescription = "Back Icon",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                },
+                backgroundColor = MaterialTheme.colorScheme.background,
+                modifier = Modifier.height(60.dp)
+            )
+        },
         sheetContent = {
             Image(
                 painter = painterResource(id = R.drawable.ablum1),
@@ -102,7 +113,6 @@ fun BottomSheetForLyrics(
                         }
                     }
             ) {
-
                 Text(
                     text = "Lyrics",
                     style = MaterialTheme.typography.titleMedium,
@@ -113,18 +123,15 @@ fun BottomSheetForLyrics(
     ) {
         when (playbackState) {
             is PlaybackState.Loading -> {
-                // Display a loading indicator or state
                 LoadingAnimation()
             }
 
             is PlaybackState.Playing -> {
                 songDetails = (playbackState as PlaybackState.Playing).songDetails
-                playPauseIcon = Icons.Filled.Pause
             }
 
             is PlaybackState.Paused -> {
                 songDetails = (playbackState as PlaybackState.Paused).songDetails
-                playPauseIcon = Icons.Filled.PlayArrow
             }
 
             is PlaybackState.Error -> {
@@ -136,28 +143,19 @@ fun BottomSheetForLyrics(
                 songDetails = it,
                 viewModel = viewModel,
                 navController = navController,
-                playPauseIcon = playPauseIcon
             )
         }
     }
 }
 
-
 @Composable
 fun MusicPlayerDataScreen(
     songDetails: PlayingTrackDetails,
     viewModel: MusicPlayerViewModel,
-    playPauseIcon: ImageVector,
     navController: NavController
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
                 model = songDetails.image,
                 contentDescription = songDetails.name,
@@ -183,11 +181,7 @@ fun MusicPlayerDataScreen(
                     )
             )
 
-            MusicPlayerContent(
-                viewModel = viewModel,
-                songDetails = songDetails,
-                playPauseIcon = playPauseIcon
-            )
+            MusicPlayerContent(viewModel = viewModel, songDetails = songDetails)
         }
     }
 }
@@ -195,16 +189,14 @@ fun MusicPlayerDataScreen(
 @Composable
 fun MusicPlayerContent(
     viewModel: MusicPlayerViewModel,
-    songDetails: PlayingTrackDetails,
-    playPauseIcon: ImageVector
+    songDetails: PlayingTrackDetails
 ) {
-
-
-    val likeIcon = Icons.Outlined.Add
-    val shareIcon = Icons.Outlined.Share
-
-
-
+    val icons = getThemedIcons()
+    val playPauseIcon = if (viewModel.isMusicPlaying()) {
+        icons.pauseIcon
+    } else {
+        icons.playIcon
+    }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -221,8 +213,7 @@ fun MusicPlayerContent(
                 model = songDetails.image,
                 contentDescription = songDetails.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Row(
@@ -232,22 +223,20 @@ fun MusicPlayerContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             IconButton(
                 onClick = {},
                 modifier = Modifier
-                    .wrapContentSize()
             ) {
                 Icon(
-                    imageVector = likeIcon,
+                    painter = painterResource(id = icons.addIcon),
                     contentDescription = "Add to library",
-                    tint = Color(0xFFEAEAEA)
+                    modifier = Modifier
+                        .fillMaxSize(0.8f)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             Column(
-                modifier = Modifier
-                    .weight(9f)
+                modifier = Modifier.weight(9f)
             ) {
                 Text(
                     text = songDetails.name,
@@ -278,13 +267,13 @@ fun MusicPlayerContent(
             Spacer(modifier = Modifier.weight(1f))
             IconButton(
                 onClick = {},
-                modifier = Modifier
-                    .wrapContentSize()
+                modifier = Modifier.wrapContentSize()
             ) {
                 Icon(
-                    imageVector = shareIcon,
-                    contentDescription = "play button",
-                    tint = Color(0xFFEAEAEA)
+                    painter = painterResource(id = icons.shareIcon),
+                    contentDescription = "Share",
+                    modifier = Modifier
+                        .fillMaxSize(0.8f)
                 )
             }
         }
@@ -299,13 +288,10 @@ fun MusicPlayerContent(
 @Composable
 fun MusicPlayerControls(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
-    playPauseIcon: ImageVector,
+    playPauseIcon: Int,
     currentTrackDuration: Long,
 ) {
-    val nextButton = Icons.Filled.SkipNext
-    val shuffleButton = Icons.Filled.Shuffle
-    val repeatButton = Icons.Filled.Repeat
-    val previousButton = Icons.Filled.SkipPrevious
+    val icons = getThemedIcons()
 
     val playbackPosition by viewModel.playbackPosition.collectAsState()
     val isUserInteracting by viewModel.isUserInteractingWithSlider.collectAsState()
@@ -313,19 +299,16 @@ fun MusicPlayerControls(
     var sliderPosition by remember { mutableStateOf(0f) }
     val maxSliderValue = currentTrackDuration.toFloat()
 
-//    update postion only whene user is not interacting
     LaunchedEffect(playbackPosition, isUserInteracting) {
         if (!isUserInteracting) {
             sliderPosition = playbackPosition.toFloat()
         }
     }
 
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
+        modifier = Modifier.fillMaxWidth(0.85f)
     ) {
         Slider(
             value = sliderPosition,
@@ -356,73 +339,72 @@ fun MusicPlayerControls(
             )
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
         ) {
             IconButton(
                 onClick = { viewModel.shuffleMusic() },
                 modifier = Modifier
-                    .size(40.dp)
                     .weight(1f)
             ) {
                 Icon(
-                    imageVector = shuffleButton,
+                    painter = painterResource(id = icons.shuffleButtonInactive),
                     contentDescription = "Shuffle Button",
                     modifier = Modifier
-                        .size(30.dp)
+                        .fillMaxSize()
                 )
             }
             IconButton(
                 onClick = { viewModel.skipToPrevious() },
                 modifier = Modifier
-                    .size(60.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Icon(
-                    imageVector = previousButton,
+                    painter = painterResource(id = icons.previousButton),
                     contentDescription = "Previous Button",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier
+                        .fillMaxSize(0.7f)
                 )
             }
             IconButton(
                 onClick = { viewModel.togglePausePlay() },
                 modifier = Modifier
-                    .size(60.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Icon(
-                    imageVector = playPauseIcon,
-                    contentDescription = "Play Button",
+                    painter = painterResource(id = playPauseIcon),
+                    contentDescription = "Play/Pause Button",
                     modifier = Modifier
-                        .size(40.dp)
+                        .fillMaxSize()
                 )
             }
             IconButton(
                 onClick = { viewModel.skipToNext() },
                 modifier = Modifier
-                    .size(60.dp)
-                    .weight(1f)
+                    .weight(2f)
             ) {
                 Icon(
-                    imageVector = nextButton,
+                    painter = painterResource(id = icons.nextButton),
                     contentDescription = "Next Button",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier
+                        .fillMaxSize(0.7f)
                 )
             }
             IconButton(
                 onClick = { viewModel.repeatTrack() },
                 modifier = Modifier
-                    .size(40.dp)
                     .weight(1f)
             ) {
                 Icon(
-                    imageVector = repeatButton,
+                    painter = painterResource(id = icons.repeatButtonInactive),
                     contentDescription = "Repeat Button",
                     modifier = Modifier
-                        .size(30.dp)
+                        .fillMaxSize()
                 )
             }
         }
     }
 }
-
 

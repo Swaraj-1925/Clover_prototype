@@ -67,12 +67,7 @@ fun HomeScreen(
                         navController = navController
                     )
                 }
-                NavigationBar(
-                    onHomeClick = { /*TODO*/ },
-                    onSearchClick = { /*TODO*/ },
-                    onLibraryClick = { /*TODO*/ },
-                    onProfileClick = { /*TODO*/ }
-                )
+                NavigationBar(navController = navController)
             }
         },
     ) { paddingValues ->

@@ -52,6 +52,14 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
+    fun isMusicPlaying(): Boolean {
+        return when (_musicPlayerState.value) {
+            is PlaybackState.Playing -> true
+            is PlaybackState.Paused -> false
+            else -> false
+        }
+    }
+
     fun seekTo(position: Long) {
         viewModelScope.launch {
             playbackHandler.seekTo(position)

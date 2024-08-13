@@ -14,11 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,6 +47,7 @@ fun PlayingSongBar(
     navController: NavController
 ) {
     val playbackState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
+    val icons = getThemedIcons()
     val songDetails: PlayingTrackDetails? = when (playbackState) {
         is PlaybackState.Loading -> {
             // Display a loading indicator or state
@@ -80,9 +77,8 @@ fun PlayingSongBar(
         },
         icon = {
             Icon(
-                Icons.Default.SkipNext,
-                contentDescription = "Delete chat",
-                tint = MaterialTheme.colorScheme.primary
+                painter = painterResource(id = icons.fastForwardButton),
+                contentDescription = "Skip Next",
             )
         },
         background = MaterialTheme.colorScheme.background
@@ -94,9 +90,8 @@ fun PlayingSongBar(
         },
         icon = {
             Icon(
-                Icons.Default.SkipPrevious,
-                contentDescription = "Delete chat",
-                tint = MaterialTheme.colorScheme.primary
+                painter = painterResource(id = icons.fastBackwardButton),
+                contentDescription = "Skip Previous",
             )
         },
         background = MaterialTheme.colorScheme.background
@@ -110,9 +105,9 @@ fun PlayingSongBar(
 
         if (songDetails != null) {
             val playPauseIcon =
-                if (playbackState is PlaybackState.Playing) Icons.Filled.Pause else Icons.Filled.PlayArrow
+                if (playbackState is PlaybackState.Playing) icons.pauseIcon else icons.playIcon
 
-            val nextButton = Icons.Filled.SkipNext
+            val addButton = icons.addIcon
 
             Card(
                 onClick = { navController.navigate(MusicPlayerScreenRoute) },
@@ -192,26 +187,26 @@ fun PlayingSongBar(
                                 .weight(0.3f)
                         ) {
                             IconButton(
+                                onClick = { viewModel.skipToNext() },
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = addButton),
+                                    contentDescription = "Next Button",
+                                    tint = Color(0xFFEAEAEA),
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                )
+                            }
+                            IconButton(
                                 onClick = { viewModel.togglePausePlay() },
                             ) {
                                 Icon(
-                                    imageVector = playPauseIcon,
+                                    painter = painterResource(id = playPauseIcon),
                                     contentDescription = "Play Button",
                                     tint = Color(0xFFEAEAEA),
                                     modifier = Modifier
                                         .size(40.dp)
 
-                                )
-                            }
-                            IconButton(
-                                onClick = { viewModel.skipToNext() },
-                            ) {
-                                Icon(
-                                    imageVector = nextButton,
-                                    contentDescription = "Next Button",
-                                    tint = Color(0xFFEAEAEA),
-                                    modifier = Modifier
-                                        .size(40.dp)
                                 )
                             }
                         }
