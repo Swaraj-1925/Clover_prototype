@@ -1,6 +1,8 @@
 package com.clovermusic.clover.data.spotify.api.repository
 
 import android.util.Log
+import com.clovermusic.clover.data.local.entity.TrackEntity
+import com.clovermusic.clover.data.repository.mappers.toEntity
 import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.TrackItemsResponseDto
@@ -68,18 +70,19 @@ class ArtistRepository @Inject constructor(
         }
 
     //    Function to get artist top tracks
-    suspend fun getArtistTopTracks(artistId: String): List<TrackItemsResponseDto> =
+    suspend fun getArtistTopTracks(artistId: String): List<TrackEntity> =
         withContext(Dispatchers.IO) {
             val topTrack =
-                mutableListOf<TrackItemsResponseDto>()
+                mutableListOf<TrackEntity>()
             try {
                 val response = artistService.getArtistTopTracks(artistId)
-                topTrack.addAll(response.tracks)
+                topTrack.addAll(response.tracks.toEntity())
 
                 Log.d(
                     "ArtistRepository ",
                     "getArtistTopTracks: Success, total albums: ${topTrack.size}"
                 )
+
                 topTrack
 
             } catch (e: IOException) {

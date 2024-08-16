@@ -78,14 +78,42 @@ fun List<TrackArtistResponseDto>.toEntity(
             artistId = it.id,
             uri = it.uri,
             genres = it.genres ?: emptyList(),
-            imageUrl = it.images?.firstOrNull()?.url ?: "",
+            imageUrl = it.images.firstOrNull()?.url ?: "",
             name = it.name,
+            followers = it.followers?.total ?: 0,
             isFollowed = followed,
             isTopArtist = top,
             timestamp = System.currentTimeMillis(),
         )
     }
 }
+fun TrackArtistResponseDto.toEntity() : ArtistsEntity{
+    return ArtistsEntity(
+        artistId = id,
+        uri = uri,
+        genres = genres ?: emptyList(),
+        imageUrl = images.firstOrNull()?.url ?: "",
+        name = name,
+        followers = followers?.total ?: 0,
+        timestamp = System.currentTimeMillis(),
+    )
+}
+
+fun List<TrackItemsResponseDto>.toEntity(): List<TrackEntity> {
+    return map {tracks ->
+        TrackEntity(
+            trackId = tracks.id,
+            albumId = tracks.album.id,
+            uri = tracks.uri,
+            durationMs = tracks.duration_ms,
+            name = tracks.name,
+            imageUrl = tracks.album.images.firstOrNull()?.url ?: "" ,
+            previewUrl = tracks.preview_url,
+            timestamp = System.currentTimeMillis(),
+        )
+    }
+
+    }
 
 fun AlbumResponseDto.toEntity(artistId: String): AlbumEntity {
     return AlbumEntity(

@@ -30,12 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
-import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
 
 @Composable
@@ -43,7 +41,6 @@ fun SongListCard(
     track: TrackEntity,
     artists: List<ArtistsEntity>,
     index: Int,
-    viewModel: MusicPlayerViewModel = hiltViewModel()
 ) {
     Card(
         colors = CardDefaults.cardColors(Color.Transparent),
@@ -69,7 +66,7 @@ fun SongListCard(
                     .width(IntrinsicSize.Min)
             )
             Card(
-                onClick = { viewModel.playTrack(track.uri) },
+                onClick = { },
                 modifier = Modifier
                     .padding(start = 4.dp)
                     .aspectRatio(1f)
@@ -108,17 +105,21 @@ fun SongListCard(
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.weight(1f, fill = false)
+                            .align(Alignment.CenterVertically)
                     )
                     Text(
                         text = " • ",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
+                            .align(Alignment.CenterVertically)
                     )
                     Text(
                         text = Parsers.parseDurationMinutesSeconds(track.durationMs),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
                     )
                 }
             }

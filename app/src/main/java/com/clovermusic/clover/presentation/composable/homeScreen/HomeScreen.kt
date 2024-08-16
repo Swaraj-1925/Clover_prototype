@@ -165,7 +165,8 @@ fun HomeContent(
                                 if (state is DataState.OldData) state.data else (state as DataState.NewData).data
                             TopArtistsSection(
                                 artists = data.take(6),
-                                onArtistClick = { /*TODO*/ }
+                                onArtistClick = { /*TODO*/ },
+                                navController = navController
                             )
                         }
 

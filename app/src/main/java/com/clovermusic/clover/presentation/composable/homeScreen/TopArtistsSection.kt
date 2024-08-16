@@ -16,12 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.presentation.composable.components.ArtistCard
+import com.clovermusic.clover.presentation.navigation.ArtistScreenRoute
 
 @Composable
 fun TopArtistsSection(
     artists: List<ArtistsEntity>,
+    navController: NavController,
     onArtistClick: () -> Unit,
 ) {
     Column(
@@ -58,7 +61,7 @@ fun TopArtistsSection(
                 ArtistCard(
                     artistName = artist.name,
                     url = artist.imageUrl,
-                    onArtistClick = {}
+                    onArtistClick = {navController.navigate(ArtistScreenRoute(id = artist.artistId))}
                 )
             }
         }

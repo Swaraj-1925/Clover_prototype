@@ -17,3 +17,13 @@ object MusicPlayerScreenRoute
 @Serializable
 object PlayingSongBarRoute
 
+
+@Serializable
+data class ArtistScreenRoute(
+    val id: String,
+)
+
+@Serializable
+data class ArtistAlbumScreenRoute(
+    val id: String,
+)

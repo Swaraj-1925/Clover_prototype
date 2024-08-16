@@ -9,6 +9,7 @@ data class ArtistsEntity(
     val artistId: String,
     val uri: String,
     val genres: List<String>,
+    val followers: Int=0,
     val imageUrl: String,
     val name: String,
     val isFollowed: Boolean = false,
