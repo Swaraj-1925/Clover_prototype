@@ -20,22 +20,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
+import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.ArtistViewModal
-import com.clovermusic.clover.presentation.viewModel.HomeViewModel
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
-import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.DataState
 
 
@@ -44,24 +41,21 @@ import com.clovermusic.clover.util.DataState
 fun ArtistPage(
     navController: NavController,
     artistId: String,
-    viewModel: ArtistViewModal = hiltViewModel()
+    viewModel: ArtistViewModal = hiltViewModel(),
+    musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
 ) {
-    val artistInfo by viewModel.artistInfo.collectAsStateWithLifecycle()
-    val musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
+    val artistData by viewModel.artistData.collectAsStateWithLifecycle()
     val playbackState by musicPlayerViewModel.musicPlayerState.collectAsStateWithLifecycle()
-    val isLoading = listOf(
-        artistInfo
-    ).any { it is DataState.Loading }
-
+    val isLoading = artistData is DataState.Loading || playbackState is PlaybackState.Loading
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isLoading,
-        onRefresh = { viewModel.getArtistInfo(artistId) }
+        onRefresh = { viewModel.getArtistData(artistId = artistId, true) }
     )
 
     LaunchedEffect(artistId) {
-        viewModel.getArtistInfo(artistId)
+        viewModel.getArtistData(artistId = artistId, false)
     }
 
     Scaffold(
@@ -82,12 +76,38 @@ fun ArtistPage(
                 .pullRefresh(pullRefreshState)
                 .padding(innerPadding)
         ) {
-            ArtistContent(
-                artistInfo = artistInfo,
-                snackbarHostState = snackbarHostState,
-                navController = navController,
-                modifier = Modifier.fillMaxSize()
-            )
+            when (val state = artistData) {
+                is DataState.Loading -> {
+                    LoadingAnimation()
+                }
+
+                is DataState.Error -> {
+                    LaunchedEffect(snackbarHostState) {
+                        snackbarHostState.showSnackbar(
+                            message = state.message ?: "An error occurred",
+                            duration = SnackbarDuration.Long
+                        )
+                    }
+                }
+
+                is DataState.NewData -> {
+                    ArtistContent(
+                        artistInfo = state.data,
+                        snackbarHostState = snackbarHostState,
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                is DataState.OldData -> {
+                    ArtistContent(
+                        artistInfo = state.data,
+                        snackbarHostState = snackbarHostState,
+                        navController = navController,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
             PullRefreshIndicator(
                 refreshing = isLoading,
                 state = pullRefreshState,
@@ -99,76 +119,38 @@ fun ArtistPage(
 
 @Composable
 fun ArtistContent(
-    artistInfo: DataState<ArtistsEntity>,
+    artistInfo: ArtistDataUiState,
     snackbarHostState: SnackbarHostState,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    CloverTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = modifier.padding(8.dp)
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        modifier = modifier.padding(8.dp)
+    ) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                when (val state = artistInfo) {
-                    is DataState.Loading -> {
-                        item {
-                            LoadingAnimation()
-                        }
-                    }
-                    is DataState.Error -> {
-                        item {
-                        LaunchedEffect(snackbarHostState) {
-                            snackbarHostState.showSnackbar(
-                                message = state.message ?: "An error occurred",
-                                duration = SnackbarDuration.Long
-                            )
-                            }
-                        }
-                    }
-                    is DataState.NewData -> {
-                        item {
-                            ArtistPageHeader(
-                                artist = state.data,
-                            )
-                        }
-                        item {
-                            ArtistSongList(
-                                playlist = state.data.playlist
-                            )
-                        }
-                        item {
-                            ArtistPageAlbumSection(
-                                playlist = state.data.albums,
-                                artistId = state.data.artistId,
-                                navController = navController
-                            )
-                        }
-                    }
-                    is DataState.OldData -> {
-                        item {
-                            ArtistPageHeader(
-                                artist = state.data,
-                            )
-                        }
-                        item {
-                            ArtistSongList(
-                                playlist = state.data.playlist
-                            )
-                        }
-                        item {
-                            ArtistPageAlbumSection(
-                                playlist = state.data.albums,
-                                artistId = state.data.artistId,
-                                navController = navController
-                            )
-                        }
-                    }
-                }
+            item {
+                ArtistPageHeader(
+                    artist = artistInfo.artistInfo,
+                )
+            }
+            item {
+                ArtistSongList(
+                    trackList = artistInfo.artistTopTracks.take(5)
+                )
+            }
+            item {
+                ArtistPageAlbumSection(
+                    albumList = artistInfo.artistAlbums.flatMap { it.albums },
+                    artistId = artistInfo.artistInfo.artistId,
+                    navController = navController
+                )
             }
         }
     }
 }
+
+

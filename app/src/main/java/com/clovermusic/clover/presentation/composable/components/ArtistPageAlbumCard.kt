@@ -23,53 +23,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.clovermusic.clover.R
+import com.clovermusic.clover.data.local.entity.AlbumEntity
 
 
 @Composable
 fun ArtistPageAlbumCard(
-    url: String,
-    playlistName: String,
+    albums: AlbumEntity,
     songCount: Int,
-    onNameClick: () -> Unit,
-    onCardClick: () -> Unit,
+    navController: NavController
 ) {
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .width(420.dp)
-            .clickable { onCardClick() }
+            .clickable { }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 4.dp, horizontal = 16.dp)
         ) {
-            Box (
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
                     .shadow(10.dp, RoundedCornerShape(16.dp)) // Apply shadow for elevation
                     .clip(RoundedCornerShape(16.dp)) // Ensure the image is clipped to the shape
-            ){
+            ) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(url)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = playlistName,
+                    model = albums.imageUrl,
+                    contentDescription = albums.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .height(100.dp)
                         .fillMaxWidth()
-                        .padding(top= 8.dp)
+                        .padding(top = 8.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )
             }
@@ -82,26 +77,30 @@ fun ArtistPageAlbumCard(
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text(
-                        text = playlistName,
+                        text = albums.name,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.background,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .padding(vertical = 2.dp)
-                            .clickable { onNameClick() }
+                            .clickable { }
                     )
                     Text(
                         text = "$songCount Songs",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.background,
-                        )
+                    )
                 }
-                IconButton(onClick = { /*TODO*/ },
+                IconButton(
+                    onClick = { /*TODO*/ },
                     modifier = Modifier
-                        .align(Alignment.CenterVertically)) {
-                    Image(painter = painterResource(id = R.drawable.more_vertical),
-                        contentDescription = "More" )
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.more_vertical),
+                        contentDescription = "More"
+                    )
 
                 }
             }

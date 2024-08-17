@@ -6,6 +6,7 @@ import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
+import com.clovermusic.clover.data.local.entity.relations.TrackWithArtists
 import com.clovermusic.clover.data.spotify.api.dto.common.AddedByResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.PlaylistTrackResponseDto
@@ -35,7 +36,7 @@ fun List<UsersPlaylistItemDto>.toEntity(): List<PlaylistInfoEntity> {
     }
 }
 
-
+@JvmName("PlaylistTrackResponseDto")
 fun List<PlaylistTrackResponseDto>.toEntity(): List<TrackEntity> {
     return map { tracks ->
         TrackEntity(
@@ -87,7 +88,8 @@ fun List<TrackArtistResponseDto>.toEntity(
         )
     }
 }
-fun TrackArtistResponseDto.toEntity() : ArtistsEntity{
+
+fun TrackArtistResponseDto.toEntity(): ArtistsEntity {
     return ArtistsEntity(
         artistId = id,
         uri = uri,
@@ -100,20 +102,52 @@ fun TrackArtistResponseDto.toEntity() : ArtistsEntity{
 }
 
 fun List<TrackItemsResponseDto>.toEntity(): List<TrackEntity> {
-    return map {tracks ->
+    return map { tracks ->
         TrackEntity(
             trackId = tracks.id,
             albumId = tracks.album.id,
             uri = tracks.uri,
             durationMs = tracks.duration_ms,
             name = tracks.name,
-            imageUrl = tracks.album.images.firstOrNull()?.url ?: "" ,
+            imageUrl = tracks.album.images.firstOrNull()?.url ?: "",
             previewUrl = tracks.preview_url,
             timestamp = System.currentTimeMillis(),
         )
     }
+}
+
+fun List<TrackItemsResponseDto>.toEntityWithArtist(): List<TrackWithArtists> {
+    return mapNotNull { trackDto ->
+        val trackEntity = TrackEntity(
+            trackId = trackDto.id,
+            albumId = trackDto.album.id,
+            uri = trackDto.uri,
+            durationMs = trackDto.duration_ms,
+            name = trackDto.name,
+            imageUrl = trackDto.album.images[0]?.url ?: "", // Handle null safely
+            previewUrl = trackDto.preview_url,
+            timestamp = System.currentTimeMillis()
+        )
+
+        val artistsEntityList = trackDto.artists.map { artistDto ->
+            ArtistsEntity(
+                artistId = artistDto.id,
+                uri = artistDto.uri,
+                genres = artistDto.genres ?: emptyList(),
+                followers = artistDto.followers?.total ?: 0,
+                imageUrl = artistDto.images[0].url,
+                name = artistDto.name,
+                timestamp = System.currentTimeMillis()
+            )
+        }
+
+        TrackWithArtists(
+            track = trackEntity,
+            artists = artistsEntityList
+        )
 
     }
+}
 
 fun AlbumResponseDto.toEntity(artistId: String): AlbumEntity {
     return AlbumEntity(

@@ -4,7 +4,9 @@ import android.util.Log
 import com.clovermusic.clover.data.local.dao.Insert
 import com.clovermusic.clover.data.local.dao.Provide
 import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
+import com.clovermusic.clover.data.local.entity.relations.TrackWithArtists
 import com.clovermusic.clover.data.repository.mappers.toEntity
+import com.clovermusic.clover.data.repository.mappers.toEntityWithArtist
 import com.clovermusic.clover.data.spotify.api.networkDataSources.NetworkDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +39,17 @@ class ArtistRepository @Inject constructor(
             try {
                 provide.provideArtistAlbum(artistId)
             } catch (e: Exception) {
+                throw e
+            }
+        }
+
+    suspend fun getArtistTopTracks(artistId: String): List<TrackWithArtists> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = dataSource.artistData.fetchArtistTopTracks(artistId)
+                response.toEntityWithArtist()
+            } catch (e: Exception) {
+                Log.e("ArtistRepository", "getArtistTopTracks: ", e)
                 throw e
             }
         }
