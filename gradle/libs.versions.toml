@@ -1,6 +1,6 @@
 [versions]
 accompanistPager = "0.35.1-alpha"
-agp = "8.5.1"
+agp = "8.5.2"
 auth = "2.1.2"
 coilCompose = "2.7.0"
 converterGson = "2.11.0"
