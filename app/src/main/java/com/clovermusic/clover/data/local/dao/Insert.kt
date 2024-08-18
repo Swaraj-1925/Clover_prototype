@@ -18,7 +18,6 @@ class Insert @Inject constructor(
         insertData.insertUser(user)
     }
 
-
     override fun insertPlaylistInfo(playlistInfo: PlaylistInfoEntity) {
         insertData.insertPlaylistInfo(playlistInfo)
     }
@@ -47,14 +46,9 @@ class Insert @Inject constructor(
         insertData.upsertArtist(artist)
     }
 
-    override fun insertFollowedArtist(artistId: String) {
-        insertData.insertFollowedArtist(artistId)
+    override fun upsertArtist(artist: List<ArtistsEntity>) {
+        insertData.upsertArtist(artist)
     }
-
-    override fun insertTopArtist(artistId: String) {
-        insertData.insertTopArtist(artistId)
-    }
-
 
     override fun insertAlbum(album: AlbumEntity) {
         insertData.insertAlbum(album)
@@ -67,6 +61,7 @@ class Insert @Inject constructor(
     override fun insertCollaborator(collaborator: CollaboratorsEntity) {
         insertData.insertCollaborator(collaborator)
     }
+
 
     override fun insertCollaborator(collaborator: List<CollaboratorsEntity>) {
         insertData.insertCollaborator(collaborator)

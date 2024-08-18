@@ -3,7 +3,6 @@ package com.clovermusic.clover.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import androidx.room.Upsert
 import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
@@ -44,11 +43,8 @@ interface InsertDataDao {
     @Upsert
     fun upsertArtist(artist: ArtistsEntity)
 
-    @Query("UPDATE artists SET isFollowed = 1 WHERE artistId = :artistId")
-    fun insertFollowedArtist(artistId: String)
-
-    @Query("UPDATE artists SET isTopArtist = 1 WHERE artistId = :artistId")
-    fun insertTopArtist(artistId: String)
+    @Upsert
+    fun upsertArtist(artist: List<ArtistsEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAlbum(album: AlbumEntity)
@@ -63,6 +59,7 @@ interface InsertDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCollaborator(collaborator: List<CollaboratorsEntity>)
 
+    
 //    CrossRef
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -83,4 +80,6 @@ interface InsertDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCollaboratorsTrackCrossRef(crossRef: List<CollaboratorsTrackCrossRef>)
+
+
 }

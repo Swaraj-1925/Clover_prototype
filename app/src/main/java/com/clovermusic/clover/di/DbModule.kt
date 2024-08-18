@@ -23,7 +23,8 @@ object DbModule {
             appContext,
             AppDatabase::class.java,
             "CloverDb"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
     }
 
     @Singleton

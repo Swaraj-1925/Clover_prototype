@@ -75,6 +75,10 @@ class MusicPlayerViewModel @Inject constructor(
         _isUserInteractingWithSlider.value = false
     }
 
+    fun updateNumberOfClicks() {
+
+    }
+
     private fun observePlayerState() {
         viewModelScope.launch {
             playbackHandler.playerState.collect { state ->
