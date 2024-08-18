@@ -62,6 +62,14 @@ class Insert @Inject constructor(
         insertData.insertCollaborator(collaborator)
     }
 
+    override fun insertFollowedArtist(artistId: String) {
+        insertData.insertFollowedArtist(artistId)
+    }
+
+    override fun insertTopArtist(artistId: String) {
+        insertData.insertTopArtist(artistId)
+    }
+
 
     override fun insertCollaborator(collaborator: List<CollaboratorsEntity>) {
         insertData.insertCollaborator(collaborator)
