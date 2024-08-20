@@ -42,5 +42,5 @@ class GetPlaylistUseCase @Inject constructor(
             Log.e("GetPlaylistUseCase", "Error getting playlist", e)
             emit(DataState.Error(customErrorHandling(e)))
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.Default)
 }

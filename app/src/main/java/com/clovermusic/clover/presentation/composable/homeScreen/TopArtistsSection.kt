@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ fun TopArtistsSection(
     navController: NavController,
     onArtistClick: () -> Unit,
 ) {
+    val state = rememberLazyListState()
     Column(
 
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -55,7 +57,8 @@ fun TopArtistsSection(
         }
         LazyRow(
             contentPadding = PaddingValues(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = state
         ) {
             items(artists) { artist ->
                 ArtistCard(
