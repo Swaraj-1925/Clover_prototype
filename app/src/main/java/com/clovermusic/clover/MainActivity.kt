@@ -12,12 +12,14 @@ import com.clovermusic.clover.data.spotify.api.networkDataAction.NetworkDataActi
 import com.clovermusic.clover.presentation.navigation.Navigation
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
+import com.spotify.android.appremote.api.SpotifyAppRemote
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private var spotifyAppRemote: SpotifyAppRemote? = null
 
     @Inject
     lateinit var networkDataAction: NetworkDataAction
@@ -47,4 +49,13 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
         finish()
     }
+
+    override fun onStop() {
+        super.onStop()
+        spotifyAppRemote?.let {
+            SpotifyAppRemote.disconnect(it)
+            spotifyAppRemote = null
+        }
+    }
+
 }

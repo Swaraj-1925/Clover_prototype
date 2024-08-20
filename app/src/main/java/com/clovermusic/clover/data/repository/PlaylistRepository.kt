@@ -12,8 +12,6 @@ import com.clovermusic.clover.data.local.entity.relations.TrackWithArtists
 import com.clovermusic.clover.data.repository.mappers.toEntity
 import com.clovermusic.clover.data.spotify.api.networkDataSources.NetworkDataSource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -24,17 +22,18 @@ class PlaylistRepository @Inject constructor(
     private val dataSource: NetworkDataSource
 ) {
 
-    suspend fun getAndStoreCurrentUserPlaylistsFromApi(): List<PlaylistInfoEntity> {
-        try {
-            val response = dataSource.playlistData.fetchCurrentUsersPlaylists()
-            val playlistEntities = response.toEntity()
-            insert.insertPlaylistInfo(playlistEntities)
-            return playlistEntities
-        } catch (e: Exception) {
-            Log.e("PlaylistRepository", "getAndStoreCurrentUserPlaylistsFromApi: ", e)
-            throw e
+    suspend fun getAndStoreCurrentUserPlaylistsFromApi(): List<PlaylistInfoEntity> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = dataSource.playlistData.fetchCurrentUsersPlaylists()
+                val playlistEntities = response.toEntity()
+                insert.insertPlaylistInfo(playlistEntities)
+                playlistEntities
+            } catch (e: Exception) {
+                Log.e("PlaylistRepository", "getAndStoreCurrentUserPlaylistsFromApi: ", e)
+                throw e
+            }
         }
-    }
 
     fun getStoredCurrentUserPlaylists(): List<PlaylistInfoEntity> {
         return try {
@@ -47,14 +46,16 @@ class PlaylistRepository @Inject constructor(
     suspend fun getAndStorePlaylistFromApi(playlistId: String): Playlist =
         withContext(Dispatchers.IO) {
             try {
-                val response = async { dataSource.playlistData.fetchPlaylist(playlistId) }.await()
+                val response = dataSource.playlistData.fetchPlaylist(playlistId)
 
                 val playlistEntity = response.toEntity()
                 val trackEntities = response.tracks.items.toEntity()
                 val artistEntities = response.tracks.items.flatMap { it.track.artists }.toEntity()
+
                 val collaboratorsEntities =
                     response.tracks.items.map { it.added_by.toEntity(it.track.id) }
 
+                Log.d("getPlaylistFromApi", "Collob")
                 val playlistTrackCrossRefs = response.tracks.items.map {
                     PlaylistTrackCrossRef(
                         playlistId = playlistEntity.playlistId,
@@ -62,6 +63,7 @@ class PlaylistRepository @Inject constructor(
                     )
                 }
 
+                Log.d("getPlaylistFromApi", "play;ostTrackCros")
                 val trackArtistCrossRefs = response.tracks.items.flatMap { trackResponse ->
                     trackResponse.track.artists.map { artistResponse ->
                         TrackArtistsCrossRef(
@@ -76,15 +78,14 @@ class PlaylistRepository @Inject constructor(
                         collaboratorId = it.added_by.id
                     )
                 }
-                insert.apply {
-                    insertPlaylistInfo(playlistEntity)
-                    insertTrack(trackEntities)
-                    insertArtist(artistEntities)
-                    insertCollaborator(collaboratorsEntities)
-                    insertPlaylistTrackCrossRef(playlistTrackCrossRefs)
-                    insertTrackArtistsCrossRef(trackArtistCrossRefs)
-                    insertCollaboratorsTrackCrossRef(trackCollaboratorCrossRefs)
-                }
+
+                insert.insertPlaylistInfo(playlistEntity)
+                insert.insertTrack(trackEntities)
+                insert.insertArtist(artistEntities)
+                insert.insertCollaborator(collaboratorsEntities)
+                insert.insertPlaylistTrackCrossRef(playlistTrackCrossRefs)
+                insert.insertTrackArtistsCrossRef(trackArtistCrossRefs)
+                insert.insertCollaboratorsTrackCrossRef(trackCollaboratorCrossRefs)
 
                 provide.providePlaylist(playlistId)
             } catch (e: Exception) {
@@ -93,19 +94,13 @@ class PlaylistRepository @Inject constructor(
             }
         }
 
-    suspend fun getStoredPlaylist(playlistId: String): Playlist? = withContext(Dispatchers.IO) {
-        try {
-            val playlistHasTracks = provide.playlistHasTracks(playlistId) > 0
-            if (playlistHasTracks) {
-                provide.providePlaylist(playlistId)
-            } else {
-                null
-            }
+    fun getStoredPlaylist(playlistId: String): Playlist {
+        return try {
+            provide.providePlaylist(playlistId)
         } catch (e: Exception) {
             throw e
         }
     }
-
 
     suspend fun getPlaylistFromApi(playlistId: String): Playlist {
         val response = dataSource.playlistData.fetchPlaylist(playlistId)

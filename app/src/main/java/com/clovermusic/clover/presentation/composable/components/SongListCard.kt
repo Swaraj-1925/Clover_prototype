@@ -43,7 +43,7 @@ fun SongListCard(
     track: TrackEntity,
     artists: List<ArtistsEntity>,
     index: Int,
-    viewModel: MusicPlayerViewModel = hiltViewModel()
+    musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
 ) {
     Card(
         colors = CardDefaults.cardColors(Color.Transparent),
@@ -69,7 +69,7 @@ fun SongListCard(
                     .width(IntrinsicSize.Min)
             )
             Card(
-                onClick = { viewModel.playTrack(track.uri) },
+                onClick = { musicPlayerViewModel.playTrack(track.uri) },
                 modifier = Modifier
                     .padding(start = 4.dp)
                     .aspectRatio(1f)
@@ -107,18 +107,23 @@ fun SongListCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.weight(1f, fill = false)
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .align(Alignment.CenterVertically)
                     )
                     Text(
                         text = " • ",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
+                            .align(Alignment.CenterVertically)
                     )
                     Text(
                         text = Parsers.parseDurationMinutesSeconds(track.durationMs),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
                     )
                 }
             }

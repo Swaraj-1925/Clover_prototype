@@ -16,21 +16,21 @@ class UserRepository @Inject constructor(
     private val insert: Insert,
     private val provide: Provide
 ) {
-    suspend fun getAndStoreUserDataFromAPi(): UserEntity {
+    suspend fun getAndStoreUserDataFromAPi(): UserEntity = withContext(Dispatchers.IO) {
         try {
             val response = dataSource.userDataSource.fetchCurrentUsersProfile()
             Log.d("UserRepository", "getAndStoreUserDataFromAPi: $response")
             val userEntity = response.toEntity()
             insert.insertUser(userEntity)
-            return userEntity
+            userEntity
         } catch (e: Exception) {
             Log.e("UserRepository", "getAndStoreUserDataFromAPi: ", e)
             throw e
         }
     }
 
-    fun getStoredUserData(): UserEntity {
-        return try {
+    suspend fun getStoredUserData(): UserEntity = withContext(Dispatchers.IO) {
+        try {
             provide.getUser()
         } catch (e: Exception) {
             throw e
@@ -41,10 +41,24 @@ class UserRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val response = dataSource.userDataSource.fetchFollowedArtists()
+
                 val artistsEntity = response.toEntity().map { it.copy(isFollowed = true) }
-                artistsEntity.forEach {
-                    Log.i("UserRepository", "Saved followed Artist ${it.name}")
-                    insert.insertFollowedArtist(it.artistId)
+
+                artistsEntity.forEach { artist ->
+                    val existingArtist = provide.getArtistById(artist.artistId)
+                    if (existingArtist != null) {
+                        insert.upsertArtist(
+                            existingArtist.copy(
+                                isFollowed
+
+
+                                = true,
+                                timestamp = System.currentTimeMillis()
+                            )
+                        )
+                    } else {
+                        insert.insertArtist(artist)
+                    }
                 }
                 artistsEntity
             } catch (e: Exception) {
@@ -61,23 +75,34 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun getAndStoreTopArtistsFromApi(timeRange: String): List<ArtistsEntity> {
-        try {
-            val response = dataSource.userDataSource.fetchTopArtists(timeRange)
-            val artistsEntity = response.toEntity().map { it.copy(isTopArtist = true) }
-            artistsEntity.forEach {
-                Log.i("UserRepository", "Saved Top Artist ${it.name}")
-                insert.insertTopArtist(it.artistId)
-            }
-            return artistsEntity
-        } catch (e: Exception) {
-            Log.e("UserRepository", "getAndStoreTopArtistsFromApi: ", e)
-            throw e
-        }
-    }
+    suspend fun getAndStoreTopArtistsFromApi(timeRange: String): List<ArtistsEntity> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = dataSource.userDataSource.fetchTopArtists(timeRange)
+                val artistsEntity = response.toEntity().map { it.copy(isTopArtist = true) }
 
-    fun getStoredTopArtists(): List<ArtistsEntity> {
-        return try {
+                artistsEntity.forEach { artist ->
+                    val existingArtist = provide.getArtistById(artist.artistId)
+                    if (existingArtist != null) {
+                        insert.upsertArtist(
+                            existingArtist.copy(
+                                isTopArtist = true,
+                                timestamp = System.currentTimeMillis()
+                            )
+                        )
+                    } else {
+                        insert.insertArtist(artist)
+                    }
+                }
+                artistsEntity
+            } catch (e: Exception) {
+                Log.e("UserRepository", "getAndStoreTopArtistsFromApi: ", e)
+                throw e
+            }
+        }
+
+    suspend fun getStoredTopArtists(): List<ArtistsEntity> = withContext(Dispatchers.IO) {
+        try {
             provide.provideTopArtists()
         } catch (e: Exception) {
             throw e

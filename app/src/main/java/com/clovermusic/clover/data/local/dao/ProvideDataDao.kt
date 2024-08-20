@@ -26,6 +26,12 @@ interface ProvideDataDao {
     @Query("SELECT * FROM artists WHERE artistId = :artistId")
     fun provideArtistAlbum(artistId: String): ArtistWithAlbums
 
+    @Query("SELECT * FROM artists WHERE isFollowed = 1")
+    fun provideFollowedArtists(): List<ArtistsEntity>
+
+    @Query("SELECT * FROM artists WHERE isTopArtist = 1")
+    fun provideTopArtists(): List<ArtistsEntity>
+
     @Query(
         """
         SELECT COUNT(*)
@@ -36,11 +42,12 @@ interface ProvideDataDao {
     )
     fun playlistHasTracks(playlistId: String): Int
 
-    @Query("SELECT * FROM artists WHERE isFollowed = 1")
-    fun provideFollowedArtists(): List<ArtistsEntity>
+    @Query("SELECT * FROM artists WHERE artistId = :artistId LIMIT 1")
+    fun provideArtistById(artistId: String): ArtistsEntity?
 
-    @Query("SELECT * FROM artists WHERE isTopArtist = 1")
-    fun provideTopArtists(): List<ArtistsEntity>
+    @Query("SELECT * FROM artists WHERE artistId IN (:artistIds)")
+    fun getArtistsByIds(artistIds: List<String>): List<ArtistsEntity>
 
-
+    @Query("SELECT * FROM artists WHERE artistId = :artistId")
+    suspend fun getArtistById(artistId: String): ArtistsEntity?
 }

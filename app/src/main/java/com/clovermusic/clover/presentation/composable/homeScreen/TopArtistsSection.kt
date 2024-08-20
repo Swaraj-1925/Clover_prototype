@@ -10,20 +10,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.presentation.composable.components.ArtistCard
+import com.clovermusic.clover.presentation.navigation.ArtistScreenRoute
 
 @Composable
 fun TopArtistsSection(
     artists: List<ArtistsEntity>,
+    navController: NavController,
     onArtistClick: () -> Unit,
 ) {
+    val state = rememberLazyListState()
     Column(
 
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -52,13 +57,14 @@ fun TopArtistsSection(
         }
         LazyRow(
             contentPadding = PaddingValues(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = state
         ) {
             items(artists) { artist ->
                 ArtistCard(
                     artistName = artist.name,
-                    url = artist.imageUrl,
-                    onArtistClick = {}
+                    url = artist.imageUrl ?: "",
+                    onArtistClick = { navController.navigate(ArtistScreenRoute(id = artist.artistId)) }
                 )
             }
         }

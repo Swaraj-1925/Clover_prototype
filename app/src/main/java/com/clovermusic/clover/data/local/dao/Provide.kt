@@ -10,6 +10,7 @@ import javax.inject.Inject
 class Provide @Inject constructor(
     private val provideData: ProvideDataDao
 ) : ProvideDataDao {
+
     override fun getUser(): UserEntity {
         return provideData.getUser()
     }
@@ -30,10 +31,6 @@ class Provide @Inject constructor(
         return provideData.provideArtistAlbum(artistId)
     }
 
-    override fun playlistHasTracks(playlistId: String): Int {
-        return provideData.playlistHasTracks(playlistId)
-    }
-
     override fun provideFollowedArtists(): List<ArtistsEntity> {
         return provideData.provideFollowedArtists()
     }
@@ -42,4 +39,19 @@ class Provide @Inject constructor(
         return provideData.provideTopArtists()
     }
 
+    override fun playlistHasTracks(playlistId: String): Int {
+        return provideData.playlistHasTracks(playlistId)
+    }
+
+    override fun provideArtistById(artistId: String): ArtistsEntity? {
+        return provideData.provideArtistById(artistId)
+    }
+
+    override fun getArtistsByIds(artistIds: List<String>): List<ArtistsEntity> {
+        return provideData.getArtistsByIds(artistIds = artistIds)
+    }
+
+    override suspend fun getArtistById(artistId: String): ArtistsEntity? {
+        return provideData.getArtistById(artistId)
+    }
 }

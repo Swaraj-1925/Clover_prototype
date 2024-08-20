@@ -2,6 +2,8 @@ package com.clovermusic.clover.data.spotify.api.networkDataSources
 
 
 import android.util.Log
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.data.repository.mappers.toEntity
 import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.TrackItemsResponseDto
@@ -50,6 +52,7 @@ class ArtistDataSource @Inject constructor(
                 mutableListOf<TrackItemsResponseDto>()
             val response = artistService.getArtistTopTracks(artistId)
             topTrack.addAll(response.tracks)
+            response.tracks
 
             Log.d(
                 "ArtistRepository ",
@@ -59,6 +62,12 @@ class ArtistDataSource @Inject constructor(
 
         }
 
+    suspend fun fetchArtist(artistId: String): ArtistsEntity =
+        withContext(Dispatchers.IO) {
+            val response = artistService.getArtist(artistId).toEntity()
+            response
+
+    }
     suspend fun fetchArtistRelatedArtists(id: String): List<TrackArtistResponseDto> =
         withContext(Dispatchers.IO) {
             val artists =

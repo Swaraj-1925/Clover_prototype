@@ -82,7 +82,7 @@ class RemotePlaybackHandlerUseCase @Inject constructor(
         }
     }
 
-    private suspend fun performRemoteAction(action: suspend (SpotifyAppRemote) -> Unit) {
+    suspend fun performRemoteAction(action: suspend (SpotifyAppRemote) -> Unit) {
         try {
             val remote = appRemoteRepository.getConnectedAppRemote()
             action(remote)

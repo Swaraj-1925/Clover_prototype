@@ -75,37 +75,43 @@ class MusicPlayerViewModel @Inject constructor(
         _isUserInteractingWithSlider.value = false
     }
 
+    fun updateNumberOfClicks() {
+
+    }
+
     private fun observePlayerState() {
         viewModelScope.launch {
             playbackHandler.playerState.collect { state ->
-                state?.let {
-                    updatePlaybackState(it)
-                }
+                updatePlaybackState(state)
             }
         }
     }
 
-    private fun updatePlaybackState(playerState: PlayerState) {
-        val trackDetails = playerState.track.let { track ->
-            PlayingTrackDetails(
-                name = track.name,
-                songUri = track.uri,
-                artist = track.artist.name,
-                artistUri = track.artist.uri,
-                image = track.imageUri.raw?.convertSpotifyImageUriToUrl() ?: "",
-                artists = track.artists.map { it.name },
-                artistsUri = track.artists.map { it.uri },
-                duration = track.duration,
-                currentPosition = playerState.playbackPosition,
-                isShuffling = playerState.playbackOptions.isShuffling,
-                repeatMode = playerState.playbackOptions.repeatMode
-            )
-        }
-
-        _musicPlayerState.value = if (playerState.isPaused) {
-            PlaybackState.Paused(trackDetails)
+    private fun updatePlaybackState(playerState: PlayerState?) {
+        if (playerState == null) {
+            _musicPlayerState.value = PlaybackState.Loading
         } else {
-            PlaybackState.Playing(trackDetails)
+            val trackDetails = playerState.track?.let { track ->
+                PlayingTrackDetails(
+                    name = track.name,
+                    songUri = track.uri,
+                    artist = track.artist.name,
+                    artistUri = track.artist.uri,
+                    image = track.imageUri?.raw?.convertSpotifyImageUriToUrl() ?: "",
+                    artists = track.artists.map { it.name },
+                    artistsUri = track.artists.map { it.uri },
+                    duration = track.duration,
+                    currentPosition = playerState.playbackPosition,
+                    isShuffling = playerState.playbackOptions.isShuffling,
+                    repeatMode = playerState.playbackOptions.repeatMode
+                )
+            }
+
+            _musicPlayerState.value = if (playerState.isPaused) {
+                PlaybackState.Paused(trackDetails)
+            } else {
+                PlaybackState.Playing(trackDetails)
+            }
         }
     }
 }

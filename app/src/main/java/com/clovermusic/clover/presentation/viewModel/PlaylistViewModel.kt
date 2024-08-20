@@ -19,7 +19,7 @@ class PlaylistViewModel @Inject constructor(
     private val _playlistUiState = MutableStateFlow<DataState<Playlist>>(DataState.Loading)
     val playlistUiState: StateFlow<DataState<Playlist>> = _playlistUiState.asStateFlow()
 
-    fun getPlaylist(id: String, forceRefresh: Boolean = false) {
+    fun getPlaylist(id: String, forceRefresh: Boolean = true) {
         viewModelScope.launch {
             val playlist = playlistUseCases.getPlaylist(forceRefresh, id)
             playlist.collect { state ->

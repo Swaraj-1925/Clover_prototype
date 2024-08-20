@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.clovermusic.clover.presentation.composable.artistScreen.ArtistAllAlbumPage
+import com.clovermusic.clover.presentation.composable.artistScreen.ArtistPage
 import com.clovermusic.clover.presentation.composable.components.BottomSheetForLyrics
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.composable.homeScreen.HomeScreen
@@ -29,6 +31,14 @@ fun Navigation(
         }
         composable<MusicPlayerScreenRoute> {
             BottomSheetForLyrics(navController = navController)
+        }
+        composable<ArtistScreenRoute> {
+            val artist: ArtistScreenRoute = it.toRoute()
+            ArtistPage(artistId = artist.id, navController = navController)
+        }
+        composable<ArtistAlbumScreenRoute> {
+            val album: ArtistAlbumScreenRoute = it.toRoute()
+            ArtistAllAlbumPage(artistId = album.id, navController = navController)
         }
 
     }
