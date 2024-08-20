@@ -59,7 +59,6 @@ fun ArtistPageAlbumSection(
             albumList.take(5).forEach { album ->
                 ArtistPageAlbumCard(
                     albums = album,
-                    songCount = albumList.size, // Assuming songCount is a property in your albums
                     navController = navController
                 )
             }

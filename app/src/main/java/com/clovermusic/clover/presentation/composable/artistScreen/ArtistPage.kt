@@ -33,6 +33,7 @@ import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.ArtistViewModal
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
+import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.DataState
 
 
@@ -51,11 +52,11 @@ fun ArtistPage(
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isLoading,
-        onRefresh = { viewModel.getArtistData(artistId = artistId, true) }
+        onRefresh = { viewModel.getArtistData(artistId = artistId, true, limit = 5) }
     )
 
     LaunchedEffect(artistId) {
-        viewModel.getArtistData(artistId = artistId, false)
+        viewModel.getArtistData(artistId = artistId, false, limit = 5)
     }
 
     Scaffold(
@@ -71,48 +72,50 @@ fun ArtistPage(
             }
         }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .pullRefresh(pullRefreshState)
-                .padding(innerPadding)
-        ) {
-            when (val state = artistData) {
-                is DataState.Loading -> {
-                    LoadingAnimation()
-                }
+        CloverTheme {
+            Box(
+                modifier = Modifier
+                    .pullRefresh(pullRefreshState)
+                    .padding(innerPadding)
+            ) {
+                when (val state = artistData) {
+                    is DataState.Loading -> {
+                        LoadingAnimation()
+                    }
 
-                is DataState.Error -> {
-                    LaunchedEffect(snackbarHostState) {
-                        snackbarHostState.showSnackbar(
-                            message = state.message ?: "An error occurred",
-                            duration = SnackbarDuration.Long
+                    is DataState.Error -> {
+                        LaunchedEffect(snackbarHostState) {
+                            snackbarHostState.showSnackbar(
+                                message = state.message ?: "An error occurred",
+                                duration = SnackbarDuration.Long
+                            )
+                        }
+                    }
+
+                    is DataState.NewData -> {
+                        ArtistContent(
+                            artistInfo = state.data,
+                            snackbarHostState = snackbarHostState,
+                            navController = navController,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    is DataState.OldData -> {
+                        ArtistContent(
+                            artistInfo = state.data,
+                            snackbarHostState = snackbarHostState,
+                            navController = navController,
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
-
-                is DataState.NewData -> {
-                    ArtistContent(
-                        artistInfo = state.data,
-                        snackbarHostState = snackbarHostState,
-                        navController = navController,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
-                is DataState.OldData -> {
-                    ArtistContent(
-                        artistInfo = state.data,
-                        snackbarHostState = snackbarHostState,
-                        navController = navController,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                PullRefreshIndicator(
+                    refreshing = isLoading,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
             }
-            PullRefreshIndicator(
-                refreshing = isLoading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }
@@ -135,6 +138,7 @@ fun ArtistContent(
             item {
                 ArtistPageHeader(
                     artist = artistInfo.artistInfo,
+                    navController = navController
                 )
             }
             item {

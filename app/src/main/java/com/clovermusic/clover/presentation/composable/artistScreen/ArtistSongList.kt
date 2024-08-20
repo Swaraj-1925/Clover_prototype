@@ -20,7 +20,7 @@ import com.clovermusic.clover.presentation.composable.components.SongListCard
 @Composable
 fun ArtistSongList(
     trackList: List<TrackWithArtists>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),

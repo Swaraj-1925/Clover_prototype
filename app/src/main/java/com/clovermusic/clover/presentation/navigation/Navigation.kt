@@ -38,7 +38,7 @@ fun Navigation(
         }
         composable<ArtistAlbumScreenRoute> {
             val album: ArtistAlbumScreenRoute = it.toRoute()
-            ArtistAllAlbumPage(albumId = album.id, navController = navController)
+            ArtistAllAlbumPage(artistId = album.id, navController = navController)
         }
 
     }

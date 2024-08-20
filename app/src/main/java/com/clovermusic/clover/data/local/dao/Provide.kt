@@ -50,4 +50,8 @@ class Provide @Inject constructor(
     override fun getArtistsByIds(artistIds: List<String>): List<ArtistsEntity> {
         return provideData.getArtistsByIds(artistIds = artistIds)
     }
+
+    override suspend fun getArtistById(artistId: String): ArtistsEntity? {
+        return provideData.getArtistById(artistId)
+    }
 }

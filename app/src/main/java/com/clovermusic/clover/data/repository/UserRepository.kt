@@ -41,10 +41,24 @@ class UserRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val response = dataSource.userDataSource.fetchFollowedArtists()
+
                 val artistsEntity = response.toEntity().map { it.copy(isFollowed = true) }
-                artistsEntity.forEach {
-                    Log.i("UserRepository", "Saved followed Artist ${it.name}")
-                    insert.insertFollowedArtist(it.artistId)
+
+                artistsEntity.forEach { artist ->
+                    val existingArtist = provide.getArtistById(artist.artistId)
+                    if (existingArtist != null) {
+                        insert.upsertArtist(
+                            existingArtist.copy(
+                                isFollowed
+
+
+                                = true,
+                                timestamp = System.currentTimeMillis()
+                            )
+                        )
+                    } else {
+                        insert.insertArtist(artist)
+                    }
                 }
                 artistsEntity
             } catch (e: Exception) {
@@ -65,9 +79,19 @@ class UserRepository @Inject constructor(
         try {
             val response = dataSource.userDataSource.fetchTopArtists(timeRange)
             val artistsEntity = response.toEntity().map { it.copy(isTopArtist = true) }
-            artistsEntity.forEach {
-                Log.i("UserRepository", "Saved Top Artist ${it.name}")
-                insert.insertTopArtist(it.artistId)
+
+            artistsEntity.forEach { artist ->
+                val existingArtist = provide.getArtistById(artist.artistId)
+                if (existingArtist != null) {
+                    insert.upsertArtist(
+                        existingArtist.copy(
+                            isTopArtist = true,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
+                } else {
+                    insert.insertArtist(artist)
+                }
             }
             return artistsEntity
         } catch (e: Exception) {

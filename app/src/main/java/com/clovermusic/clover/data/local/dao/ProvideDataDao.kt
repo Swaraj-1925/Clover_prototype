@@ -47,4 +47,7 @@ interface ProvideDataDao {
 
     @Query("SELECT * FROM artists WHERE artistId IN (:artistIds)")
     fun getArtistsByIds(artistIds: List<String>): List<ArtistsEntity>
+
+    @Query("SELECT * FROM artists WHERE artistId = :artistId")
+    suspend fun getArtistById(artistId: String): ArtistsEntity?
 }

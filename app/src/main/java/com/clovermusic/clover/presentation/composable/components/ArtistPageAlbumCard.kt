@@ -35,7 +35,6 @@ import com.clovermusic.clover.data.local.entity.AlbumEntity
 @Composable
 fun ArtistPageAlbumCard(
     albums: AlbumEntity,
-    songCount: Int,
     navController: NavController
 ) {
     Card(
@@ -85,11 +84,6 @@ fun ArtistPageAlbumCard(
                         modifier = Modifier
                             .padding(vertical = 2.dp)
                             .clickable { }
-                    )
-                    Text(
-                        text = "$songCount Songs",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.background,
                     )
                 }
                 IconButton(

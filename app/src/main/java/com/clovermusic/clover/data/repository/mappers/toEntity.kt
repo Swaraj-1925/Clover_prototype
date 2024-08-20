@@ -79,7 +79,7 @@ fun List<TrackArtistResponseDto>.toEntity(
             artistId = it.id,
             uri = it.uri,
             genres = it.genres ?: emptyList(),
-            imageUrl = it.images.firstOrNull()?.url ?: "",
+            imageUrl = it.images?.firstOrNull()?.url ?: "",
             name = it.name,
             followers = it.followers?.total ?: 0,
             isFollowed = followed,
@@ -94,7 +94,7 @@ fun TrackArtistResponseDto.toEntity(): ArtistsEntity {
         artistId = id,
         uri = uri,
         genres = genres ?: emptyList(),
-        imageUrl = images.firstOrNull()?.url ?: "",
+        imageUrl = images?.firstOrNull()?.url ?: "",
         name = name,
         followers = followers?.total ?: 0,
         timestamp = System.currentTimeMillis(),
@@ -135,7 +135,7 @@ fun List<TrackItemsResponseDto>.toEntityWithArtist(): List<TrackWithArtists> {
                 uri = artistDto.uri,
                 genres = artistDto.genres ?: emptyList(),
                 followers = artistDto.followers?.total ?: 0,
-                imageUrl = artistDto.images[0].url,
+                imageUrl = artistDto.images?.get(0)?.url ?: " ",
                 name = artistDto.name,
                 timestamp = System.currentTimeMillis()
             )

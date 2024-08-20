@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
@@ -41,10 +42,10 @@ import com.clovermusic.clover.presentation.composable.components.getThemedIcons
 @Composable
 fun ArtistPageHeader(
     artist: ArtistsEntity,
-    modifier: Modifier =Modifier
-){
+    navController: NavController
+) {
     val icons = getThemedIcons()
-    
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,7 +55,7 @@ fun ArtistPageHeader(
                 .fillMaxWidth()
                 .height(270.dp)
         ) {
-            Card(onClick = { /*TODO*/ }) {
+            Card(onClick = { navController.popBackStack() }) {
                 AsyncImage(
                     model = artist.imageUrl,
                     contentDescription = artist.name,
@@ -80,7 +81,7 @@ fun ArtistPageHeader(
                     )
             )
             Text(
-                text =artist.name,
+                text = artist.name,
                 style = MaterialTheme.typography.headlineLarge
                     .copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
@@ -111,10 +112,12 @@ fun ArtistPageHeader(
                 .height(36.dp)
                 .padding(start = 20.dp)
         ) {
-            Text(text = "${artist.followers} monthly listeners",
+            Text(
+                text = "${artist.followers} monthly listeners",
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier
-                    .align(Alignment.Bottom))
+                    .align(Alignment.Bottom)
+            )
         }
         Row(
             modifier = Modifier
@@ -122,37 +125,53 @@ fun ArtistPageHeader(
                 .height(50.dp)
                 .padding(start = 20.dp)
         ) {
-            OutlinedButton(onClick = { /*TODO*/ },
+            OutlinedButton(
+                onClick = { /*TODO*/ },
                 modifier = Modifier
                     .size(86.dp, 35.dp)
-                    .align(Alignment.CenterVertically)) {
-                Text(text = "FOLLOW",
-                    style = MaterialTheme.typography.bodySmall)
+                    .align(Alignment.CenterVertically)
+            ) {
+                Text(
+                    text = "FOLLOW",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             Spacer(modifier = Modifier.width(12.dp))
-            IconButton(onClick = { /*TODO*/ },
+            IconButton(
+                onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)) {
-                Image(painter = painterResource(id = R.drawable.more_vertical),
-                    contentDescription = "More")
+                    .align(Alignment.CenterVertically)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.more_vertical),
+                    contentDescription = "More"
+                )
             }
             Spacer(modifier = Modifier.width(130.dp))
-            IconButton(onClick = { /*TODO*/ },
+            IconButton(
+                onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)) {
-                Image(painter = painterResource(id = icons.shuffleButtonInactive),
+                    .align(Alignment.CenterVertically)
+            ) {
+                Image(
+                    painter = painterResource(id = icons.shuffleButtonInactive),
                     contentDescription = "Shuffle",
                     modifier = Modifier
-                        .size(30.dp))
+                        .size(30.dp)
+                )
             }
             Spacer(modifier = Modifier.width(10.dp))
-            IconButton(onClick = { /*TODO*/ },
+            IconButton(
+                onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)) {
-                Image(painter = painterResource(id = R.drawable.play_circle),
+                    .align(Alignment.CenterVertically)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.play_circle),
                     contentDescription = "Play",
                     modifier = Modifier
-                        .size(44.dp))
+                        .size(44.dp)
+                )
             }
         }
     }

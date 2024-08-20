@@ -43,6 +43,7 @@ class ArtistAlbumsUseCase @Inject constructor(
                 }
             }
             refreshArtistId.forEach { artistId ->
+                Log.d("ArtietALbums", "$limit")
                 val albums = repository.artists.getAndStoreArtistAlbumsFromApi(artistId, limit)
                 artistAlbums.add(albums)
             }

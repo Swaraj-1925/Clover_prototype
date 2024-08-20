@@ -60,8 +60,8 @@ fun TopArtistsSection(
             items(artists) { artist ->
                 ArtistCard(
                     artistName = artist.name,
-                    url = artist.imageUrl,
-                    onArtistClick = {navController.navigate(ArtistScreenRoute(id = artist.artistId))}
+                    url = artist.imageUrl ?: "",
+                    onArtistClick = { navController.navigate(ArtistScreenRoute(id = artist.artistId)) }
                 )
             }
         }

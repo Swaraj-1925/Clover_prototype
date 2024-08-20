@@ -21,13 +21,14 @@ class ArtistViewModal @Inject constructor(
     private val _artistData = MutableStateFlow<DataState<ArtistDataUiState>>(DataState.Loading)
     val artistData: StateFlow<DataState<ArtistDataUiState>> = _artistData.asStateFlow()
 
-    fun getArtistData(artistId: String, forceRefresh: Boolean) {
+
+    fun getArtistData(artistId: String, forceRefresh: Boolean, limit: Int? = null) {
         viewModelScope.launch {
             combine(
                 artist.getArtist(artistId),
                 artist.artistAlbums(
                     artistIds = listOf(artistId),
-                    limit = null,
+                    limit = limit,
                     forceRefresh = forceRefresh
                 ),
                 artist.artistTopTrack(artistId)
