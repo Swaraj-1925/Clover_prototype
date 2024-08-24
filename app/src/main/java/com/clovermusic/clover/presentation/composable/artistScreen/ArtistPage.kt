@@ -93,20 +93,16 @@ fun ArtistPage(
                     }
 
                     is DataState.NewData -> {
-                        ArtistContent(
+                        ArtistContentOld(
                             artistInfo = state.data,
-                            snackbarHostState = snackbarHostState,
                             navController = navController,
-                            modifier = Modifier.fillMaxSize()
                         )
                     }
 
                     is DataState.OldData -> {
-                        ArtistContent(
+                        ArtistContentOld(
                             artistInfo = state.data,
-                            snackbarHostState = snackbarHostState,
                             navController = navController,
-                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
@@ -121,11 +117,9 @@ fun ArtistPage(
 }
 
 @Composable
-fun ArtistContent(
+fun ArtistContentOld(
     artistInfo: ArtistDataUiState,
-    snackbarHostState: SnackbarHostState,
     navController: NavController,
-    modifier: Modifier = Modifier
 ) {
     Surface(
         color = MaterialTheme.colorScheme.background
@@ -143,7 +137,7 @@ fun ArtistContent(
             item {
                 ArtistSongList(
                     trackList = artistInfo.artistTopTracks.take(5),
-                    )
+                )
             }
             item {
                 ArtistPageAlbumSection(

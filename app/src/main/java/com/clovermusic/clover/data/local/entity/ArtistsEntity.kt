@@ -14,5 +14,6 @@ data class ArtistsEntity(
     val name: String,
     val isFollowed: Boolean = false,
     val isTopArtist: Boolean = false,
+    val popularity: Int = 0,
     val timestamp: Long
 )

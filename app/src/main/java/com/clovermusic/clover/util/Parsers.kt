@@ -74,4 +74,21 @@ object Parsers {
         return "https://i.scdn.co/image/$imageId"
     }
 
+
+    fun formatNumber(number: Int): String {
+        return when {
+            number >= 1_000_000 -> {
+                val millions = number / 1_000_000.0
+                String.format("%.1fM", millions)
+            }
+
+            number >= 1_000 -> {
+                val thousands = number / 1_000.0
+                String.format("%.1fK", thousands)
+            }
+
+            else -> number.toString()
+        }
+    }
+
 }
