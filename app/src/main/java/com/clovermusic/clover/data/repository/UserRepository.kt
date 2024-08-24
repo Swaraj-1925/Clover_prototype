@@ -108,4 +108,8 @@ class UserRepository @Inject constructor(
             throw e
         }
     }
+
+    suspend fun incrementNumClick(playlistId: String) = withContext(Dispatchers.IO) {
+        insert.incrementNumClick(playlistId)
+    }
 }
