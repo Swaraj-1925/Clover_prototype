@@ -149,7 +149,7 @@ fun ArtistScreenHeader(
                         modifier = Modifier
                             .size(180.dp, 50.dp)
                             .align(Alignment.CenterVertically),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                     ) {
                         Text(
                             text = "Follow",
@@ -163,7 +163,7 @@ fun ArtistScreenHeader(
                         modifier = Modifier
                             .size(180.dp, 50.dp)
                             .align(Alignment.CenterVertically),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         Text(
                             text = "Play",
