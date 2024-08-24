@@ -38,7 +38,7 @@ fun ArtistPageAlbumCard(
     navController: NavController
 ) {
     Card(
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .width(420.dp)

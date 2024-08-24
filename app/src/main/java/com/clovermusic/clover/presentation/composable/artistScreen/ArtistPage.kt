@@ -128,8 +128,7 @@ fun ArtistContent(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.background,
-        modifier = modifier.padding(8.dp)
+        color = MaterialTheme.colorScheme.background
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -143,8 +142,8 @@ fun ArtistContent(
             }
             item {
                 ArtistSongList(
-                    trackList = artistInfo.artistTopTracks.take(5)
-                )
+                    trackList = artistInfo.artistTopTracks.take(5),
+                    )
             }
             item {
                 ArtistPageAlbumSection(
