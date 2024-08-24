@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.clovermusic.clover.presentation.composable.artistScreen.TabItem
 import com.clovermusic.clover.presentation.composable.components.ArtistPageAlbumCard
 import com.clovermusic.clover.presentation.composable.components.SongListCard
 import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
@@ -31,10 +30,8 @@ fun ArtistContent(
     artistInfo: ArtistDataUiState,
     navController: NavController,
 ) {
-    val titles = listOf(
-        TabItem(title = "Songs"),
-        TabItem(title = "Albums")
-    )
+    val titles = listOf("Songs", "Albums")
+    val numAlbums = artistInfo.artistAlbums.flatMap { it.albums }.size
 
     val pagerState = rememberPagerState {
         titles.size
@@ -58,7 +55,7 @@ fun ArtistContent(
         item {
             ArtistScreenHeader(
                 artist = artistInfo.artistInfo,
-                numAlbums = artistInfo.artistAlbums.size
+                numAlbums = numAlbums
             )
         }
 
@@ -68,7 +65,7 @@ fun ArtistContent(
                     Tab(
                         selected = index == selectedTabIndex,
                         onClick = { selectedTabIndex = index },
-                        text = { Text(text = item.title) }
+                        text = { Text(text = item) }
                     )
                 }
             }
