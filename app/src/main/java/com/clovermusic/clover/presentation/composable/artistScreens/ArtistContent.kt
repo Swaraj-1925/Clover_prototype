@@ -1,6 +1,7 @@
 package com.clovermusic.clover.presentation.composable.artistScreens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,12 +77,13 @@ fun ArtistContent(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
+                    .height(500.dp)
             ) { pageIndex ->
                 when (pageIndex) {
                     0 -> {
                         val trackList = artistInfo.artistTopTracks
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(modifier = Modifier
+                            .fillMaxSize()) {
                             items(trackList) { track ->
                                 SongListCard(
                                     track = track.track,
@@ -94,7 +96,8 @@ fun ArtistContent(
 
                     1 -> {
                         val albumList = artistInfo.artistAlbums.flatMap { it.albums }
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             items(albumList) { album ->
                                 ArtistPageAlbumCard(
                                     albums = album,
