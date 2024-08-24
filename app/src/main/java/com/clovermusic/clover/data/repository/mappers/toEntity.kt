@@ -84,6 +84,7 @@ fun List<TrackArtistResponseDto>.toEntity(
             followers = it.followers?.total ?: 0,
             isFollowed = followed,
             isTopArtist = top,
+            popularity = it.popularity,
             timestamp = System.currentTimeMillis(),
         )
     }
@@ -97,6 +98,7 @@ fun TrackArtistResponseDto.toEntity(): ArtistsEntity {
         imageUrl = images?.firstOrNull()?.url ?: "",
         name = name,
         followers = followers?.total ?: 0,
+        popularity = popularity,
         timestamp = System.currentTimeMillis(),
     )
 }
@@ -137,6 +139,7 @@ fun List<TrackItemsResponseDto>.toEntityWithArtist(): List<TrackWithArtists> {
                 followers = artistDto.followers?.total ?: 0,
                 imageUrl = artistDto.images?.get(0)?.url ?: " ",
                 name = artistDto.name,
+                popularity = artistDto.popularity,
                 timestamp = System.currentTimeMillis()
             )
         }

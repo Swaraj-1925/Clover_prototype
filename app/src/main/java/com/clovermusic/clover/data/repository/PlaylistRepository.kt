@@ -27,7 +27,7 @@ class PlaylistRepository @Inject constructor(
             try {
                 val response = dataSource.playlistData.fetchCurrentUsersPlaylists()
                 val playlistEntities = response.toEntity()
-                insert.insertPlaylistInfo(playlistEntities)
+                insert.upsertPlaylistInfo(playlistEntities)
                 playlistEntities
             } catch (e: Exception) {
                 Log.e("PlaylistRepository", "getAndStoreCurrentUserPlaylistsFromApi: ", e)

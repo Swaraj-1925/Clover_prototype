@@ -22,8 +22,8 @@ class Insert @Inject constructor(
         insertData.insertPlaylistInfo(playlistInfo)
     }
 
-    override fun insertPlaylistInfo(playlistInfo: List<PlaylistInfoEntity>) {
-        insertData.insertPlaylistInfo(playlistInfo)
+    override fun upsertPlaylistInfo(playlistInfo: List<PlaylistInfoEntity>) {
+        insertData.upsertPlaylistInfo(playlistInfo)
     }
 
     override fun insertTrack(track: TrackEntity) {
@@ -68,6 +68,10 @@ class Insert @Inject constructor(
 
     override fun insertTopArtist(artistId: String) {
         insertData.insertTopArtist(artistId)
+    }
+
+    override suspend fun incrementNumClick(playlistId: String) {
+        insertData.incrementNumClick(playlistId)
     }
 
 

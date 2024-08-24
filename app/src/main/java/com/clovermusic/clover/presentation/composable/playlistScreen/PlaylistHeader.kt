@@ -166,7 +166,9 @@ fun Buttons(
             .background(color = Color.Transparent)
     ) {
         OutlinedButton(
-            onClick = { viewModel.shuffleMusic() },
+            onClick = {
+                viewModel.shuffleMusic()
+            },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent

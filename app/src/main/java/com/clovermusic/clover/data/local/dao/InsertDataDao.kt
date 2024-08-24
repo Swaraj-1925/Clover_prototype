@@ -24,8 +24,8 @@ interface InsertDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPlaylistInfo(playlistInfo: PlaylistInfoEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlaylistInfo(playlistInfo: List<PlaylistInfoEntity>)
+    @Upsert
+    fun upsertPlaylistInfo(playlistInfo: List<PlaylistInfoEntity>)
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -65,6 +65,9 @@ interface InsertDataDao {
 
     @Query("UPDATE artists SET isTopArtist = 1 WHERE artistId = :artistId")
     fun insertTopArtist(artistId: String)
+
+    @Query("UPDATE playlist SET numClick = numClick + 1 WHERE playlistId = :playlistId")
+    suspend fun incrementNumClick(playlistId: String)
 
 
 //    CrossRef

@@ -135,14 +135,14 @@ fun HomeContent(
                         is DataState.Loading -> {}
                         is DataState.OldData -> {
                             PlaylistSection(
-                                playlists = state.data,
+                                playlists = state.data.sortedByDescending { it.numClick },
                                 navController = navController
                             )
                         }
 
                         is DataState.NewData -> {
                             PlaylistSection(
-                                playlists = state.data,
+                                playlists = state.data.sortedByDescending { it.numClick },
                                 navController = navController
                             )
                         }

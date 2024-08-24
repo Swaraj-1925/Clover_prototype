@@ -3,6 +3,7 @@ package com.clovermusic.clover.presentation.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
 import com.clovermusic.clover.util.DataState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
+    private val appUseCases: AppUseCases
 ) : ViewModel() {
     private val _playlistUiState = MutableStateFlow<DataState<Playlist>>(DataState.Loading)
     val playlistUiState: StateFlow<DataState<Playlist>> = _playlistUiState.asStateFlow()
@@ -35,6 +37,12 @@ class PlaylistViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun incrementNumClick(id: String) {
+        viewModelScope.launch {
+            appUseCases.incrementNumClick(id)
         }
     }
 }
