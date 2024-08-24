@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation.composable.artistScreens
+package com.clovermusic.clover.presentation.composable.artistScreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -82,8 +82,10 @@ fun ArtistContent(
                 when (pageIndex) {
                     0 -> {
                         val trackList = artistInfo.artistTopTracks
-                        LazyColumn(modifier = Modifier
-                            .fillMaxSize()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
                             items(trackList) { track ->
                                 SongListCard(
                                     track = track.track,
@@ -96,8 +98,10 @@ fun ArtistContent(
 
                     1 -> {
                         val albumList = artistInfo.artistAlbums.flatMap { it.albums }
-                        LazyColumn(modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
                             items(albumList) { album ->
                                 ArtistPageAlbumCard(
                                     albums = album,

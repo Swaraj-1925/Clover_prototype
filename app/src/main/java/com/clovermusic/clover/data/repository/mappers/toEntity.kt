@@ -6,7 +6,9 @@ import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
+import com.clovermusic.clover.data.local.entity.relations.AlbumWithTrack
 import com.clovermusic.clover.data.local.entity.relations.TrackWithArtists
+import com.clovermusic.clover.data.spotify.api.dto.albums.SpecificAlbumResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.AddedByResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.AlbumResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.common.PlaylistTrackResponseDto
@@ -202,7 +204,6 @@ fun TrackItemsResponseDto.toEntity() = TrackEntity(
     durationMs = this.duration_ms,
     name = this.name,
     imageUrl = this.album.images
-        .filterNotNull() // Filter out null images
         .sortedBy { it.height * it.width } // Sort images by size (smallest first)
         .let { sortedImages ->
             if (sortedImages.size > 1) {
@@ -228,4 +229,33 @@ fun UsersProfileResponseDto.toEntity(): UserEntity {
         timeStamp = System.currentTimeMillis()
 
     )
+}
+
+fun SpecificAlbumResponseDto.toEntity(artistId: String?): AlbumWithTrack {
+
+    val album = AlbumEntity(
+        albumId = id,
+        artistId = artistId ?: "",
+        uri = uri,
+        name = name,
+        imageUrl = images.firstOrNull()?.url ?: "",
+        releaseDate = release_date,
+        timestamp = System.currentTimeMillis(),
+    )
+
+    val track = tracks.items.map { trackDto ->
+        TrackEntity(
+            trackId = trackDto.id,
+            albumId = id,
+            uri = trackDto.uri,
+            durationMs = trackDto.duration_ms,
+            name = trackDto.name,
+            imageUrl = images[0].url,
+            previewUrl = trackDto.preview_url,
+            timestamp = System.currentTimeMillis()
+        )
+    }
+
+    return AlbumWithTrack(album, track)
+
 }

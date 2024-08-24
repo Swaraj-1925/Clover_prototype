@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation.composable.artistScreens
+package com.clovermusic.clover.presentation.composable.artistScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ import com.clovermusic.clover.presentation.composable.components.LoadingAnimatio
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.uiState.PlaybackState
-import com.clovermusic.clover.presentation.viewModel.ArtistViewModal
+import com.clovermusic.clover.presentation.viewModel.ArtistAndAlbumViewModal
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.DataState
 
@@ -41,7 +41,7 @@ import com.clovermusic.clover.util.DataState
 fun ArtistScreen(
     navController: NavController,
     artistId: String,
-    viewModel: ArtistViewModal = hiltViewModel(),
+    viewModel: ArtistAndAlbumViewModal = hiltViewModel(),
     musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
 ) {
     LaunchedEffect(artistId) {

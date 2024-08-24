@@ -1,6 +1,7 @@
 package com.clovermusic.clover.di
 
 
+import com.clovermusic.clover.data.spotify.api.service.AlbumService
 import com.clovermusic.clover.data.spotify.api.service.ArtistService
 import com.clovermusic.clover.data.spotify.api.service.PlaylistService
 import com.clovermusic.clover.data.spotify.api.service.UserService
@@ -16,7 +17,8 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SpotifyNetworkModule {
+object
+SpotifyNetworkModule {
 
     //    Return the OkHttpClient with the AuthInterceptor When OkHttpClient is created
     @Provides
@@ -55,6 +57,12 @@ object SpotifyNetworkModule {
     @Singleton
     fun providePlaylistService(retrofit: Retrofit): PlaylistService {
         return retrofit.create(PlaylistService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlbumService(retrofit: Retrofit): AlbumService {
+        return retrofit.create(AlbumService::class.java)
     }
 
 }
