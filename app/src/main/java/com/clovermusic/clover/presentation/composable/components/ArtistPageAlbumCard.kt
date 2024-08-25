@@ -53,8 +53,8 @@ fun ArtistPageAlbumCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .shadow(10.dp, RoundedCornerShape(16.dp)) // Apply shadow for elevation
-                    .clip(RoundedCornerShape(16.dp)) // Ensure the image is clipped to the shape
+                    .shadow(10.dp, RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
             ) {
                 AsyncImage(
                     model = albums.imageUrl,

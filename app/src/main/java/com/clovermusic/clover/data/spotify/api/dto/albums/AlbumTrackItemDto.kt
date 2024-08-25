@@ -12,7 +12,6 @@ data class AlbumTrackItemDto(
     val id: String,
     val is_local: Boolean,
     val is_playable: Boolean,
-    val linked_from: LinkedFrom,
     val name: String,
     val preview_url: String,
     val track_number: Int,
