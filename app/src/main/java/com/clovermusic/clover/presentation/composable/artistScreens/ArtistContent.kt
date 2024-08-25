@@ -97,7 +97,7 @@ fun ArtistContent(
                     1 -> {
                         val albumList = artistInfo.artistAlbums.flatMap { it.albums }
                         LazyColumn(modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             items(albumList) { album ->
                                 ArtistPageAlbumCard(
                                     albums = album,

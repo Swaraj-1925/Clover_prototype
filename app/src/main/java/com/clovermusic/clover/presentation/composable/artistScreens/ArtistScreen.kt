@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.ArtistViewModal
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.DataState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -47,6 +49,8 @@ fun ArtistScreen(
     LaunchedEffect(artistId) {
         viewModel.getArtistData(artistId = artistId, false, limit = 5)
     }
+    val systemUiController = rememberSystemUiController()
+    val statusBarColor = MaterialTheme.colorScheme.background
 
     val artistData by viewModel.artistData.collectAsStateWithLifecycle()
     val playbackState by musicPlayerViewModel.musicPlayerState.collectAsStateWithLifecycle()
@@ -60,16 +64,24 @@ fun ArtistScreen(
         onRefresh = { viewModel.getArtistData(artistId = artistId, true, limit = 5) }
     )
 
+    LaunchedEffect(Unit) {
+        systemUiController.setStatusBarColor(
+            color = statusBarColor,
+            darkIcons = false // Set to true if you want to use dark icons on the status bar
+        )
+    }
+
+
     Scaffold(
+        modifier = Modifier.statusBarsPadding(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
-                        modifier = Modifier
-                            .padding(top = 24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
@@ -82,11 +94,10 @@ fun ArtistScreen(
                 actions = {
                     IconButton(
                         onClick = { /*TODO*/ },
-                        modifier = Modifier.padding(top = 24.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Search Icon",
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "More Icon",
                             tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
@@ -94,7 +105,7 @@ fun ArtistScreen(
                 },
                 backgroundColor = MaterialTheme.colorScheme.background,
                 modifier = Modifier
-                    .height(60.dp)
+                    .height(40.dp)
             )
         },
         bottomBar = {
