@@ -1,5 +1,6 @@
 package com.clovermusic.clover.presentation.composable.albumScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,6 +22,7 @@ fun AlbumScreen(
     albumViewModal: ArtistAndAlbumViewModal = hiltViewModel(),
     albumId: String
 ) {
+    Log.d("AlbumScreen", "AlbumScreen: $albumId")
     LaunchedEffect(albumId) {
         albumViewModal.getAlbum(albumId)
     }
@@ -46,7 +48,7 @@ fun AlbumScreen(
                 }
 
                 is DataState.NewData -> {
-                    
+
 //                    it contain AlbumEntity
                     state.data.album
 //                    it contain Track Entity

@@ -8,7 +8,7 @@ import retrofit2.http.Url
 interface AlbumService {
     @GET("albums/{id}")
     suspend fun getAlbum(
-        @Path("artistId") artistId: String,
+        @Path("id") id: String,
     ): SpecificAlbumResponseDto
 
     @GET

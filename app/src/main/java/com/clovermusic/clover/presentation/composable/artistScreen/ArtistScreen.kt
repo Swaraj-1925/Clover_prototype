@@ -36,7 +36,6 @@ import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.ArtistAndAlbumViewModal
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.DataState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -49,8 +48,7 @@ fun ArtistScreen(
     LaunchedEffect(artistId) {
         viewModel.getArtistData(artistId = artistId, false, limit = 5)
     }
-    val systemUiController = rememberSystemUiController()
-    val statusBarColor = MaterialTheme.colorScheme.background
+    MaterialTheme.colorScheme.background
 
     val artistData by viewModel.artistData.collectAsStateWithLifecycle()
     val playbackState by musicPlayerViewModel.musicPlayerState.collectAsStateWithLifecycle()
@@ -64,12 +62,7 @@ fun ArtistScreen(
         onRefresh = { viewModel.getArtistData(artistId = artistId, true, limit = 5) }
     )
 
-    LaunchedEffect(Unit) {
-        systemUiController.setStatusBarColor(
-            color = statusBarColor,
-            darkIcons = false // Set to true if you want to use dark icons on the status bar
-        )
-    }
+
 
 
     Scaffold(
