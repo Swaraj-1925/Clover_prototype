@@ -7,5 +7,6 @@ data class NetworkDataSource @Inject constructor(
     val authData: AuthDataSource,
     val playlistData: PlaylistDataSource,
     val userDataSource: UserDataSource,
-    val artistData: ArtistDataSource
+    val artistData: ArtistDataSource,
+    val albumData: AlbumDataSources
 )

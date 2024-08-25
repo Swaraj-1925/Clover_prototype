@@ -1,4 +1,4 @@
-package com.clovermusic.clover.presentation.composable.artistScreens
+package com.clovermusic.clover.presentation.composable.artistScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

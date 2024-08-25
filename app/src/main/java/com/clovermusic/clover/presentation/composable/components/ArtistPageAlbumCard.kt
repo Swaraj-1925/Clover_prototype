@@ -1,13 +1,11 @@
 package com.clovermusic.clover.presentation.composable.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,8 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,74 +41,63 @@ fun ArtistPageAlbumCard(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
-            .padding(8.dp)
             .width(420.dp)
             .clickable { }
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 4.dp, horizontal = 16.dp)
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .shadow(10.dp, RoundedCornerShape(12.dp)) // Apply shadow for elevation
-                     // Ensure the image is clipped to the shape
+                    .shadow(10.dp, RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
             ) {
                 AsyncImage(
                     model = albums.imageUrl,
                     contentDescription = albums.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxSize()
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color(0xFF2C2C2C)
-                                ),
-                                startX = 0f,
-                                endX = Float.POSITIVE_INFINITY
-                            )
-                        )
-                )
-                Column(
-                    modifier = Modifier
+                        .height(100.dp)
                         .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(8.dp)
                 ) {
-                    Row(
+                    Text(
+                        text = albums.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.background,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = albums.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(vertical = 4.dp, horizontal = 16.dp)
-                                .clickable { }
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                    ) {
-                        IconButton(
-                            onClick = { /*TODO*/ }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.more_vertical),
-                                contentDescription = "More"
-                            )
+                            .padding(vertical = 2.dp)
+                            .clickable { }
+                    )
+                }
+                IconButton(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.more_vertical),
+                        contentDescription = "More"
+                    )
 
-                        }
-                    }
                 }
             }
+        }
     }
 }
