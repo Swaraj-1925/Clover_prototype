@@ -13,12 +13,15 @@ class AlbumDataSources @Inject constructor(
 ) {
     suspend fun fetchAlbum(albumId: String): SpecificAlbumResponseDto =
         withContext(Dispatchers.IO) {
+            Log.d("AlbumDataSources", "Fetching album $albumId")
 
             val album: SpecificAlbumResponseDto
-            val tracks = mutableListOf<AlbumTrackItemDto>()
-            var nextUrl: String? = null
-            
             val response = albumService.getAlbum(albumId)
+            val tracks = mutableListOf<AlbumTrackItemDto>().apply {
+                addAll(response.tracks.items)
+            }
+            var nextUrl: String? = null
+
             album = response
             nextUrl = response.tracks.next
             while (nextUrl != null) {
@@ -30,7 +33,7 @@ class AlbumDataSources @Inject constructor(
                     "Fetched batch ${response.tracks.items.size} from total ${response.tracks.total},"
                 )
             }
-            album.tracks.items = tracks
+
             album
         }
 }
