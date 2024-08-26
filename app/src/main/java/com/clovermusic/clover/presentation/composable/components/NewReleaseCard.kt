@@ -23,14 +23,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.clovermusic.clover.R
 import com.clovermusic.clover.data.local.entity.AlbumEntity
+import com.clovermusic.clover.presentation.navigation.ArtistAlbumScreenRoute
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 
 @Composable
 fun NewReleaseCard(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
+    navController: NavController,
     album: AlbumEntity,
 ) {
     val playButton = painterResource(id = R.drawable.play)
@@ -39,7 +42,9 @@ fun NewReleaseCard(
             .fillMaxWidth()
             .aspectRatio(1.2f)
     ) {
-        Card {
+        Card (
+            onClick = {navController.navigate(ArtistAlbumScreenRoute(album.albumId))}
+        ){
             AsyncImage(
                 model = album.imageUrl,
                 contentDescription = album.name,

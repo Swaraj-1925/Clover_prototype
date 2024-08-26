@@ -31,22 +31,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.clovermusic.clover.R
 import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
 import com.clovermusic.clover.presentation.composable.components.NewReleaseCard
+import com.clovermusic.clover.presentation.navigation.ArtistScreenRoute
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun NewReleasesSection(
-    onArtistClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    albums: List<ArtistWithAlbums>
+    albums: List<ArtistWithAlbums>,
+    navController: NavController
 ) {
     val albumsSize by remember { derivedStateOf { albums.size.coerceAtLeast(1) } }
     val pagerState = rememberPagerState(initialPage = 0) { albumsSize }
     var artistName by remember { mutableStateOf("Loading..") }
-
+    var artistId by remember { mutableStateOf("") }
     val settingsButton = painterResource(id = R.drawable.settings)
 
     LaunchedEffect(Unit) {
@@ -66,6 +67,7 @@ fun NewReleasesSection(
             .collect { page ->
                 if (albums.isNotEmpty() && page < albums.size) {
                     artistName = albums[page].artist.name
+                    artistId = albums[page].artist.artistId
                 }
             }
     }
@@ -102,11 +104,11 @@ fun NewReleasesSection(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
-                            .clickable { onArtistClick() }
+                            .clickable { navController.navigate(ArtistScreenRoute(artistId)) }
                     )
                 }
                 IconButton(
-                    onClick = { onSettingsClick() },
+                    onClick = { /*TODO*/ },
                     modifier = Modifier
                         .fillMaxSize(0.7f)
                         .align(Alignment.CenterVertically)
@@ -129,6 +131,7 @@ fun NewReleasesSection(
             ) { currentPage ->
                 NewReleaseCard(
                     album = albums[currentPage].albums.first(),
+                    navController = navController
                 )
             }
         }
