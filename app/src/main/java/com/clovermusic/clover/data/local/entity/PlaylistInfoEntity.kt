@@ -15,7 +15,7 @@ data class PlaylistInfoEntity(
     val totalTrack: Int,
     val owner: String,
     val ownerId: String,
-    val imageUrl: String?,
+    val imageUrl: String,
     val followers: Int = 0,
     val numClick: Int = 0,
     val timestamp: Long

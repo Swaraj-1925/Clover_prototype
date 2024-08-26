@@ -1,5 +1,6 @@
 package com.clovermusic.clover.data.spotify.api.service
 
+import com.clovermusic.clover.data.spotify.api.dto.search.SearchResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.users.FollowedArtistsDto
 import com.clovermusic.clover.data.spotify.api.dto.users.TopArtistsResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
@@ -53,4 +54,13 @@ interface UserService {
     suspend fun checkIfCurrentUserFollowsPlaylist(
         @Path("playlist_id") playlistId: String,
     ): Boolean
+
+
+    @GET("search")
+    suspend fun search(
+        @Query("q") query: String,
+        @Query("type") type: String,
+        @Query("limit") limit: Int = 20
+    ): SearchResponseDto
+
 }

@@ -1,10 +1,12 @@
 package com.clovermusic.clover.util
 
 import android.database.sqlite.SQLiteException
+import android.util.Log
 import retrofit2.HttpException
 import java.io.IOException
 
 fun customErrorHandling(e: Exception): String {
+    Log.e("customErrorHandling", "customErrorHandling: ",e)
     return when (e) {
         // Network errors
         is IOException -> "Unable to connect to the internet. Please check your connection."

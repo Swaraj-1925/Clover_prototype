@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
 import com.clovermusic.clover.data.local.entity.relations.Playlist
@@ -50,4 +51,7 @@ interface ProvideDataDao {
 
     @Query("SELECT * FROM artists WHERE artistId = :artistId")
     suspend fun getArtistById(artistId: String): ArtistsEntity?
+
+    @Query("SELECT * FROM search_result")
+    suspend fun getAllSearchResults(): List<SearchResultEntity>
 }

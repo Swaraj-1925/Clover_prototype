@@ -2,6 +2,7 @@ package com.clovermusic.clover.data.local.dao
 
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.relations.ArtistWithAlbums
 import com.clovermusic.clover.data.local.entity.relations.Playlist
@@ -53,5 +54,9 @@ class Provide @Inject constructor(
 
     override suspend fun getArtistById(artistId: String): ArtistsEntity? {
         return provideData.getArtistById(artistId)
+    }
+
+    override suspend fun getAllSearchResults(): List<SearchResultEntity> {
+        return provideData.getAllSearchResults()
     }
 }
