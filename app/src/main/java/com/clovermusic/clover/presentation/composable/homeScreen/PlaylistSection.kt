@@ -21,14 +21,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.presentation.composable.components.PlaylistCard
-import com.clovermusic.clover.presentation.navigation.PlaylistScreenRoute
+import com.clovermusic.clover.presentation.viewModel.LibraryViewModel
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
-import com.clovermusic.clover.presentation.viewModel.PlaylistViewModel
 
 @Composable
 fun PlaylistSection(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
-    playlistViewModel: PlaylistViewModel = hiltViewModel(),
+    playlistViewModel: LibraryViewModel = hiltViewModel(),
     playlists: List<PlaylistInfoEntity> = emptyList(),
     navController: NavController
 ) {
@@ -66,17 +65,8 @@ fun PlaylistSection(
             items(playlists) { playlist ->
                 playlist.imageUrl?.let {
                     PlaylistCard(
-                        url = it,
-                        playlistName = playlist.name,
-                        songCount = playlist.totalTrack,
-                        onNameClick = {
-                            navController.navigate(PlaylistScreenRoute(id = playlist.playlistId))
-                            playlistViewModel.incrementNumClick(playlist.playlistId)
-                        },
-                        onCardClick = {
-                            viewModel.playTrack(playlist.uri)
-                            playlistViewModel.incrementNumClick(playlist.playlistId)
-                        }
+                        playlistInfo = playlist,
+                        navController = navController
                     )
                 }
             }

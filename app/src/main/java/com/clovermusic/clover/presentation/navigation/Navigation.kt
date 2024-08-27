@@ -11,6 +11,7 @@ import com.clovermusic.clover.presentation.composable.artistScreen.ArtistScreen
 import com.clovermusic.clover.presentation.composable.components.BottomSheetForLyrics
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.composable.homeScreen.HomeScreen
+import com.clovermusic.clover.presentation.composable.libraryScreen.LibraryScreen
 import com.clovermusic.clover.presentation.composable.playlistScreen.PlaylistScreen
 
 @Composable
@@ -39,6 +40,9 @@ fun Navigation(
         composable<ArtistAlbumScreenRoute> {
             val album: ArtistAlbumScreenRoute = it.toRoute()
             AlbumScreen(albumId = album.id)
+        }
+        composable<LibraryScreenRoute>{
+            LibraryScreen(navController = navController)
         }
 
     }

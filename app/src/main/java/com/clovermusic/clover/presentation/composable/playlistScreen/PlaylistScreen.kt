@@ -29,8 +29,8 @@ import com.clovermusic.clover.presentation.composable.components.LoadingAnimatio
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.uiState.PlaybackState
+import com.clovermusic.clover.presentation.viewModel.LibraryViewModel
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
-import com.clovermusic.clover.presentation.viewModel.PlaylistViewModel
 import com.clovermusic.clover.util.DataState
 import kotlinx.coroutines.launch
 
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlaylistScreen(
     playlistId: String,
-    viewModel: PlaylistViewModel = hiltViewModel(),
+    viewModel: LibraryViewModel = hiltViewModel(),
     navController: NavController,
 ) {
     val playlistUiState by viewModel.playlistUiState.collectAsState()

@@ -122,7 +122,7 @@ fun UserPageBody() {
                         color = MaterialTheme.colorScheme.surface)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                    UserPagePlaylistSection()
+//                    UserPagePlaylistSection()
                 }
             }
         }
