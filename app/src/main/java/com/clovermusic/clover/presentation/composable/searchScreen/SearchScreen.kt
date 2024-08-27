@@ -8,11 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
@@ -31,16 +36,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.domain.model.Search
+import com.clovermusic.clover.presentation.composable.components.AlbumSearchCard
+import com.clovermusic.clover.presentation.composable.components.ArtistSearchCard
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
+import com.clovermusic.clover.presentation.composable.components.PlaylistSearchCard
+import com.clovermusic.clover.presentation.composable.components.TrackSearchCard
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.presentation.viewModel.SearchViewModel
 import com.clovermusic.clover.util.DataState
 
-//TODO : DELETE ALL COMMENTS  AFTER COMPLETING SCREEN
-
-//this is main componat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
@@ -48,66 +54,68 @@ fun SearchScreen(
     musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     navController: NavController
 ) {
-//    shows text after typing in text filed
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
-
-//    to know if user is searching i.e started typing in text field
     val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
-
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-
-//    get old data from db
     val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
-
-//    List of categories
     val categories by viewModel.categories.collectAsStateWithLifecycle()
-
-//    List of selected categories
     val selectedCategories by viewModel.selectedCategories.collectAsStateWithLifecycle()
-
-//    for bottom bar
     val playbackState by musicPlayerViewModel.musicPlayerState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         topBar = {
-            SearchBar(
-                query = searchText,
-                onQueryChange = viewModel::onSearchTextChange,
-                onSearch = { viewModel.search(it) },
-                active = isSearching,
-                onActiveChange = { viewModel.toggleIsSearching(it) },
-                placeholder = {
-                    Text(
-                        text = "What would you like to hear",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 2.dp)
+                    .statusBarsPadding()
             ) {
-//                Data to show After User Starts Typing in TextField
-                Column {
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        items(categories) { category ->
-                            FilterChip(
-                                selected = selectedCategories.contains(category),
-                                onClick = { viewModel.toggleCategory(category) },
-                                label = { Text(category) },
-                                modifier = Modifier.padding(end = 8.dp)
+                SearchBar(
+                    query = searchText,
+                    onQueryChange = viewModel::onSearchTextChange,
+                    onSearch = { viewModel.search(it) },
+                    active = isSearching,
+                    onActiveChange = { viewModel.toggleIsSearching(it) },
+                    placeholder = {
+                        Text(
+                            text = "What would you like to hear",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    leadingIcon = {
+                        IconButton(onClick = { viewModel.toggleIsSearching(false) }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack, // Change this to your desired back icon
+                                contentDescription = "Back"
                             )
                         }
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth()
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                ) {
+                    Column {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            items(categories) { category ->
+                                FilterChip(
+                                    selected = selectedCategories.contains(category),
+                                    onClick = { viewModel.toggleCategory(category) },
+                                    label = { Text(category) },
+                                    modifier = Modifier.padding(end = 8.dp)
+                                )
+                            }
+                        }
 
-                    when {
-//                        Show old data if there is no search results or user didn't type anything
-                        searchText.isEmpty() -> SearchHistoryList(searchHistory,snackbarHostState)
-//                        Show search results if user typed something
-                        else -> SearchResultsList(searchResults,snackbarHostState)
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        when {
+                            searchText.isEmpty() -> SearchHistoryList(searchHistory, snackbarHostState)
+                            else -> SearchResultsList(searchResults, snackbarHostState, navController)
+                        }
                     }
                 }
             }
@@ -116,15 +124,12 @@ fun SearchScreen(
         bottomBar = {
             Column {
                 if (playbackState is PlaybackState.Playing || playbackState is PlaybackState.Paused) {
-                    PlayingSongBar(
-                        navController = navController
-                    )
+                    PlayingSongBar(navController = navController)
                 }
                 NavigationBar(navController = navController)
             }
         },
     ) { innerPadding ->
-//        Everything else which is supposed be in SearchScreen
         Box(
             modifier = Modifier
                 .padding(innerPadding)
@@ -132,6 +137,7 @@ fun SearchScreen(
         )
     }
 }
+
 
 //in History only few usefully things are shown image, name,  id , uri , ps Track Artist is not saved locally in history
 @Composable
@@ -169,27 +175,47 @@ fun SearchHistoryList(searchHistory: DataState<List<SearchResultEntity>>,snackba
 //List of search results Don't have to be plane text  show card for different types
 // it dose not show all in category header see if can figure out way to do that
 @Composable
-fun SearchResultsList(searchResults: DataState<Search>,snackbarHostState: SnackbarHostState) {
+fun SearchResultsList(searchResults: DataState<Search>, snackbarHostState: SnackbarHostState,
+                      navController: NavController,) {
     when (searchResults) {
-        is DataState.Loading -> {}
+        is DataState.Loading -> {
+            // Optionally, show a loading indicator
+        }
         is DataState.NewData -> {
             val results = searchResults.data
             LazyColumn {
                 if (!results.album.isNullOrEmpty()) {
                     item { CategoryHeader("Albums") }
-                    items(results.album) { album -> SearchResultItem(album.name) }
+                    items(results.album) { album ->
+                        AlbumSearchCard(
+                            album = album,
+                            navController = navController
+                        )
+                    }
                 }
                 if (!results.artist.isNullOrEmpty()) {
                     item { CategoryHeader("Artists") }
-                    items(results.artist) { artist -> SearchResultItem(artist.name) }
+                    items(results.artist) { artist ->
+                        ArtistSearchCard(
+                            artistName = artist,
+                            url = artist.imageUrl,
+                            navController = navController)
+                    }
                 }
                 if (!results.playlist.isNullOrEmpty()) {
                     item { CategoryHeader("Playlists") }
-                    items(results.playlist) { playlist -> SearchResultItem(playlist.name) }
+                    items(results.playlist) { playlist ->
+                        PlaylistSearchCard(
+                            playlist = playlist,
+                            navController = navController,
+                            songCount = playlist.totalTrack)
+                    }
                 }
                 if (!results.track.isNullOrEmpty()) {
                     item { CategoryHeader("Tracks") }
-                    items(results.track) { track -> SearchResultItem(track.name) }
+                    items(results.track) { track ->
+                        TrackSearchCard(track = track )
+                    }
                 }
             }
         }
