@@ -11,8 +11,8 @@ fun List<TrackArtistResponseDto>.toFollowedArtists(): List<TrackArtists> {
             genres = apiItem.genres,
             id = apiItem.id,
             images = apiItem.images?.toImages() ?: emptyList(),
-            name = apiItem.name,
-            popularity = apiItem.popularity,
+            name = apiItem.name ?: " ",
+            popularity = apiItem.popularity ?: 0,
             uri = apiItem.uri
         )
     }

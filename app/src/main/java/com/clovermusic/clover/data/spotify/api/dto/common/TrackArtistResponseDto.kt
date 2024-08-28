@@ -6,8 +6,8 @@ data class TrackArtistResponseDto(
     val href: String,
     val id: String,
     val images: List<ImageResponseDto>?,
-    val name: String,
-    val popularity: Int,
+    val name: String?,
+    val popularity: Int? ,
     val type: String,
     val uri: String
 )

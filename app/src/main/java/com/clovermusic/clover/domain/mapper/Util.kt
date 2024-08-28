@@ -57,8 +57,8 @@ object Util {
                 genres = apiArtist.genres,
                 id = apiArtist.id,
                 images = apiArtist.images?.toImages() ?: emptyList(),
-                name = apiArtist.name,
-                popularity = apiArtist.popularity,
+                name = apiArtist.name ?: " ",
+                popularity = apiArtist.popularity ?: 0,
                 uri = apiArtist.uri
             )
         }
@@ -67,7 +67,7 @@ object Util {
     fun AlbumResponseDto.toAlbum(): Albums {
         return Albums(
             artists = artists.toAlbumArtist(),
-            image = images[0]!!.toImages(),
+            image = images[0].toImages(),
             totalTracks = total_tracks,
             albumId = id,
             albumName = name,
