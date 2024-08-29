@@ -1,5 +1,6 @@
 package com.clovermusic.clover.presentation.composable.searchScreen
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,15 +13,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -38,16 +35,19 @@ import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.domain.model.Search
 import com.clovermusic.clover.presentation.composable.components.AlbumSearchCard
 import com.clovermusic.clover.presentation.composable.components.ArtistSearchCard
+import com.clovermusic.clover.presentation.composable.components.LoadingAnimation
 import com.clovermusic.clover.presentation.composable.components.NavigationBar
 import com.clovermusic.clover.presentation.composable.components.PlayingSongBar
 import com.clovermusic.clover.presentation.composable.components.PlaylistSearchCard
+import com.clovermusic.clover.presentation.composable.components.SearchBar
 import com.clovermusic.clover.presentation.composable.components.TrackSearchCard
 import com.clovermusic.clover.presentation.uiState.PlaybackState
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.presentation.viewModel.SearchViewModel
+import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.DataState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
@@ -65,60 +65,45 @@ fun SearchScreen(
 
     Scaffold(
         topBar = {
-            Box(
+            CloverTheme {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 2.dp)
-                    .statusBarsPadding()
             ) {
                 SearchBar(
-                    query = searchText,
-                    onQueryChange = viewModel::onSearchTextChange,
-                    onSearch = { viewModel.search(it) },
-                    active = isSearching,
-                    onActiveChange = { viewModel.toggleIsSearching(it) },
-                    placeholder = {
-                        Text(
-                            text = "What would you like to hear",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    },
-                    leadingIcon = {
-                        IconButton(onClick = { viewModel.toggleIsSearching(false) }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack, // Change this to your desired back icon
-                                contentDescription = "Back"
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-
+                    searchText = searchText,
+                    onSearchTextChanged = viewModel::onSearchTextChange,
+                    navController = navController
+                )
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    Column {
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
-                            items(categories) { category ->
-                                FilterChip(
-                                    selected = selectedCategories.contains(category),
-                                    onClick = { viewModel.toggleCategory(category) },
-                                    label = { Text(category) },
-                                    modifier = Modifier.padding(end = 8.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        when {
-                            searchText.isEmpty() -> SearchHistoryList(searchHistory, snackbarHostState)
-                            else -> SearchResultsList(searchResults, snackbarHostState, navController)
-                        }
+                    items(categories) { category ->
+                        FilterChip(
+                            selected = selectedCategories.contains(category),
+                            onClick = { viewModel.toggleCategory(category) },
+                            label = { Text(category) },
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.surface
+                            ),
+                            border = null,
+                        )
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                when {
+                    searchText.isEmpty() -> SearchHistoryList(searchHistory, snackbarHostState)
+                    else -> SearchResultsList(searchResults, snackbarHostState, navController)
+                }
             }
+            }
+
+
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
@@ -129,12 +114,21 @@ fun SearchScreen(
                 NavigationBar(navController = navController)
             }
         },
+        modifier = Modifier
+            .statusBarsPadding()
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         )
+        {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+            }
+        }
     }
 }
 
@@ -179,18 +173,15 @@ fun SearchResultsList(searchResults: DataState<Search>, snackbarHostState: Snack
                       navController: NavController,) {
     when (searchResults) {
         is DataState.Loading -> {
-            // Optionally, show a loading indicator
+            LoadingAnimation()
         }
         is DataState.NewData -> {
             val results = searchResults.data
             LazyColumn {
-                if (!results.album.isNullOrEmpty()) {
-                    item { CategoryHeader("Albums") }
-                    items(results.album) { album ->
-                        AlbumSearchCard(
-                            album = album,
-                            navController = navController
-                        )
+                if (!results.track.isNullOrEmpty()) {
+                    item { CategoryHeader("Tracks") }
+                    items(results.track) { track ->
+                        TrackSearchCard(track = track )
                     }
                 }
                 if (!results.artist.isNullOrEmpty()) {
@@ -202,6 +193,15 @@ fun SearchResultsList(searchResults: DataState<Search>, snackbarHostState: Snack
                             navController = navController)
                     }
                 }
+                if (!results.album.isNullOrEmpty()) {
+                    item { CategoryHeader("Albums") }
+                    items(results.album) { album ->
+                        AlbumSearchCard(
+                            album = album,
+                            navController = navController
+                        )
+                    }
+                }
                 if (!results.playlist.isNullOrEmpty()) {
                     item { CategoryHeader("Playlists") }
                     items(results.playlist) { playlist ->
@@ -209,12 +209,6 @@ fun SearchResultsList(searchResults: DataState<Search>, snackbarHostState: Snack
                             playlist = playlist,
                             navController = navController,
                             songCount = playlist.totalTrack)
-                    }
-                }
-                if (!results.track.isNullOrEmpty()) {
-                    item { CategoryHeader("Tracks") }
-                    items(results.track) { track ->
-                        TrackSearchCard(track = track )
                     }
                 }
             }

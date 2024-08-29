@@ -3,6 +3,7 @@ package com.clovermusic.clover.presentation.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.domain.model.Search
 import com.clovermusic.clover.domain.usecase.user.UserUseCases
@@ -64,7 +65,7 @@ class SearchViewModel @Inject constructor(
             try {
                 toggleIsSearching(true)
                 _searchResults.value = DataState.Loading
-                delay(500)
+                delay(250)
                 if (query.isNotEmpty()) {
                     val categories = _selectedCategories.value.toList().let {
                         if (it.contains("All")) listOf("All") else it
@@ -113,4 +114,10 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
+    fun onClearClick(
+    ) {
+        _searchText.value = ""
+            _searchResults.value = DataState.OldData(Search())
+        }
+
 }
