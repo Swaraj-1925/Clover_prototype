@@ -34,7 +34,7 @@ class SearchViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<DataState<List<SearchResultEntity>>>(DataState.Loading)
     val searchHistory = _searchHistory.asStateFlow()
 
-    private val _categories = MutableStateFlow(listOf("All", "Album", "Artist", "Playlist", "Track"))
+    private val _categories = MutableStateFlow(listOf("All", "Track", "Album", "Artist", "Playlist"))
     val categories: StateFlow<List<String>> = _categories.asStateFlow()
 
     private val _selectedCategories = MutableStateFlow(setOf("All"))
