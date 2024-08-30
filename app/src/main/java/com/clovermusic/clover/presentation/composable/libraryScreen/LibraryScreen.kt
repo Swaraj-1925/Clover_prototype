@@ -6,26 +6,31 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,19 +59,47 @@ fun LibraryScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
+            modifier = Modifier
+                .statusBarsPadding(),
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             topBar = {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    items(categories) { category ->
-                        FilterChip(
-                            selected = selectedCategories.contains(category),
-                            onClick = { libraryViewModel.onCategorySelected(category) },
-                            label = { Text(category) },
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "Your library",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { navController.popBackStack() }
+                            ) {
+                                androidx.compose.material.Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
+                                    contentDescription = "Back Icon",
+                                    tint = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        },
+                    )
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp)
+                    ) {
+                        items(categories) { category ->
+                            FilterChip(
+                                selected = selectedCategories.contains(category),
+                                onClick = { libraryViewModel.onCategorySelected(category) },
+                                label = { Text(category) },
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
                     }
                 }
             },
@@ -83,13 +116,13 @@ fun LibraryScreen(
             floatingActionButton = {
                     Button(
                         onClick = {/*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.surface),
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.Add,
                             contentDescription = "Create Playlist",
                             modifier = Modifier
-                                .background(MaterialTheme.colors.primary
+                                .background(MaterialTheme.colorScheme.surface
                                 )
                         )
                     }
