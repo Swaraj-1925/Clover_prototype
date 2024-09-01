@@ -19,6 +19,11 @@ data class ThemedIcons(
     val fastForwardButton: Int,
     val fastBackwardButton: Int,
     val moreIcon: Int,
+    val removeIcon : Int,
+    val queueIcon: Int,
+    val albumIcon : Int,
+    val artistIcon: Int,
+    val editIcon: Int,
 )
 
 @Composable
@@ -39,7 +44,12 @@ fun getThemedIcons(): ThemedIcons {
             repeatButtonActive1 = R.drawable.repeat_white_active_2,
             fastForwardButton = R.drawable.fast_forward_white,
             fastBackwardButton = R.drawable.fast_backward_white,
-            moreIcon = R.drawable.more_white
+            moreIcon = R.drawable.more_white,
+            removeIcon = R.drawable.minus_white,
+            queueIcon = R.drawable.addtolib_white,
+            albumIcon = R.drawable.album_white,
+            artistIcon = R.drawable.profile_white,
+            editIcon = R.drawable.edit_white
         )
     } else {
         ThemedIcons(
@@ -56,7 +66,12 @@ fun getThemedIcons(): ThemedIcons {
             repeatButtonActive1 = R.drawable.repeat_black_active_2,
             fastForwardButton = R.drawable.fast_forward_black,
             fastBackwardButton = R.drawable.fast_backward_black,
-            moreIcon = R.drawable.more_black
+            moreIcon = R.drawable.more_black,
+            removeIcon = R.drawable.minus_black,
+            queueIcon = R.drawable.addtolib_black,
+            albumIcon = R.drawable.album_black,
+            artistIcon = R.drawable.profile_black_,
+            editIcon = R.drawable.edit_black
         )
     }
 }

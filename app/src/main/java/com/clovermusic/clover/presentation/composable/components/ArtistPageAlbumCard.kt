@@ -36,7 +36,8 @@ import com.clovermusic.clover.presentation.navigation.ArtistAlbumScreenRoute
 @Composable
 fun ArtistPageAlbumCard(
     albums: AlbumEntity,
-    navController: NavController
+    navController: NavController,
+    onMoreClick: ()-> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
@@ -95,7 +96,7 @@ fun ArtistPageAlbumCard(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { onMoreClick() },
                         modifier = Modifier
                             .align(Alignment.End)
                     ) {

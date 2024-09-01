@@ -44,6 +44,7 @@ fun SongListCard(
     artists: List<ArtistsEntity>,
     index: Int,
     musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
+    onMoreClick: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(Color.Transparent),
@@ -127,7 +128,7 @@ fun SongListCard(
                     )
                 }
             }
-            IconButton(onClick = { /* TODO: Implement more options */ }) {
+            IconButton(onClick = { onMoreClick() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.more_vertical),
                     contentDescription = "More options"

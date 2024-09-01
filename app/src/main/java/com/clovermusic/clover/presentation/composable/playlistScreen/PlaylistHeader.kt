@@ -35,14 +35,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.presentation.composable.components.BottomSheetOption
 import com.clovermusic.clover.presentation.composable.components.getThemedIcons
 import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.util.Parsers
 
 @Composable
 fun PlaylistHeader(
-    playlist: Playlist
+    playlist: Playlist,
+    onMoreClick: (List<BottomSheetOption>) -> Unit
 ) {
+
     Surface(
         color = Color.Transparent,
         modifier = Modifier
@@ -78,7 +81,8 @@ fun PlaylistHeader(
                         .weight(0.7f)
                         .padding(8.dp)
                 ) {
-                    PlaylistInfo(playlist)
+                    PlaylistInfo(playlist,
+                        onMoreClick = onMoreClick)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -88,8 +92,29 @@ fun PlaylistHeader(
 }
 
 @Composable
-fun PlaylistInfo(playlist: Playlist) {
+fun PlaylistInfo(
+    playlist: Playlist,
+    onMoreClick: (List<BottomSheetOption>)->Unit) {
     val icons = getThemedIcons()
+
+    val options =
+        listOf(
+            BottomSheetOption(
+                iconResId = icons.addIcon,
+                label = "Add Playlist to your Library",
+                onClick = {}
+            ),
+            BottomSheetOption(
+                iconResId = icons.queueIcon,
+                label = "Add to Queue",
+                onClick = {}
+            ),
+            BottomSheetOption(
+                iconResId = icons.shareIcon,
+                label = "Share Playlist",
+                onClick = {}
+            ),
+        )
     Text(
         text = "${playlist.playlist.totalTrack} songs • ${
             Parsers.parseDurationHoursMinutes(
@@ -141,7 +166,9 @@ fun PlaylistInfo(playlist: Playlist) {
                     .fillMaxSize()
             )
         }
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            onMoreClick(options)
+        }) {
             Icon(
                 painter = painterResource(id = icons.moreIcon),
                 contentDescription = "More",
