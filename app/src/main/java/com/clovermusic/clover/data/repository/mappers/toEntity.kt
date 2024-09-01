@@ -6,6 +6,7 @@ import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.relations.AlbumWithTrack
@@ -169,7 +170,7 @@ fun AlbumResponseDto.toEntity(artistId: String): AlbumEntity {
 }
 
 @JvmName("toAlbumEntity")
-fun List<AlbumResponseDto>.toEntity(artistId: String): List<AlbumEntity> {
+fun List<AlbumResponseDto>.toEntity(artistId: String = ""): List<AlbumEntity> {
     return map {
         AlbumEntity(
             albumId = it.id,
@@ -193,7 +194,7 @@ fun PlaylistResponseDto.toEntity() = PlaylistInfoEntity(
     ownerId = this.owner.id,
     snapshotId = this.snapshot_id,
     totalTrack = this.tracks.total,
-    imageUrl = this.images.firstOrNull()?.url,
+    imageUrl = this.images.firstOrNull()?.url ?: "",
     followers = this.followers.total ?: 0,
     timestamp = System.currentTimeMillis()
 )
@@ -259,5 +260,46 @@ fun SpecificAlbumResponseDto.toEntity(artistId: String?): AlbumWithTrack {
     }
 
     return AlbumWithTrack(album, track)
+}
+
+fun AlbumEntity.toEntity(): SearchResultEntity {
+    return SearchResultEntity(
+        itemId = this.albumId,
+        type = "album",
+        name = this.name,
+        uri = this.uri,
+        imageUrl = this.imageUrl,
+        timestamp =  System.currentTimeMillis()
+    )
+}
+fun ArtistsEntity.toEntity():  SearchResultEntity {
+    return SearchResultEntity(
+        itemId = this.artistId,
+        type = "artist",
+        name = this.name,
+        uri = this.uri,
+        imageUrl = this.imageUrl,
+        timestamp =  System.currentTimeMillis()
+    )
+}
+fun TrackEntity.toEntity():SearchResultEntity {
+    return SearchResultEntity(
+        itemId = this.trackId,
+        type = "track",
+        name = this.name,
+        uri = this.uri,
+        imageUrl = this.imageUrl,
+        timestamp =  System.currentTimeMillis()
+    )
+}
+fun PlaylistInfoEntity.toEntity(): SearchResultEntity{
+    return SearchResultEntity(
+        itemId = this.playlistId,
+        type = "playlist",
+        name = this.name,
+        uri = this.uri,
+        imageUrl = this.imageUrl,
+        timestamp =  System.currentTimeMillis()
+    )
 
 }

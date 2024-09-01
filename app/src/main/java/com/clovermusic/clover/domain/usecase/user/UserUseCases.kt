@@ -11,5 +11,6 @@ data class UserUseCases @Inject constructor(
     val getCurrentUsersProfile: GetCurrentUsersProfileUseCase,
     val getUsersProfile: GetUsersProfileUseCase,
     val topArtists: TopArtistUseCase,
-    val unfollowPlaylist: UnfollowPlaylistUseCase
+    val unfollowPlaylist: UnfollowPlaylistUseCase,
+    val searchUseCase: SearchUseCase
 )

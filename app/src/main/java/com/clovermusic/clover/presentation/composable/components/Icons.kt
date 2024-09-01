@@ -19,6 +19,7 @@ data class ThemedIcons(
     val fastForwardButton: Int,
     val fastBackwardButton: Int,
     val moreIcon: Int,
+    val searchIcon: Int
 )
 
 @Composable
@@ -39,7 +40,8 @@ fun getThemedIcons(): ThemedIcons {
             repeatButtonActive1 = R.drawable.repeat_white_active_2,
             fastForwardButton = R.drawable.fast_forward_white,
             fastBackwardButton = R.drawable.fast_backward_white,
-            moreIcon = R.drawable.more_white
+            moreIcon = R.drawable.more_white,
+            searchIcon =R.drawable.search_white
         )
     } else {
         ThemedIcons(
@@ -56,7 +58,8 @@ fun getThemedIcons(): ThemedIcons {
             repeatButtonActive1 = R.drawable.repeat_black_active_2,
             fastForwardButton = R.drawable.fast_forward_black,
             fastBackwardButton = R.drawable.fast_backward_black,
-            moreIcon = R.drawable.more_black
+            moreIcon = R.drawable.more_black,
+            searchIcon= R.drawable.search_black
         )
     }
 }

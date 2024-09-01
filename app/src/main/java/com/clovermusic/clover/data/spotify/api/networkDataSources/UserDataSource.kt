@@ -2,6 +2,7 @@ package com.clovermusic.clover.data.spotify.api.networkDataSources
 
 import android.util.Log
 import com.clovermusic.clover.data.spotify.api.dto.common.TrackArtistResponseDto
+import com.clovermusic.clover.data.spotify.api.dto.search.SearchResponseDto
 import com.clovermusic.clover.data.spotify.api.dto.users.UsersProfileResponseDto
 import com.clovermusic.clover.data.spotify.api.service.UserService
 import kotlinx.coroutines.Dispatchers
@@ -71,4 +72,9 @@ class UserDataSource @Inject constructor(
             response
         }
 
+    suspend fun search(query: String, type: String, limit: Int): SearchResponseDto =
+        withContext(Dispatchers.IO) {
+            userService.search(query, type, limit)
+        }
+    
 }

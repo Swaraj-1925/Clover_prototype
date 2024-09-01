@@ -10,6 +10,7 @@ import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.crossRef.CollaboratorsTrackCrossRef
@@ -28,10 +29,10 @@ import java.time.LocalDate
         UserEntity::class,
         CollaboratorsTrackCrossRef::class,
         PlaylistTrackCrossRef::class,
-        TrackArtistsCrossRef::class
-
+        TrackArtistsCrossRef::class,
+        SearchResultEntity::class
     ],
-    version = 2
+    version = 1
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

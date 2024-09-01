@@ -9,6 +9,7 @@ import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.SearchResultEntity
 import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.data.local.entity.UserEntity
 import com.clovermusic.clover.data.local.entity.crossRef.CollaboratorsTrackCrossRef
@@ -68,6 +69,9 @@ interface InsertDataDao {
 
     @Query("UPDATE playlist SET numClick = numClick + 1 WHERE playlistId = :playlistId")
     suspend fun incrementNumClick(playlistId: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSearchResults(results: List<SearchResultEntity>)
 
 
 //    CrossRef
