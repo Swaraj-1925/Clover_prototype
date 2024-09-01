@@ -4,20 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
 import com.clovermusic.clover.data.local.entity.relations.Playlist
+import com.clovermusic.clover.data.spotify.api.dto.playlists.CreatePlaylistRequest
 import com.clovermusic.clover.domain.usecase.app.AppUseCases
 import com.clovermusic.clover.domain.usecase.playlist.PlaylistUseCases
+import com.clovermusic.clover.domain.usecase.user.UserUseCases
 import com.clovermusic.clover.util.DataState
+import com.clovermusic.clover.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
-    private val appUseCases: AppUseCases
+    private val appUseCases: AppUseCases,
+    private val userUseCases: UserUseCases
 ) : ViewModel() {
     private val _playlistUiState = MutableStateFlow<DataState<Playlist>>(DataState.Loading)
     val playlistUiState: StateFlow<DataState<Playlist>> = _playlistUiState.asStateFlow()
@@ -30,6 +35,10 @@ class LibraryViewModel @Inject constructor(
 
     private val _selectedCategories = MutableStateFlow(setOf("Top 5"))
     val selectedCategories: StateFlow<Set<String>> = _selectedCategories.asStateFlow()
+
+
+    private val _playlistCreationState = MutableStateFlow<Resource<String>>(Resource.Loading())
+    val playlistCreationState: StateFlow<Resource<String>> = _playlistCreationState.asStateFlow()
 
 
     init {
@@ -74,6 +83,24 @@ class LibraryViewModel @Inject constructor(
             }
         }
     }
+
+    fun createPlaylist(playlistRequest: CreatePlaylistRequest){
+        viewModelScope.launch{
+            val userId = userUseCases.getCurrentUsersProfile(true)
+                .firstOrNull { it is DataState.NewData }?.let {
+                    (it as DataState.NewData).data.userId
+                }
+
+            if (userId != null) {
+                // Now create the playlist using the retrieved user ID
+                playlistUseCases.createNewPlaylist(userId, playlistRequest).collect { result ->
+                    _playlistCreationState.value = result
+                }
+            } else {
+                _playlistCreationState.value = Resource.Error("Failed to retrieve user ID")
+            }
+        }
+        }
 
     fun incrementNumClick(id: String) {
         viewModelScope.launch {
