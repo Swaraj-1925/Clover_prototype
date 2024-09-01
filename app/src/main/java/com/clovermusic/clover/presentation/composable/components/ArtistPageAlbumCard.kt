@@ -46,10 +46,6 @@ fun ArtistPageAlbumCard(
             .padding(8.dp)
             .clickable { navController.navigate(ArtistAlbumScreenRoute(albums.albumId)) }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -108,6 +104,5 @@ fun ArtistPageAlbumCard(
                 }
             }
 
-        }
     }
 }
