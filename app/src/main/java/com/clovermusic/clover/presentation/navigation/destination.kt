@@ -29,4 +29,7 @@ data class ArtistAlbumScreenRoute(
 )
 
 @Serializable
+object LibraryScreenRoute
+
+@Serializable
 object SearchScreenRoute
