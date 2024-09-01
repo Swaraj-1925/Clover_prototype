@@ -16,27 +16,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.presentation.navigation.PlaylistScreenRoute
+import com.clovermusic.clover.presentation.viewModel.LibraryViewModel
+import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 
 
 @Composable
 fun PlaylistCard(
-    url: String,
-    playlistName: String,
-    songCount: Int,
-    onNameClick: () -> Unit,
-    onCardClick: () -> Unit,
+   playlistInfo: PlaylistInfoEntity,
+    size: Pair<Int, Int> = 1 to 1,
+    navController: NavController,
+    musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
+   libraryViewModel: LibraryViewModel = hiltViewModel()
 ) {
+    val (widthFactor, heightFactor) = size
+
     Card(
+        onClick = {
+            musicPlayerViewModel.playTrack(playlistInfo.uri)
+            libraryViewModel.incrementNumClick(playlistInfo.playlistId)
+                  },
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .width(160.dp)
-            .clickable { onCardClick() }
     ) {
         Column(
             modifier = Modifier
@@ -44,14 +53,11 @@ fun PlaylistCard(
                 .padding(14.dp)
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(url)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = playlistName,
+                model = playlistInfo.imageUrl,
+                contentDescription = playlistInfo.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .height(140.dp)
+                    .height(140.dp *heightFactor)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
             )
@@ -59,17 +65,17 @@ fun PlaylistCard(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = playlistName,
+                    text = playlistInfo.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .padding(vertical = 2.dp)
-                        .clickable { onNameClick() }
+                        .clickable { navController.navigate(PlaylistScreenRoute(id = playlistInfo.playlistId)) }
                 )
                 Text(
-                    text = "$songCount Songs",
+                    text = "${playlistInfo.totalTrack} Songs",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
 
