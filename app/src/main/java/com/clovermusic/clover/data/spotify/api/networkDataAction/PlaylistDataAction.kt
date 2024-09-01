@@ -19,9 +19,9 @@ class PlaylistDataAction @Inject constructor(
             Log.d("UserRepository", "followPlaylist: Successfully followed playlist")
         }
 
-    suspend fun removePlaylistItems(playlistId: String, tracks: List<String>): Unit =
+    suspend fun removePlaylistItems(playlistId: String, uri: List<String>): Unit =
         withContext(Dispatchers.IO) {
-            playlistService.removePlaylistItems(playlistId, tracks)
+            playlistService.removePlaylistItems(playlistId, uri)
             Log.d("UserRepository", "followPlaylist: Successfully followed playlist")
         }
 

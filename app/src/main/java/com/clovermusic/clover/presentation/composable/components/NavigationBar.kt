@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.clovermusic.clover.R
 import com.clovermusic.clover.presentation.navigation.HomeScreenRoute
+import com.clovermusic.clover.presentation.navigation.LibraryScreenRoute
+import com.clovermusic.clover.presentation.navigation.SearchScreenRoute
 
 @Composable
 fun NavigationBar(
@@ -68,12 +70,12 @@ fun NavigationBar(
                 NavigationItem(
                     icon = search,
                     contentDescription = "Search",
-                    onClick = {}
+                    onClick = {navController.navigate(SearchScreenRoute)}
                 )
                 NavigationItem(
                     icon = library,
                     contentDescription = "Library",
-                    onClick = {}
+                    onClick = {navController.navigate(LibraryScreenRoute)}
                 )
                 NavigationItem(
                     icon = profile,

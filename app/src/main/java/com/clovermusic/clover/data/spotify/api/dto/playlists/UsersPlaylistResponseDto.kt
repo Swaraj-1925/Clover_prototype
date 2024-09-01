@@ -21,7 +21,7 @@ data class UsersPlaylistItemDto(
     val images: List<ImageResponseDto>,
     val name: String,
     val owner: OwnerResponseDto,
-    val primary_color: String,
+    val primary_color: String?,
     val public: Boolean,
     val snapshot_id: String,
     val tracks: UsersPlaylistTracksDto,
