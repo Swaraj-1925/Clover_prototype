@@ -115,8 +115,7 @@ fun HomeContent(
                                 if (state is DataState.OldData) state.data else (state as DataState.NewData).data
                             NewReleasesSection(
                                 albums = data,
-                                onArtistClick = { /*TODO*/ },
-                                onSettingsClick = { /*TODO*/ }
+                                navController = navController
                             )
                         }
 

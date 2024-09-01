@@ -20,10 +20,9 @@ class GetAlbumUseCase @Inject constructor(
 
                 dataSource.authData.ensureValidAccessToken()
                 emit(DataState.Loading)
+                val albums = repository.album.getAlbum(albumId)
                 emit(
-                    DataState.NewData(
-                        repository.album.getAlbum(albumId)
-                    )
+                    DataState.NewData(albums)
                 )
             } catch (e: Exception) {
                 val error = customErrorHandling(e)
