@@ -27,3 +27,6 @@ data class ArtistScreenRoute(
 data class ArtistAlbumScreenRoute(
     val id: String,
 )
+
+@Serializable
+object LibraryScreenRoute
