@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.clovermusic.clover.presentation.composable.components.ArtistPageAlbumCard
+import com.clovermusic.clover.presentation.composable.components.BottomSheetOption
 import com.clovermusic.clover.presentation.composable.components.SongListCard
+import com.clovermusic.clover.presentation.composable.components.getThemedIcons
 import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -30,6 +32,7 @@ import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
 fun ArtistContent(
     artistInfo: ArtistDataUiState,
     navController: NavController,
+    onMoreClick :(List<BottomSheetOption>)-> Unit
 
 ) {
     val titles = listOf("Songs", "Albums")
@@ -42,6 +45,49 @@ fun ArtistContent(
     var selectedTabIndex by remember {
         mutableIntStateOf(0)
     }
+    val icons = getThemedIcons()
+
+    val trackOption = listOf(
+        BottomSheetOption(
+            iconResId = icons.queueIcon,
+            label = "Add to queue",
+            onClick = {}
+        ),
+        BottomSheetOption(
+            iconResId = icons.removeIcon,
+            label = "Hide this track",
+            onClick = {}
+        ),
+        BottomSheetOption(
+            iconResId = icons.artistIcon,
+            label = "View Artist",
+            onClick = {}
+        ),
+        BottomSheetOption(
+            iconResId = icons.albumIcon,
+            label = "View Album",
+            onClick = {}
+        ),
+        BottomSheetOption(
+            iconResId = icons.shareIcon,
+            label = "Share",
+            onClick = {}
+        ),
+    )
+    val albumOption = listOf(
+        BottomSheetOption(
+            iconResId = icons.queueIcon,
+            label = "Add to queue",
+            onClick = {}
+        ),
+
+
+        BottomSheetOption(
+            iconResId = icons.shareIcon,
+            label = "Share",
+            onClick = {}
+        ),
+    )
 
     LaunchedEffect(selectedTabIndex) {
         pagerState.animateScrollToPage(selectedTabIndex)
@@ -91,7 +137,8 @@ fun ArtistContent(
                                 SongListCard(
                                     track = track.track,
                                     artists = track.artists,
-                                    index = trackList.indexOf(track) + 1
+                                    index = trackList.indexOf(track) + 1,
+                                    onMoreClick = {onMoreClick(trackOption)}
                                 )
                             }
                         }
@@ -106,7 +153,8 @@ fun ArtistContent(
                             items(albumList) { album ->
                                 ArtistPageAlbumCard(
                                     albums = album,
-                                    navController = navController
+                                    navController = navController,
+                                    onMoreClick = {onMoreClick(albumOption)}
                                 )
                             }
                         }

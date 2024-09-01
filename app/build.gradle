@@ -150,6 +150,9 @@ dependencies {
     kapt libs.androidx.room.compiler
     implementation libs.androidx.room.paging
 
+    //statuspadding
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.31.1-alpha" // Update to the latest version
+
 }
 kapt {
     correctErrorTypes true

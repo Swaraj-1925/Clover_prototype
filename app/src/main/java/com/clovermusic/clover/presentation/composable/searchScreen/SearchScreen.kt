@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -46,6 +47,7 @@ import com.clovermusic.clover.presentation.viewModel.MusicPlayerViewModel
 import com.clovermusic.clover.presentation.viewModel.SearchViewModel
 import com.clovermusic.clover.ui.theme.CloverTheme
 import com.clovermusic.clover.util.DataState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
@@ -63,7 +65,10 @@ fun SearchScreen(
     val playbackState by musicPlayerViewModel.musicPlayerState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val systemUiController = rememberSystemUiController()
+
     Scaffold(
+        modifier = Modifier.statusBarsPadding(),
         topBar = {
             CloverTheme {
             Column(
@@ -114,8 +119,6 @@ fun SearchScreen(
                 NavigationBar(navController = navController)
             }
         },
-        modifier = Modifier
-            .statusBarsPadding()
     ) { innerPadding ->
         Box(
             modifier = Modifier

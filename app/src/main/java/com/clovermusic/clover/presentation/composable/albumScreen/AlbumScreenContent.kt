@@ -33,7 +33,8 @@ fun AlbumScreenContent(
         items(trackList) { track ->
             SongListCard(
                 track = track,
-                index = trackList.indexOf(track) + 1
+                index = trackList.indexOf(track) + 1,
+                onMoreClick ={}
             )
         }
     }
