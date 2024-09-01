@@ -30,6 +30,7 @@ import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
 fun ArtistContent(
     artistInfo: ArtistDataUiState,
     navController: NavController,
+
 ) {
     val titles = listOf("Songs", "Albums")
     val numAlbums = artistInfo.artistAlbums.flatMap { it.albums }.size

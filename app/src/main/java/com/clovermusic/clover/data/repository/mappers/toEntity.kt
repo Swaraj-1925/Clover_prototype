@@ -1,5 +1,7 @@
 package com.clovermusic.clover.data.repository.mappers
 
+import android.util.Log
+import androidx.compose.ui.platform.LocalGraphicsContext
 import com.clovermusic.clover.data.local.entity.AlbumEntity
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.data.local.entity.CollaboratorsEntity
@@ -53,7 +55,7 @@ fun List<PlaylistTrackResponseDto>.toEntity(): List<TrackEntity> {
                 .sortedBy { it.height * it.width } // Sort images by size (smallest first)
                 .let { sortedImages ->
                     if (sortedImages.size > 1) {
-                        sortedImages[1].url // Get the 2nd smallest image
+                        sortedImages[1].url ?: " "// Get the 2nd smallest image
                     } else {
                         sortedImages.firstOrNull()?.url ?: "" // If only one image, use it
                     }
@@ -82,12 +84,12 @@ fun List<TrackArtistResponseDto>.toEntity(
             artistId = it.id,
             uri = it.uri,
             genres = it.genres ?: emptyList(),
-            imageUrl = it.images?.firstOrNull()?.url ?: "",
-            name = it.name,
+            imageUrl = it.images?.firstOrNull()?.url ?: " ",
+            name = it.name ?:" ",
             followers = it.followers?.total ?: 0,
             isFollowed = followed,
             isTopArtist = top,
-            popularity = it.popularity,
+            popularity = it.popularity ?: 0,
             timestamp = System.currentTimeMillis(),
         )
     }
@@ -99,9 +101,9 @@ fun TrackArtistResponseDto.toEntity(): ArtistsEntity {
         uri = uri,
         genres = genres ?: emptyList(),
         imageUrl = images?.firstOrNull()?.url ?: "",
-        name = name,
+        name = name ?: "",
         followers = followers?.total ?: 0,
-        popularity = popularity,
+        popularity = popularity ?: 0,
         timestamp = System.currentTimeMillis(),
     )
 }
@@ -141,8 +143,8 @@ fun List<TrackItemsResponseDto>.toEntityWithArtist(): List<TrackWithArtists> {
                 genres = artistDto.genres ?: emptyList(),
                 followers = artistDto.followers?.total ?: 0,
                 imageUrl = artistDto.images?.get(0)?.url ?: " ",
-                name = artistDto.name,
-                popularity = artistDto.popularity,
+                name = artistDto.name ?: "",
+                popularity = artistDto.popularity ?: 0,
                 timestamp = System.currentTimeMillis()
             )
         }
@@ -208,7 +210,7 @@ fun TrackItemsResponseDto.toEntity() = TrackEntity(
         .sortedBy { it.height * it.width } // Sort images by size (smallest first)
         .let { sortedImages ->
             if (sortedImages.size > 1) {
-                sortedImages[1].url // Get the 2nd smallest image
+                sortedImages[1].url ?: " " // Get the 2nd smallest image
             } else {
                 sortedImages.firstOrNull()?.url ?: "" // If only one image, use it
             }
@@ -251,7 +253,7 @@ fun SpecificAlbumResponseDto.toEntity(artistId: String?): AlbumWithTrack {
             uri = trackDto.uri,
             durationMs = trackDto.duration_ms,
             name = trackDto.name,
-            imageUrl = images[0].url,
+            imageUrl = images[0].url ?: "",
             previewUrl = trackDto.preview_url,
             timestamp = System.currentTimeMillis()
         )

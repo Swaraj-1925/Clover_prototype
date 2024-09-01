@@ -63,8 +63,6 @@ fun ArtistScreen(
     )
 
 
-
-
     Scaffold(
         modifier = Modifier.statusBarsPadding(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },

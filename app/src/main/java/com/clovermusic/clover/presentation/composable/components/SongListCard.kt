@@ -41,7 +41,7 @@ import com.clovermusic.clover.util.Parsers
 @Composable
 fun SongListCard(
     track: TrackEntity,
-    artists: List<ArtistsEntity>,
+    artists: List<ArtistsEntity> = emptyList(),
     index: Int,
     musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
 ) {
