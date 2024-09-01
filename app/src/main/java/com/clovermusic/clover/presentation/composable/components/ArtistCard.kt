@@ -14,17 +14,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.presentation.navigation.ArtistScreenRoute
 
 @Composable
 fun ArtistCard(
-    artistName: String,
-    url: String,
-    onArtistClick: () -> Unit
+    artist: ArtistsEntity,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -33,15 +33,12 @@ fun ArtistCard(
             .padding(8.dp)
     ) {
         Card(
-            onClick = { onArtistClick() },
+            onClick = { navController.navigate(ArtistScreenRoute(id = artist.artistId)) },
             colors = CardDefaults.cardColors(Color.Transparent),
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(url)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = artistName,
+                model = artist.imageUrl,
+                contentDescription = artist.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .height(140.dp)
@@ -49,7 +46,7 @@ fun ArtistCard(
             )
         }
         Text(
-            text = artistName,
+            text = artist.name,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             maxLines = 1,

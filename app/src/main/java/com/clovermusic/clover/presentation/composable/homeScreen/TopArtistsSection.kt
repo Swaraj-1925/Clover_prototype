@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.clovermusic.clover.data.local.entity.ArtistsEntity
 import com.clovermusic.clover.presentation.composable.components.ArtistCard
-import com.clovermusic.clover.presentation.navigation.ArtistScreenRoute
 
 @Composable
 fun TopArtistsSection(
@@ -62,9 +61,8 @@ fun TopArtistsSection(
         ) {
             items(artists) { artist ->
                 ArtistCard(
-                    artistName = artist.name,
-                    url = artist.imageUrl ?: "",
-                    onArtistClick = { navController.navigate(ArtistScreenRoute(id = artist.artistId)) }
+                    artist = artist,
+                    navController = navController
                 )
             }
         }

@@ -1,20 +1,76 @@
 package com.clovermusic.clover.presentation.viewModel
-
-//@HiltViewModel
-//class Test @Inject constructor(
-//    private val appRemote: AppRemote
-//) : ViewModel() {
-//    private val _appRemote = MutableStateFlow<SpotifyAppRemote?>(null)
 //
+//import android.net.Uri
+//import androidx.activity.compose.rememberLauncherForActivityResult
+//import androidx.activity.result.contract.ActivityResultContracts
+//import androidx.compose.foundation.Image
+//import androidx.compose.foundation.background
+//import androidx.compose.foundation.layout.Arrangement
+//import androidx.compose.foundation.layout.Column
+//import androidx.compose.foundation.layout.Spacer
+//import androidx.compose.foundation.layout.fillMaxSize
+//import androidx.compose.foundation.layout.height
+//import androidx.compose.foundation.layout.padding
+//import androidx.compose.foundation.layout.size
+//import androidx.compose.foundation.shape.RoundedCornerShape
+//import androidx.compose.material3.Button
+//import androidx.compose.material3.MaterialTheme
+//import androidx.compose.material3.Text
+//import androidx.compose.runtime.Composable
+//import androidx.compose.runtime.getValue
+//import androidx.compose.runtime.mutableStateOf
+//import androidx.compose.runtime.remember
+//import androidx.compose.runtime.setValue
+//import androidx.compose.ui.Alignment
+//import androidx.compose.ui.Modifier
+//import androidx.compose.ui.draw.clip
+//import androidx.compose.ui.platform.LocalContext
+//import androidx.compose.ui.unit.dp
+//import coil.compose.rememberAsyncImagePainter
 //
-//    fun connectToAppRemote() {
-//        SpotifyAppRemote.disconnect(_appRemote.value)
-//        viewModelScope.launch {
-//            try {
-//                _appRemote.value = appRemote.connectToAppRemote()
-//            } catch (e: Exception) {
-//                Log.e("Test", "connectToAppRemote: ", e)
-//            }
+//@Composable
+//fun ImagePickerButton(
+//    onImageSelected: (Uri) -> Unit
+//) {
+//    val context = LocalContext.current
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri: Uri? ->
+//        uri?.let {
+//            onImageSelected(it)
 //        }
+//    }
+//
+//    Button(onClick = { launcher.launch("image/*") }) {
+//        Text("Select Cover Image")
+//    }
+//}
+//@Composable
+//fun PlaylistCoverScreen() {
+//    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center
+//    ) {
+//        selectedImageUri?.let { uri ->
+//            Image(
+//                painter = rememberAsyncImagePainter(uri),
+//                contentDescription = "Selected Playlist Cover",
+//                modifier = Modifier
+//                    .size(200.dp)
+//                    .clip(RoundedCornerShape(8.dp))
+//                    .background(MaterialTheme.colorScheme.surface)
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        ImagePickerButton(onImageSelected = { uri ->
+//            selectedImageUri = uri
+//        })
 //    }
 //}

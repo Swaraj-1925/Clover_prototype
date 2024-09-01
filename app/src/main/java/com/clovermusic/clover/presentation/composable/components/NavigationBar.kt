@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.clovermusic.clover.R
 import com.clovermusic.clover.presentation.navigation.HomeScreenRoute
+import com.clovermusic.clover.presentation.navigation.LibraryScreenRoute
 
 @Composable
 fun NavigationBar(
@@ -73,7 +74,7 @@ fun NavigationBar(
                 NavigationItem(
                     icon = library,
                     contentDescription = "Library",
-                    onClick = {}
+                    onClick = {navController.navigate(LibraryScreenRoute)}
                 )
                 NavigationItem(
                     icon = profile,

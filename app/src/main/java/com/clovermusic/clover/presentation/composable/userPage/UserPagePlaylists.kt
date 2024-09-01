@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.clovermusic.clover.presentation.composable.components.PlaylistCard
+
 
 @Composable
 fun UserPagePlaylistSection(playlist: List<swaraj.dummy> = swaraj.playlist) {
@@ -21,13 +21,13 @@ fun UserPagePlaylistSection(playlist: List<swaraj.dummy> = swaraj.playlist) {
     ) {
         items(playlist.size) { index ->
             val item = playlist[index]
-            PlaylistCard(
-                url = item.imageurl,
-                playlistName = item.name,
-                songCount = item.noofsongs,
-                onNameClick = { /*TODO*/ },
-                onCardClick = { /*TODO*/ }
-            )
+//            PlaylistCard(
+//                url = item.imageurl,
+//                playlistName = item.name,
+//                songCount = item.noofsongs,
+//                onNameClick = { /*TODO*/ },
+//                onCardClick = { /*TODO*/ }
+//            )
         }
     }
 }
@@ -74,3 +74,4 @@ object swaraj {
 fun UserPagePlaylistSectionPreview() {
     UserPagePlaylistSection()
 }
+
