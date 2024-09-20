@@ -94,7 +94,8 @@ fun PlaylistHeader(
 @Composable
 fun PlaylistInfo(
     playlist: Playlist,
-    onMoreClick: (List<BottomSheetOption>)->Unit) {
+
+    onMoreClick: ( List<BottomSheetOption>) -> Unit) {
     val icons = getThemedIcons()
 
     val options =

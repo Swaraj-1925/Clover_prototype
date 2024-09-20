@@ -21,18 +21,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.clovermusic.clover.data.local.entity.AlbumEntity
+import com.clovermusic.clover.data.local.entity.ArtistsEntity
+import com.clovermusic.clover.data.local.entity.PlaylistInfoEntity
+import com.clovermusic.clover.data.local.entity.TrackEntity
 import com.clovermusic.clover.presentation.composable.components.ArtistPageAlbumCard
 import com.clovermusic.clover.presentation.composable.components.BottomSheetOption
 import com.clovermusic.clover.presentation.composable.components.SongListCard
 import com.clovermusic.clover.presentation.composable.components.getThemedIcons
 import com.clovermusic.clover.presentation.uiState.ArtistDataUiState
 
+data class BottomSheetItem(
+    val track: TrackEntity? = null,
+    val artists: List<ArtistsEntity>? = null,
+    val playlist: PlaylistInfoEntity? = null,
+    val album: AlbumEntity? = null,
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArtistContent(
     artistInfo: ArtistDataUiState,
     navController: NavController,
-    onMoreClick :(List<BottomSheetOption>)-> Unit
+    onMoreClick: (BottomSheetItem, List<BottomSheetOption>) -> Unit
 
 ) {
     val titles = listOf("Songs", "Albums")
@@ -138,7 +149,10 @@ fun ArtistContent(
                                     track = track.track,
                                     artists = track.artists,
                                     index = trackList.indexOf(track) + 1,
-                                    onMoreClick = {onMoreClick(trackOption)}
+                                    onMoreClick = {
+                                        onMoreClick(
+                                            BottomSheetItem(track = track.track, artists = track.artists),
+                                            trackOption)}
                                 )
                             }
                         }
@@ -154,7 +168,10 @@ fun ArtistContent(
                                 ArtistPageAlbumCard(
                                     albums = album,
                                     navController = navController,
-                                    onMoreClick = {onMoreClick(albumOption)}
+                                    onMoreClick = {
+                                        onMoreClick(
+                                            BottomSheetItem(album = album , artists = listOf(artistInfo.artistInfo)),
+                                            albumOption)}
                                 )
                             }
                         }

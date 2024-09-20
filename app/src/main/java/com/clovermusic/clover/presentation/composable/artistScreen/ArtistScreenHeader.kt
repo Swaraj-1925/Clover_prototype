@@ -93,7 +93,7 @@ fun ArtistScreenHeader(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
-                                .align(Alignment.Start)
+                                .align(Alignment.CenterHorizontally)
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Row(

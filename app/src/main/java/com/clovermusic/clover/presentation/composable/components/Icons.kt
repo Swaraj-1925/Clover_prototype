@@ -62,7 +62,7 @@ fun getThemedIcons(): ThemedIcons {
             shuffleButtonActive = R.drawable.shuffle_black_active,
             shuffleButtonInactive = R.drawable.shuffle_black_inactive,
             previousButton = R.drawable.previous_black,
-            nextButton = R.drawable.next_white,
+            nextButton = R.drawable.next_black,
             repeatButtonActive = R.drawable.repeat_black_active,
             repeatButtonInactive = R.drawable.repeat_black_inactive,
             repeatButtonActive1 = R.drawable.repeat_black_active_2,

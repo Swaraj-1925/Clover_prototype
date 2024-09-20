@@ -36,7 +36,7 @@ fun Navigation(
         }
         composable<ArtistScreenRoute> {
             val artist: ArtistScreenRoute = it.toRoute()
-            ArtistScreen(artistId = artist.id, navController = navController, onMoreClick = {})
+            ArtistScreen(artistId = artist.id, navController = navController)
         }
         composable<ArtistAlbumScreenRoute> {
             val album: ArtistAlbumScreenRoute = it.toRoute()
