@@ -9,7 +9,7 @@ So, Clover suggests music based on what others enjoy, combined with how you inte
 Clover also pulls in your friends’ tastes. If you and a friend have, say, 60-70% similar music preferences, it looks at what they listen to after a song and factors that into your queue. Your own preferences get the most weight, followed by your friend’s, and then global trends. It also keeps tabs on your favorite artists for updates—no sponsored ads, even with a premium account. On the tech side, Clover uses Spotify’s music data because, well, I’m not exactly in the budget to buy a music label.
 
 **About the Attached Media**  
-The images and videos here are from the *x branch*. A few features are still in progress—I worked on this for about three months before I lost steam. I’ve moved to a new repo with a Python FastAPI backend and Kotlin for the Android logic, but it’s taking longer than expected. It might be a few months before it’s fully done, so it’s a slow work in progress.
+The images and videos here are from the [bottomSheet](https://github.com/Swaraj-1925/Clover_prototype/tree/bottomSheet) . A few features are still in progress—I worked on this for about three months before I lost steam. I’ve moved to a new [repo](https://github.com/Swaraj-1925/Clover) with a Python FastAPI backend and Kotlin for the Android logic, but it’s taking longer than expected. It might be a few months before it’s fully done, so it’s a slow work in progress.
 
 **Screenshots**
 Here are some glimpses of Clover in action
